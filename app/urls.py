@@ -1,5 +1,6 @@
 from django.urls import path
 from django.http import JsonResponse
+from django.contrib.auth import get_user_model
 from . import views
 
 
@@ -8,9 +9,32 @@ def health_check(request):
     return JsonResponse({'status': 'healthy', 'service': 'portfoliopro'})
 
 
+def debug_subdomain(request):
+    """Debug endpoint to check subdomain resolution"""
+    User = get_user_model()
+    subdomain_param = request.GET.get('subdomain', '')
+    
+    # Get all subdomains in database
+    all_subdomains = list(User.objects.values_list('subdomain', flat=True))
+    
+    # Check if subdomain exists
+    user_exists = User.objects.filter(subdomain__iexact=subdomain_param).exists() if subdomain_param else False
+    
+    return JsonResponse({
+        'requested_subdomain': subdomain_param,
+        'subdomain_from_request': getattr(request, 'subdomain', None),
+        'tenant_resolved': getattr(request, 'tenant', None) is not None,
+        'tenant_username': getattr(request, 'tenant', None).username if getattr(request, 'tenant', None) else None,
+        'user_exists_in_db': user_exists,
+        'all_subdomains_in_db': all_subdomains,
+        'host': request.get_host(),
+    })
+
+
 urlpatterns = [
-    # Health Check
+    # Health Check & Debug
     path('health/', health_check, name='health_check'),
+    path('debug-subdomain/', debug_subdomain, name='debug_subdomain'),
     
     # Main portfolio
     path('', views.portfolio_view, name='home'),
