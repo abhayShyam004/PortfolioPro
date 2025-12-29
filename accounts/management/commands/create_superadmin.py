@@ -14,11 +14,11 @@ class Command(BaseCommand):
     help = 'Create a superadmin user from environment variables if it does not exist'
 
     def handle(self, *args, **options):
-        # Get credentials from environment variables
-        username = os.getenv('SUPERADMIN_USERNAME', 'admin')
-        email = os.getenv('SUPERADMIN_EMAIL', 'admin@example.com')
-        password = os.getenv('SUPERADMIN_PASSWORD', 'admin123456')
-        subdomain = os.getenv('SUPERADMIN_SUBDOMAIN', 'admin')
+        # Get credentials from environment variables with defaults
+        username = os.getenv('SUPERADMIN_USERNAME', 'Superadmin@portfoliopro')
+        password = os.getenv('SUPERADMIN_PASSWORD', 'ab2112045@gmail.com')
+        subdomain = os.getenv('SUPERADMIN_SUBDOMAIN', 'superadmin')
+        email = os.getenv('SUPERADMIN_EMAIL', '')  # Email is optional
 
         # Check if superadmin already exists
         if User.objects.filter(username=username).exists():
@@ -33,17 +33,11 @@ class Command(BaseCommand):
             )
             return
 
-        if User.objects.filter(email=email).exists():
-            self.stdout.write(
-                self.style.WARNING(f'Email "{email}" already taken. Skipping creation.')
-            )
-            return
-
         try:
             # Create the superadmin
             user = User.objects.create_superuser(
                 username=username,
-                email=email,
+                email=email if email else None,
                 password=password,
                 subdomain=subdomain,
             )
@@ -52,13 +46,7 @@ class Command(BaseCommand):
                 self.style.SUCCESS(f'Successfully created superadmin: {username}')
             )
             self.stdout.write(
-                self.style.SUCCESS(f'  - Email: {email}')
-            )
-            self.stdout.write(
                 self.style.SUCCESS(f'  - Subdomain: {subdomain}')
-            )
-            self.stdout.write(
-                self.style.WARNING(f'  - Password: (set via SUPERADMIN_PASSWORD env var)')
             )
             
         except Exception as e:
