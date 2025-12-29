@@ -10,3 +10,6 @@ python manage.py collectstatic --no-input
 
 # Run migrations
 python manage.py migrate
+
+# Create superuser if not exists (optional for testing)
+# python manage.py createsuperuser --noinput --username admin --email admin@example.com || true
