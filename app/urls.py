@@ -17,15 +17,24 @@ def debug_subdomain(request):
     # Get all subdomains in database
     all_subdomains = list(User.objects.values_list('subdomain', flat=True))
     
-    # Check if subdomain exists
-    user_exists = User.objects.filter(subdomain__iexact=subdomain_param).exists() if subdomain_param else False
+    # Check if subdomain exists and get user details
+    user_data = None
+    if subdomain_param:
+        user = User.objects.filter(subdomain__iexact=subdomain_param).first()
+        if user:
+            user_data = {
+                'username': user.username,
+                'is_active': user.is_active,
+                'is_banned': user.is_banned,
+                'role': user.role,
+            }
     
     return JsonResponse({
         'requested_subdomain': subdomain_param,
         'subdomain_from_request': getattr(request, 'subdomain', None),
         'tenant_resolved': getattr(request, 'tenant', None) is not None,
         'tenant_username': getattr(request, 'tenant', None).username if getattr(request, 'tenant', None) else None,
-        'user_exists_in_db': user_exists,
+        'user_data': user_data,
         'all_subdomains_in_db': all_subdomains,
         'host': request.get_host(),
     })
