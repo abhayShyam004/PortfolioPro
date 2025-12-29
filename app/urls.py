@@ -11,11 +11,28 @@ def health_check(request):
 
 def debug_subdomain(request):
     """Debug endpoint to check subdomain resolution"""
+    from django.core.cache import cache
+    
     User = get_user_model()
     subdomain_param = request.GET.get('subdomain', '')
+    clear_cache = request.GET.get('clear_cache', '') == '1'
+    
+    # Clear cache if requested
+    cache_cleared = False
+    if clear_cache and subdomain_param:
+        cache_key = f'tenant_{subdomain_param}'
+        cache.delete(cache_key)
+        cache_cleared = True
     
     # Get all subdomains in database
     all_subdomains = list(User.objects.values_list('subdomain', flat=True))
+    
+    # Check cached value
+    cached_value = None
+    if subdomain_param:
+        cache_key = f'tenant_{subdomain_param}'
+        cached_value = cache.get(cache_key)
+        cached_value = str(cached_value) if cached_value is not None else 'NOT_CACHED'
     
     # Check if subdomain exists and get user details
     user_data = None
@@ -35,8 +52,11 @@ def debug_subdomain(request):
         'tenant_resolved': getattr(request, 'tenant', None) is not None,
         'tenant_username': getattr(request, 'tenant', None).username if getattr(request, 'tenant', None) else None,
         'user_data': user_data,
+        'cached_value': cached_value,
+        'cache_cleared': cache_cleared,
         'all_subdomains_in_db': all_subdomains,
         'host': request.get_host(),
+        'hint': 'Add ?clear_cache=1 to clear cached tenant lookup'
     })
 
 
