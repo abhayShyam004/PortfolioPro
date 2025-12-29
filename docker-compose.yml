@@ -1,0 +1,112 @@
+# =============================================================================
+# PortfolioPro Docker Compose Configuration
+# Services: web, db (postgres), redis, nginx
+# =============================================================================
+
+version: '3.8'
+
+services:
+  # =============================================================================
+  # Django Web Application
+  # =============================================================================
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: portfoliopro_web
+    restart: unless-stopped
+    env_file:
+      - .env.docker
+    environment:
+      - DEBUG=False
+      - DATABASE_URL=postgres://portfoliopro:${DB_PASSWORD}@db:5432/portfoliopro
+      - REDIS_URL=redis://redis:6379/0
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+      - ./logs:/app/logs
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - portfoliopro_network
+    expose:
+      - "8000"
+
+  # =============================================================================
+  # PostgreSQL Database
+  # =============================================================================
+  db:
+    image: postgres:15-alpine
+    container_name: portfoliopro_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: portfoliopro
+      POSTGRES_USER: portfoliopro
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U portfoliopro -d portfoliopro"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - portfoliopro_network
+
+  # =============================================================================
+  # Redis Cache
+  # =============================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: portfoliopro_redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - portfoliopro_network
+
+  # =============================================================================
+  # Nginx Reverse Proxy
+  # =============================================================================
+  nginx:
+    image: nginx:alpine
+    container_name: portfoliopro_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - static_volume:/app/staticfiles:ro
+      - media_volume:/app/media:ro
+      - ./certbot/conf:/etc/letsencrypt:ro
+      - ./certbot/www:/var/www/certbot:ro
+    depends_on:
+      - web
+    networks:
+      - portfoliopro_network
+
+# =============================================================================
+# Volumes
+# =============================================================================
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  static_volume:
+    driver: local
+  media_volume:
+    driver: local
+
+# =============================================================================
+# Networks
+# =============================================================================
+networks:
+  portfoliopro_network:
+    driver: bridge

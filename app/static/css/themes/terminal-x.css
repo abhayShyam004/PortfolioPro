@@ -1,0 +1,450 @@
+/*
+ * Terminal X Theme - Hacker Terminal Interface
+ * 
+ * A portfolio that looks like a command-line terminal interface.
+ * Think: The Matrix meets GitHub dark mode
+ */
+
+/* Import monospace font */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+/* Terminal X Color Palette */
+body.theme-terminal_x {
+    --terminal-bg: #0D1117;
+    --terminal-bg-secondary: #161b22;
+    --terminal-green: #00FF41;
+    --terminal-amber: #FFBF00;
+    --terminal-cyan: #00D9FF;
+    --terminal-red: #f85149;
+    --terminal-text: #c9d1d9;
+    --terminal-muted: #8b949e;
+    --terminal-border: #30363d;
+    
+    background-color: var(--terminal-bg) !important;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace !important;
+    color: var(--terminal-text) !important;
+}
+
+/* Override page wrapper */
+body.theme-terminal_x .s-pagewrap {
+    background: var(--terminal-bg);
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Terminal window container */
+body.theme-terminal_x::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: #21262d;
+    z-index: 9998;
+    border-bottom: 1px solid var(--terminal-border);
+}
+
+body.theme-terminal_x::after {
+    content: '⬤ ⬤ ⬤  abhay@portfolio ~ bash';
+    position: fixed;
+    top: 10px;
+    left: 20px;
+    font-size: 0.8rem;
+    color: var(--terminal-muted);
+    z-index: 9999;
+}
+
+body.theme-terminal_x .s-pagewrap {
+    margin-top: 50px !important;
+}
+
+/* Hide normal background effects */
+body.theme-terminal_x .circles,
+body.theme-terminal_x .gradient-bg,
+body.theme-terminal_x .retro-grid,
+body.theme-terminal_x .aurora-bg,
+body.theme-terminal_x .hexagons-bg,
+body.theme-terminal_x #particles-js,
+body.theme-terminal_x .spotlight {
+    display: none !important;
+}
+
+/* ============================================
+   HEADER / NAVIGATION
+   ============================================ */
+body.theme-terminal_x .s-header {
+    background: var(--terminal-bg) !important;
+    border-bottom: 1px solid var(--terminal-border);
+}
+
+body.theme-terminal_x .s-header .logo {
+    color: var(--terminal-green) !important;
+    font-family: 'JetBrains Mono', monospace !important;
+}
+
+body.theme-terminal_x .s-header .logo::before {
+    content: '~/';
+    color: var(--terminal-muted);
+}
+
+body.theme-terminal_x .s-header__nav-list a {
+    color: var(--terminal-cyan) !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.85rem;
+}
+
+body.theme-terminal_x .s-header__nav-list a:hover {
+    color: var(--terminal-green) !important;
+}
+
+body.theme-terminal_x .s-header__nav-list a::before {
+    content: './';
+    color: var(--terminal-muted);
+    font-size: 0.75rem;
+}
+
+/* ============================================
+   HERO / INTRO SECTION
+   ============================================ */
+body.theme-terminal_x .s-intro {
+    background: transparent !important;
+    min-height: auto;
+    padding: 80px 0 40px;
+}
+
+body.theme-terminal_x .s-intro::before {
+    display: none !important;
+}
+
+body.theme-terminal_x .text-pretitle {
+    color: var(--terminal-cyan) !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.9rem !important;
+}
+
+body.theme-terminal_x .text-pretitle::before {
+    content: '$ echo "';
+    color: var(--terminal-amber);
+}
+
+body.theme-terminal_x .text-pretitle::after {
+    content: '"';
+    color: var(--terminal-amber);
+}
+
+body.theme-terminal_x .text-huge-title {
+    color: var(--terminal-green) !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 2.5rem !important;
+    line-height: 1.4;
+    text-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+}
+
+body.theme-terminal_x .text-huge-title::before {
+    content: '> ';
+    color: var(--terminal-amber);
+}
+
+body.theme-terminal_x .intro-social {
+    background: var(--terminal-bg-secondary);
+    border: 1px solid var(--terminal-border);
+    border-radius: 6px;
+    padding: 15px 20px;
+    margin-top: 30px;
+}
+
+body.theme-terminal_x .intro-social::before {
+    content: '$ cat ./social.txt';
+    display: block;
+    color: var(--terminal-amber);
+    font-size: 0.8rem;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--terminal-border);
+}
+
+body.theme-terminal_x .intro-social li a {
+    color: var(--terminal-cyan) !important;
+    font-family: 'JetBrains Mono', monospace !important;
+}
+
+body.theme-terminal_x .intro-social li a:hover {
+    color: var(--terminal-green) !important;
+    text-decoration: underline;
+}
+
+body.theme-terminal_x .intro-social li a::before {
+    content: '→ ';
+    color: var(--terminal-muted);
+}
+
+/* ============================================
+   SECTION HEADERS
+   ============================================ */
+body.theme-terminal_x .text-pretitle.with-line,
+body.theme-terminal_x h2.text-pretitle {
+    color: var(--terminal-green) !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    border-color: var(--terminal-border) !important;
+}
+
+/* Command-style section titles */
+body.theme-terminal_x section[id] > .row:first-child .text-pretitle::before,
+body.theme-terminal_x .section-title::before {
+    content: '# ';
+    color: var(--terminal-muted);
+}
+
+/* ============================================
+   ABOUT SECTION
+   ============================================ */
+body.theme-terminal_x .s-about {
+    background: transparent !important;
+    padding: 60px 0;
+}
+
+body.theme-terminal_x .about-info__pic {
+    border: 2px solid var(--terminal-green);
+    border-radius: 6px;
+    filter: grayscale(30%) contrast(1.1);
+}
+
+body.theme-terminal_x .attention-getter {
+    color: var(--terminal-text) !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.95rem;
+    line-height: 1.8;
+    background: var(--terminal-bg-secondary);
+    border: 1px solid var(--terminal-border);
+    border-radius: 6px;
+    padding: 20px;
+}
+
+body.theme-terminal_x .attention-getter::before {
+    content: '$ cat ./about.txt\n\n';
+    display: block;
+    color: var(--terminal-amber);
+    margin-bottom: 15px;
+    white-space: pre;
+}
+
+/* ============================================
+   SKILLS SECTION
+   ============================================ */
+body.theme-terminal_x .services-list__item {
+    background: var(--terminal-bg-secondary) !important;
+    border: 1px solid var(--terminal-border) !important;
+    border-radius: 6px;
+}
+
+body.theme-terminal_x .services-list__item:hover {
+    border-color: var(--terminal-green) !important;
+    box-shadow: 0 0 15px rgba(0, 255, 65, 0.1);
+}
+
+body.theme-terminal_x .services-list__item-header h5 {
+    color: var(--terminal-green) !important;
+    font-family: 'JetBrains Mono', monospace !important;
+}
+
+body.theme-terminal_x .services-list__item-header h5::before {
+    content: '✓ ';
+    color: var(--terminal-green);
+}
+
+body.theme-terminal_x .services-list__item-content p {
+    color: var(--terminal-muted) !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.85rem;
+}
+
+/* ============================================
+   PROJECTS / WORKS SECTION
+   ============================================ */
+body.theme-terminal_x .folio-list__item-link {
+    background: var(--terminal-bg-secondary) !important;
+    border: 1px solid var(--terminal-border) !important;
+}
+
+body.theme-terminal_x .folio-list__item-link:hover {
+    border-color: var(--terminal-cyan) !important;
+}
+
+body.theme-terminal_x .folio-list__item-text h4 {
+    color: var(--terminal-text) !important;
+    font-family: 'JetBrains Mono', monospace !important;
+}
+
+body.theme-terminal_x .folio-list__item-text h4::before {
+    content: '📁 ';
+}
+
+body.theme-terminal_x .folio-list__item-text p {
+    color: var(--terminal-muted) !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.85rem;
+}
+
+/* ============================================
+   EXPERIENCE SECTION
+   ============================================ */
+body.theme-terminal_x .timeline-block {
+    border-left: 2px solid var(--terminal-green) !important;
+}
+
+body.theme-terminal_x .timeline-bullet::before {
+    background: var(--terminal-green) !important;
+}
+
+body.theme-terminal_x .timeline-header__title {
+    color: var(--terminal-text) !important;
+    font-family: 'JetBrains Mono', monospace !important;
+}
+
+body.theme-terminal_x .timeline-header__meta {
+    color: var(--terminal-cyan) !important;
+    font-family: 'JetBrains Mono', monospace !important;
+}
+
+body.theme-terminal_x .timeline__text p {
+    color: var(--terminal-muted) !important;
+    font-family: 'JetBrains Mono', monospace !important;
+}
+
+/* ============================================
+   CONTACT SECTION
+   ============================================ */
+body.theme-terminal_x .s-contact {
+    background: var(--terminal-bg-secondary) !important;
+    border-top: 1px solid var(--terminal-border);
+}
+
+body.theme-terminal_x .contact-cta h3 {
+    color: var(--terminal-green) !important;
+    font-family: 'JetBrains Mono', monospace !important;
+}
+
+body.theme-terminal_x .btn-primary,
+body.theme-terminal_x .btn {
+    background: var(--terminal-green) !important;
+    color: var(--terminal-bg) !important;
+    border: none !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    text-transform: none;
+}
+
+body.theme-terminal_x .btn:hover {
+    background: #00cc34 !important;
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+body.theme-terminal_x .ss-go-top {
+    background: var(--terminal-green) !important;
+    color: var(--terminal-bg) !important;
+}
+
+/* ============================================
+   TYPING CURSOR
+   ============================================ */
+body.theme-terminal_x .terminal-cursor {
+    display: inline-block;
+    width: 10px;
+    height: 1.2em;
+    background: var(--terminal-green);
+    animation: blink 1s step-end infinite;
+    margin-left: 2px;
+    vertical-align: bottom;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+/* ============================================
+   SCANLINES EFFECT (Optional)
+   ============================================ */
+body.theme-terminal_x.scanlines::before {
+    content: "";
+    position: fixed;
+    top: 40px;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 40px);
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.1),
+        rgba(0, 0, 0, 0.1) 1px,
+        transparent 1px,
+        transparent 2px
+    );
+    pointer-events: none;
+    z-index: 9997;
+}
+
+/* ============================================
+   REDUCED MOTION SUPPORT
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+    body.theme-terminal_x .terminal-cursor {
+        animation: none;
+        opacity: 1;
+    }
+}
+
+/* ============================================
+   MOBILE RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+    body.theme-terminal_x::after {
+        font-size: 0.7rem;
+    }
+    
+    body.theme-terminal_x .text-huge-title {
+        font-size: 1.5rem !important;
+    }
+    
+    body.theme-terminal_x.scanlines::before {
+        display: none;
+    }
+}
+
+/* ============================================
+   COMMAND HELP TOOLTIP
+   ============================================ */
+body.theme-terminal_x .command-hint {
+    position: absolute;
+    background: var(--terminal-bg-secondary);
+    border: 1px solid var(--terminal-border);
+    color: var(--terminal-text);
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+}
+
+body.theme-terminal_x a:hover + .command-hint,
+body.theme-terminal_x [data-command]:hover::after {
+    opacity: 1;
+}
+
+/* Show command hints on hover */
+body.theme-terminal_x [data-command]:hover::after {
+    content: attr(data-command);
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--terminal-bg-secondary);
+    border: 1px solid var(--terminal-border);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    color: var(--terminal-amber);
+}

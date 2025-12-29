@@ -1,0 +1,14 @@
+/*
+ * Classic Theme - Default portfolio style
+ * This is the existing style, just organized as a theme
+ */
+
+/* Classic theme uses the existing styles.css */
+/* This file exists for consistency with the theme system */
+
+body.theme-classic {
+    /* Classic theme uses default variables from styles.css */
+}
+
+/* Classic theme doesn't need additional styles - 
+   it uses the existing CSS in styles.css and enhancements.css */

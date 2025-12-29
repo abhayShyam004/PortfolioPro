@@ -1,0 +1,177 @@
+{% extends 'superadmin/base.html' %}
+
+{% block title %}{{ target_user.username }}{% endblock %}
+
+{% block content %}
+<div class="header">
+    <h1>User: {{ target_user.username }}</h1>
+    <div class="header-actions">
+        <a href="{% url 'superadmin:user_list' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i>
+            Back to Users
+        </a>
+    </div>
+</div>
+
+<!-- User Info Card -->
+<div class="card">
+    <h2 class="card-title">User Information</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+        <div>
+            <div class="form-label">Username</div>
+            <strong>{{ target_user.username }}</strong>
+        </div>
+        <div>
+            <div class="form-label">Email</div>
+            {{ target_user.email }}
+        </div>
+        <div>
+            <div class="form-label">Subdomain</div>
+            <a href="/?subdomain={{ target_user.subdomain }}" target="_blank" style="color: #eabe7c;">
+                {{ target_user.subdomain }}.portfoliopro.site
+            </a>
+        </div>
+        <div>
+            <div class="form-label">Role</div>
+            {% if target_user.role == 'SUPERADMIN' %}
+                <span class="badge badge-warning">Superadmin</span>
+            {% else %}
+                <span class="badge badge-info">User</span>
+            {% endif %}
+        </div>
+        <div>
+            <div class="form-label">Status</div>
+            {% if target_user.is_banned %}
+                <span class="badge badge-danger">Banned</span>
+            {% elif target_user.is_active %}
+                <span class="badge badge-success">Active</span>
+            {% else %}
+                <span class="badge badge-secondary">Inactive</span>
+            {% endif %}
+        </div>
+        <div>
+            <div class="form-label">Created</div>
+            {{ target_user.created_at|date:"F d, Y H:i" }}
+        </div>
+        <div>
+            <div class="form-label">Last Login</div>
+            {{ target_user.last_login|date:"F d, Y H:i"|default:"Never" }}
+        </div>
+        <div>
+            <div class="form-label">Email Verified</div>
+            {% if target_user.email_verified %}
+                <span class="badge badge-success">Yes</span>
+            {% else %}
+                <span class="badge badge-secondary">No</span>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Actions Card -->
+<div class="card">
+    <h2 class="card-title">Actions</h2>
+    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <!-- Toggle Status -->
+        <form method="POST" action="{% url 'superadmin:toggle_user_status' target_user.id %}">
+            {% csrf_token %}
+            {% if target_user.is_active %}
+                <button type="submit" class="btn btn-secondary" onclick="return confirm('Deactivate this user?')">
+                    <i class="fas fa-user-times"></i>
+                    Deactivate
+                </button>
+            {% else %}
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-user-check"></i>
+                    Activate
+                </button>
+            {% endif %}
+        </form>
+        
+        <!-- Ban/Unban -->
+        {% if not target_user.is_superadmin %}
+            {% if target_user.is_banned %}
+                <form method="POST" action="{% url 'superadmin:unban_user' target_user.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-user-check"></i>
+                        Unban User
+                    </button>
+                </form>
+            {% else %}
+                <form method="POST" action="{% url 'superadmin:ban_user' target_user.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Ban this user? They will lose access to their portfolio and admin panel.')">
+                        <i class="fas fa-user-slash"></i>
+                        Ban User
+                    </button>
+                </form>
+            {% endif %}
+        {% endif %}
+        
+        <!-- Reset Password -->
+        <form method="POST" action="{% url 'superadmin:reset_user_password' target_user.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-secondary" onclick="return confirm('Reset password? A temporary password will be generated.')">
+                <i class="fas fa-key"></i>
+                Reset Password
+            </button>
+        </form>
+        
+        <!-- Impersonate -->
+        {% if not target_user.is_superadmin %}
+            <form method="POST" action="{% url 'superadmin:impersonate_user' target_user.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-mask"></i>
+                    Impersonate
+                </button>
+            </form>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Change Role Card -->
+<div class="card">
+    <h2 class="card-title">Change Role</h2>
+    <form method="POST" action="{% url 'superadmin:change_user_role' target_user.id %}" style="display: flex; gap: 12px; align-items: end;">
+        {% csrf_token %}
+        <div class="form-group" style="margin: 0;">
+            <label class="form-label">Role</label>
+            <select name="role" class="form-control">
+                <option value="USER" {% if target_user.role == 'USER' %}selected{% endif %}>User (Portfolio Owner)</option>
+                <option value="SUPERADMIN" {% if target_user.role == 'SUPERADMIN' %}selected{% endif %}>Superadmin (Platform Admin)</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary" onclick="return confirm('Change this user\'s role?')">
+            <i class="fas fa-save"></i>
+            Update Role
+        </button>
+    </form>
+</div>
+
+<!-- Portfolio Content -->
+<div class="card">
+    <h2 class="card-title">Portfolio Content</h2>
+    
+    {% if profile %}
+    <div style="margin-bottom: 20px;">
+        <h3 style="font-size: 1rem; color: #888; margin-bottom: 10px;">Profile</h3>
+        <p><strong>Name:</strong> {{ profile.name }}</p>
+        <p><strong>Greeting:</strong> {{ profile.greeting }}</p>
+        <p><strong>Bio:</strong> {{ profile.hero_bio|truncatewords:30 }}</p>
+    </div>
+    {% endif %}
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+        <div class="stat-card">
+            <div class="stat-value">{{ projects.count }}</div>
+            <div class="stat-label">Projects</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">{{ skills.count }}</div>
+            <div class="stat-label">Skills</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -5,7 +5,7 @@
     <!--- basic page needs
     ================================================== -->
     <meta charset="utf-8">
-    <title>Abhay</title>
+    <title>{{ profile.name }}</title>
     <meta name="description" content="">
     <meta name="author" content="">
 
@@ -18,6 +18,23 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/vendor.css' %}">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/enhancements.css' %}">
+    
+    <!-- Theme System CSS -->
+    <link rel="stylesheet" href="{% static 'css/themes/base.css' %}">
+    {% block theme_css %}
+    {% if settings.active_theme == 'neural_odyssey' %}
+    <link rel="stylesheet" href="{% static 'css/themes/neural-odyssey.css' %}">
+    {% elif settings.active_theme == 'chrono_story' %}
+    <link rel="stylesheet" href="{% static 'css/themes/chrono-story.css' %}">
+    {% elif settings.active_theme == 'glass_horizon' %}
+    <link rel="stylesheet" href="{% static 'css/themes/glass-horizon.css' %}">
+    {% elif settings.active_theme == 'cinematic_flow' %}
+    <link rel="stylesheet" href="{% static 'css/themes/cinematic-flow.css' %}">
+    {% else %}
+    <link rel="stylesheet" href="{% static 'css/themes/classic.css' %}">
+    {% endif %}
+    {% endblock %}
 
     <!-- favicons
     ================================================== -->
@@ -25,14 +42,185 @@
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
     <link rel="manifest" href="site.webmanifest">
+
+    <!-- Dynamic Theme from Settings -->
+    {% if settings %}
+    <style>
+        :root {
+            --color-1: {{ settings.primary_color }};
+            --color-2: {{ settings.secondary_color }};
+            --color-body: {{ settings.background_color }};
+            --color-text: {{ settings.hero_about_text_color }};
+            --color-text-dark: {{ settings.hero_about_text_color }};
+            --color-effect: {{ settings.circle_color }};
+        }
+        
+        /* Fixed header */
+        .s-header {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100% !important;
+            z-index: 9999 !important;
+            background: #0a0a0a !important;
+        }
+        
+        /* Dynamic Typography Sizes */
+        .text-huge-title { font-size: {{ settings.name_font_size }}rem !important; }
+        
+        /* Intro section greeting */
+        .s-intro .text-pretitle { 
+            font-size: {{ settings.greeting_font_size }}rem !important; 
+        }
+        
+        /* Section headings (About, Skills, etc.) */
+        .text-pretitle.with-line {
+            font-size: {{ settings.section_heading_font_size }}rem !important;
+            color: {{ settings.section_heading_color}} !important;
+        }
+
+        @media (max-width: 768px) {
+            .text-huge-title { font-size: {{ settings.name_font_size_mobile }}rem !important; }
+            .s-intro .text-pretitle { font-size: {{ settings.greeting_font_size_mobile }}rem !important; }
+            .text-pretitle.with-line { 
+                font-size: {{ settings.section_heading_font_size_mobile }}rem !important; 
+            }
+        }
+        
+        {% if settings.button_style == 'pill' %}
+        .btn { border-radius: 50px !important; }
+        {% elif settings.button_style == 'square' %}
+        .btn { border-radius: 0 !important; }
+        {% endif %}
+        {% if settings.background_style == 'circles' %}
+        .circles span { border-color: {{ settings.circle_color }} !important; }
+        {% elif settings.background_style == 'gradient' %}
+        .circles { display: none !important; }
+        .gradient-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(-45deg, {{ settings.primary_color }}33, {{ settings.secondary_color }}33, {{ settings.circle_color }}33); background-size: 400% 400%; animation: gradientBG 15s ease infinite; z-index: -1; pointer-events: none; }
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        {% elif settings.background_style == 'grid' %}
+        .circles { display: none !important; }
+        .retro-grid { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient({{ settings.circle_color }}33 1px, transparent 1px), linear-gradient(90deg, {{ settings.circle_color }}33 1px, transparent 1px); background-size: 50px 50px; z-index: -1; pointer-events: none; }
+        {% elif settings.background_style == 'particles' %}
+        .circles { display: none !important; }
+        #particles-js { position: fixed; width: 100%; height: 100%; top: 0; left: 0; z-index: -1; pointer-events: none; }
+        {% endif %}
+        
+        /* Side-by-side Education & Experience layout */
+        .edu-exp-sidebyside .edu-exp-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+        .edu-exp-sidebyside .edu-exp-column {
+            flex: 1;
+            min-width: 300px;
+        }
+        @media (max-width: 900px) {
+            .edu-exp-sidebyside .edu-exp-row {
+                flex-direction: column;
+            }
+            .edu-exp-sidebyside .edu-exp-column {
+                width: 100%;
+            }
+        }
+        
+        /* Consistent section spacing (desktop only) */
+        @media (min-width: 901px) {
+            section.s-about,
+            section.s-skills,
+            section.s-works,
+            section[id^="custom-section-"] {
+                margin-bottom: 80px;
+            }
+        }
+        
+        /* Fix expertise section excessive top padding */
+        #expertise {
+            padding-top: 40px !important;
+        }
+        #expertise .about-expertise {
+            padding-top: 0 !important;
+            margin-top: 0 !important;
+        }
+        /* Custom List Layout Helper */
+        .block-1-1 > .column {
+            width: 100% !important;
+            flex: 0 0 100% !important;
+            max-width: 100% !important;
+        }
+        
+        /* SPOTLIGHT GLOW EFFECT */
+        .spotlight {
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 5;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s;
+            opacity: 0;
+        }
+        
+        /* CRITICAL: Ensure all content appears above backgrounds */
+        .s-pagewrap,
+        .s-content,
+        main,
+        section,
+        .s-footer,
+        .row,
+        .column {
+            position: relative !important;
+            z-index: 10 !important;
+        }
+        
+        #preloader {
+            z-index: 9999 !important;
+        }
+        
+        nav,
+        .main-nav,
+        .header-mobile {
+            z-index: 100 !important;
+        }
+        
+        /* Force visibility */
+        * {
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+        
+        .circles,
+        .gradient-bg,
+        .retro-grid,
+        #particles-js,
+        canvas,
+        .aurora-bg,
+        .hexagons-bg {
+            position: fixed !important;
+            z-index: 0 !important;
+        }
+    </style>
+    {% endif %}
+    {% block theme_config %}
+    {% endblock %}
 </head>
 
-<script>
-(function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="RZtDxmyOHqusGSj4BBckC";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
-</script>
+    {% if profile.ai_assistant_script %}
+    {{ profile.ai_assistant_script|safe }}
+    {% endif %}
 
-<body id="top">
+<body id="top" data-theme="{{ settings.active_theme|default:'classic' }}" class="theme-{{ settings.active_theme|default:'classic' }}">
 
+    <!-- Interactive 3D Background Container Block -->
+    {% block background_layer %}
+    {% endblock %}
+
+    <!-- Spotlight Effect -->
+    <div class="spotlight"></div>
 
     <!-- # preloader
     ================================================== -->
@@ -54,25 +242,44 @@
             <span></span>
         </div>
 
+        {% if settings.background_style == 'gradient' %}
+        <div class="gradient-bg"></div>
+        {% elif settings.background_style == 'grid' %}
+        <div class="retro-grid"></div>
+        {% elif settings.background_style == 'particles' %}
+        <div id="particles-js"></div>
+        {% elif settings.background_style == 'waves' %}
+        <canvas id="waves-canvas" style="position:fixed;top:0;left:0;z-index:-1;width:100%;height:100%;pointer-events:none;"></canvas>
+        {% elif settings.background_style == 'matrix' %}
+        <canvas id="matrix-canvas" style="position:fixed;top:0;left:0;z-index:-1;width:100%;height:100%;pointer-events:none;"></canvas>
+        {% elif settings.background_style == 'starfield' %}
+        <canvas id="starfield-canvas" style="position:fixed;top:0;left:0;z-index:-1;width:100%;height:100%;pointer-events:none;"></canvas>
+        {% elif settings.background_style == 'aurora' %}
+        <div class="aurora-bg"></div>
+        {% elif settings.background_style == 'hexagons' %}
+        <div class="hexagons-bg"></div>
+        {% endif %}
+
 
         <!-- ## site header 
         ================================================== -->
         <header class="s-header">
 
             <div class="header-mobile">
-                <span class="mobile-home-link"><a href="#">Abhay.</a></span>
+                <span class="mobile-home-link"><a href="#intro" class="smoothscroll">{{ profile.name }}.</a></span>
                 <a class="mobile-menu-toggle" href="#0"><span>Menu</span></a>
             </div>
 
             <div class="row wide main-nav-wrap">
                 <nav class="column lg-12 main-nav">
                     <ul>
-                        <li><a href="#" class="home-link">Abhay.</a></li>
-                        <li class="current"><a href="#intro" class="smoothscroll">Intro</a></li>
-                        <li><a href="#about" class="smoothscroll">About</a></li>
-                        <li><a href="#skills" class="smoothscroll">Skills</a></li>
-                        <li><a href="#works" class="smoothscroll">Works</a></li>
-                        <li><a href="#contact" class="smoothscroll">Say Hello</a></li>
+                        <li><a href="#intro" class="home-link smoothscroll" data-nav="intro">{{ profile.name }}.</a></li>
+                        
+                        {% for section in orderable_sections %}
+                        <li><a href="#{{ section.slug }}" class="smoothscroll" data-nav="{{ section.slug }}">{{ section.title }}</a></li>
+                        {% endfor %}
+
+                        <li><a href="#contact" class="smoothscroll" data-nav="contact">Say Hello</a></li>
                     </ul>
                 </nav>
             </div>
@@ -87,28 +294,25 @@
 
             <!-- ### intro
             ================================================== -->
+            {% if settings.show_intro_section %}
             <section id="intro" class="s-intro target-section">
 
                 <div class="row intro-content wide">
 
                     <div class="column">
                         <div class="text-pretitle with-line">
-                            Hi, I am Abhay
+                            {{ profile.greeting }}
                         </div>
 
                         <h1 class="text-huge-title">
-                            A web designer <br>
-                            & backend <br>
-                            developer based <br>
-                            in India.
+                            {{ profile.hero_bio|linebreaksbr }}
                         </h1>
                     </div>
 
                     <ul class="intro-social">
-                        <li><a href="https://www.linkedin.com/in/abhay-s-60938424a/">Linkedin</a></li>
-                        <li><a href="https://leetcode.com/u/abhayArvo">Leetcode</a></li>
-                        <li><a href="https://github.com/Abhaythecoder">Github</a></li>
-                        <li><a href="https://www.instagram.com/ab_arv/">Instagram</a></li>
+                        {% for link in social_links %}
+                        <li><a href="{{ link.url }}">{{ link.get_platform_display }}</a></li>
+                        {% endfor %}
                     </ul>
 
                 </div> <!-- end intro content -->
@@ -118,10 +322,14 @@
                 </a>
 
             </section> <!-- end s-intro -->
+            {% endif %}
 
 
             <!-- ### about
             ================================================== -->
+            {% for section in orderable_sections %}
+            
+            {% if section.slug == 'about' %}
             <section id="about" class="s-about target-section">
 
 
@@ -129,8 +337,14 @@
 
                     <div class="column lg-6 md-12 about-info__pic-block">
                         {% load static %}
-                        <img src="{% static 'images/about-photo.jpg' %}" 
-                             srcset="{% static 'images/about-photo.jpg' %}" alt="" class="about-info__pic" data-animate-el>
+                        {% if profile.about_photo %}
+                        <img src="{{ profile.about_photo.url }}" 
+                             srcset="{{ profile.about_photo.url }}" alt="" class="about-info__pic" data-animate-el>
+                        {% else %}
+                        <div class="about-info__pic about-info__placeholder" data-animate-el style="display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--color-1, #eabe7c) 0%, var(--color-2, #d4a574) 100%); border-radius: 12px; min-height: 400px;">
+                            <i class="fas fa-user" style="font-size: 8rem; color: rgba(255,255,255,0.3);"></i>
+                        </div>
+                        {% endif %}
                     </div>
 
                     <div class="column lg-6 md-12">
@@ -140,38 +354,44 @@
                                 About
                             </h2>
                             <p class="attention-getter" data-animate-el>
-                                I’m Abhay, a BTech student in Computer Science with a focus on software development and system design. I enjoy
-                                turning ideas into functional projects and constantly push myself to grow in areas like algorithms, full-stack
-                                development, and cloud technologies. Outside academics, I engage in chess and writing, which help me
-                                approach challenges with both logic and creativity.
+                                {{ profile.about_text|default:"I am a passionate developer..." }}
                             </p>
-                            <a href="https://drive.google.com/uc?export=download&id=17vo7UFsfR4kgWvtU9wY5tuvFcFeHpta6" download" class="btn btn--medium u-fullwidth" data-animate-el>Download CV</a>
+                            
+                            {% if profile.cv_link %}
+                            <a href="{{ profile.cv_link }}" class="btn btn--medium u-fullwidth" data-animate-el>Download CV</a>
+                            {% endif %}
 
                         </div>
                     </div>
                 </div> <!-- about-info -->
 
-
+            </section> <!-- end s-about -->
+            
+            {% elif section.slug == 'expertise' %}
+            <section id="expertise" class="s-about target-section">
                 <div class="row about-expertise" data-animate-block>
                     <div class="column lg-12">
 
                         <h2 class="text-pretitle" data-animate-el>Expertise</h2>
 
                         <ul class="skills-list h1" data-animate-el>
+                            {% for expertise in expertise_list %}
+                            <li>{{ expertise.name }}</li>
+                            {% empty %}
                             <li>Full-Stack Development</li>
                             <li>Django & REST API</li>
-                            <li>Front-End Design</li>
-                            <li>Project Management</li>
-                            <li>Cloud Deployment</li>
+                            {% endfor %}
                         </ul>
 
                     </div>
                 </div> <!-- end about-expertise -->
-
-
+            </section>
+            
+            {% elif section.slug == 'experience' %}
+            <section id="experience" class="s-about target-section">
                 <div class="row about-timelines" data-animate-block>
 
-                    <div class="column lg-6 tab-12">
+                    <div class="column lg-12">
 
                         <h2 class="text-pretitle" data-animate-el>
                             Experience
@@ -179,39 +399,44 @@
 
                         <div class="timeline" data-animate-el>
 
+                            {% for job in experiences %}
                             <div class="timeline__block">
                                 <div class="timeline__bullet"></div>
                                 <div class="timeline__header">
-                                    <h4 class="timeline__title">UL Technology Solutions</h4>
-                                    <h5 class="timeline__meta">SDE Intern</h5>
-                                    <p class="timeline__timeframe">December 2024 - March 2025</p>
+                                    <h4 class="timeline__title">{{ job.company }}</h4>
+                                    <h5 class="timeline__meta">{{ job.position }}</h5>
+                                    <p class="timeline__timeframe">{{ job.timeframe }}</p>
                                 </div>
                                 <div class="timeline__desc">
-                                    <p>During my internship at UL Technology Solutions, I gained hands-on experience in Django and REST API development,
-                                        building and deploying multiple full-stack web applications. I worked on real-world projects, integrating
-                                        front-end and back-end systems and managing databases.</p>
+                                    <p>{{ job.description }}</p>
                                 </div>
                             </div>
-    
+                            {% empty %}
                             <div class="timeline__block">
                                 <div class="timeline__bullet"></div>
                                 <div class="timeline__header">
-                                    <h4 class="timeline__title">Ascendia group</h4>
-                                    <h5 class="timeline__meta">Founder</h5>
-                                    <p class="timeline__timeframe">May 2025 - present</p>
+                                    <h4 class="timeline__title">Company Name</h4>
+                                    <h5 class="timeline__meta">Role</h5>
+                                    <p class="timeline__timeframe">Date - Date</p>
                                 </div>
                                 <div class="timeline__desc">
-                                    <p>I founded Ascendia Group to create and manage innovative software projects, focusing on full-stack development
-                                        and practical solutions. Leading the group has helped me develop technical expertise, project management skills,
-                                        and the ability to turn ideas into real-world applications.</p>
+                                    <p>No experience added yet.</p>
                                 </div>
                             </div>
-    
+                            {% endfor %}
+
                         </div> <!-- end timeline -->
 
                     </div> <!-- end column -->
 
-                    <div class="column lg-6 tab-12">
+                </div> <!-- end about-timelines -->
+            </section>
+            
+            {% elif section.slug == 'education' %}
+            <section id="education" class="s-about target-section">
+                <div class="row about-timelines" data-animate-block>
+
+                    <div class="column lg-12">
 
                         <h2 class="text-pretitle" data-animate-el>
                             Education
@@ -219,43 +444,40 @@
 
                         <div class="timeline" data-animate-el>
 
+                            {% for edu in education_list %}
                             <div class="timeline__block">
                                 <div class="timeline__bullet"></div>
                                 <div class="timeline__header">
-                                    <h4 class="timeline__title">VIT Bhopal University</h4>
-                                    <h5 class="timeline__meta">Bachelors of Technology in Computer Science</h5>
-                                    <p class="timeline__timeframe">September 2022</p>
+                                    <h4 class="timeline__title">{{ edu.institution }}</h4>
+                                    <h5 class="timeline__meta">{{ edu.degree }}</h5>
+                                    <p class="timeline__timeframe">{{ edu.timeframe }}</p>
                                 </div>
                                 <div class="timeline__desc">
-                                    <p>I am currently pursuing my BTech in Computer Science at VIT Bhopal University, where I am building a strong
-                                        foundation in programming, algorithms, and software development. Alongside academics, I actively work on
-                                        projects, enhance my technical skills, and explore innovative solutions to real-world problems.</p>
+                                    <p>{{ edu.description }}</p>
                                 </div>
                             </div>
-    
+                            {% empty %}
                             <div class="timeline__block">
                                 <div class="timeline__bullet"></div>
                                 <div class="timeline__header">
-                                    <h4 class="timeline__title">Kendriya Vidyalaya Tirumalagiri</h4>
-                                    <h5 class="timeline__meta">High School</h5>
-                                    <p class="timeline__timeframe">April 2020</p>
+                                    <h4 class="timeline__title">University Name</h4>
+                                    <h5 class="timeline__meta">Degree</h5>
+                                    <p class="timeline__timeframe">Year</p>
                                 </div>
                                 <div class="timeline__desc">
-                                    <p>I completed my high school education at Kendriya Vidyalaya Tirumalagiri, where I focused on building a strong
-                                        academic foundation while actively participating in extracurricular activities. This period helped me develop
-                                        discipline, critical thinking, and a passion for learning that continues to drive me today.</p>
+                                    <p>No education added yet.</p>
                                 </div>
                             </div>
-    
+                            {% endfor %}
+
                         </div> <!-- end timeline -->
                         
                     </div> <!-- end column -->
 
-
                 </div> <!-- end about-timelines -->
+            </section>
 
-            </section> <!-- end s-about -->
-
+            {% elif section.slug == 'skills' %}
             <!-- skills -->
             <section id="skills" class="s-skills target-section">
 
@@ -270,214 +492,50 @@
                         <p class="h1" data-animate-el>
                             Here are my Skills.
     
-                        <ul class="folio-list row block-lg-one-half block-stack-on-1000">
+                        <ul class="folio-list row block-lg-one-half block-tab-one-half block-mob-one-half">
+                            {% for skill in skills %}
+                            <li class="folio-list__item column" data-animate-el>
+                                <a class="folio-list__item-link" href="javascript:void(0);" onclick="openPreview('{{ skill.name|escapejs }}', '{{ skill.category|escapejs }}', '{% if skill.icon %}{{ skill.icon.url }}{% else %}{% static 'images/icons/Django.png' %}{% endif %}', '{{ skill.description|linebreaksbr|escapejs }}', '')">
+                                    <div class="folio-list__item-pic">
+                                        {% if skill.icon %}
+                                        <img src="{{ skill.icon.url }}" 
+                                             srcset="{{ skill.icon.url }}" alt="{{ skill.name }}" style="width: 60px; height: 60px; object-fit: contain;">
+                                        {% else %}
+                                        <img src="{% static 'images/icons/Django.png' %}" 
+                                             srcset="{% static 'images/icons/Django.png' %}" alt="">
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="folio-list__item-text">
+                                        <div class="folio-list__item-cat">
+                                            Tech
+                                        </div>
+                                        <div class="folio-list__item-title">
+                                            {{ skill.name }}
+                                        </div>
 
-                            <li class="folio-list__item column" data-animate-el>
-                                <a class="folio-list__item-link" href="javascript:void(0);">
-                                    <div class="folio-list__item-pic">
-                                        
-                                        {% load static %}
-                                        <img src="{% static 'images/icons/Django.png' %}"
-                                             srcset="{% static 'images/icons/Django.png' %} "  alt="">
-                                    </div>
-                                    
-                                    <div class="folio-list__item-text">
-                                        <div class="folio-list__item-cat">
-                                            backend
-                                        </div>
-                                        <div class="folio-list__item-title">
-                                            Django.
-                                        </div>
                                     </div>
                                 </a>
                             </li> <!--end folio-list__item -->
-
+                            {% empty %}
                             <li class="folio-list__item column" data-animate-el>
-                                <a class="folio-list__item-link" href="javascript:void(0);">
-                                    <div class="folio-list__item-pic">
-                                            <img src="{% static 'images/icons/rest.png' %}" 
-                                                srcset="{% static 'images/icons/rest.png' %}" alt="">
+                                <div class="folio-list__item-text">
+                                    <div class="folio-list__item-title">
+                                        No skills added yet.
                                     </div>
-                                    
-                                    <div class="folio-list__item-text">
-                                        <div class="folio-list__item-cat">
-                                            API
-                                        </div>
-                                        <div class="folio-list__item-title">
-                                            Rest.
-                                        </div>
-                                    </div>
-                                </a>
-                            </li> <!--end folio-list__item -->
-
-                            <li class="folio-list__item column" data-animate-el>
-                                <a class="folio-list__item-link" href="javascript:void(0);">
-                                    <div class="folio-list__item-pic">
-                                        <img src="{% static 'images/icons/postgre.png' %}" 
-                                                srcset="{% static 'images/icons/postgre.png' %}" alt="">
-                                    </div>
-                                    
-                                    <div class="folio-list__item-text">
-                                        <div class="folio-list__item-cat">
-                                            database
-                                        </div>
-                                        <div class="folio-list__item-title">
-                                            PostgreSQL.
-                                        </div>
-                                    </div>
-                                </a>
-                            </li> <!--end folio-list__item -->
-
-                            <li class="folio-list__item column" data-animate-el>
-                                <a class="folio-list__item-link" href="javascript:void(0);">
-                                    <div class="folio-list__item-pic">
-                                        <img src="{% static 'images/icons/aws.png' %}" 
-                                                srcset="{% static 'images/icons/aws.png' %}" alt="">
-                                    </div>
-                                    
-                                    <div class="folio-list__item-text">
-                                        <div class="folio-list__item-cat">
-                                            Cloud
-                                        </div>
-                                        <div class="folio-list__item-title">
-                                            AWS.
-                                        </div>
-                                    </div>
-                                </a>
-                            </li> <!--end folio-list__item -->
-
-                            <li class="folio-list__item column" data-animate-el>
-                                <a class="folio-list__item-link" href="javascript:void(0);">
-                                    <div class="folio-list__item-pic">
-                                        <img src="{% static 'images/icons/github.png' %}" 
-                                                srcset="{% static 'images/icons/github.png' %}" alt="">
-                                    </div>
-                                    
-                                    <div class="folio-list__item-text">
-                                        <div class="folio-list__item-cat">
-                                            Version control
-                                        </div>
-                                        <div class="folio-list__item-title">
-                                            Github.
-                                        </div>
-                                    </div>
-                                </a>
-                            </li> <!--end folio-list__item -->
-
-                            <li class="folio-list__item column" data-animate-el>
-                                <a class="folio-list__item-link" href="javascript:void(0);">
-                                    <div class="folio-list__item-pic">
-                                        <img src="{% static 'images/icons/MongoDB.png' %}" 
-                                                srcset="{% static 'images/icons/MongoDB.png' %}" alt="">
-                                    </div>
-                                    
-                                    <div class="folio-list__item-text">
-                                        <div class="folio-list__item-cat">
-                                            Database
-                                        </div>
-                                        <div class="folio-list__item-title">
-                                            MongoDB.
-                                        </div>
-                                    </div>
-                                </a>
-                            </li> <!--end folio-list__item -->
-                            <li class="folio-list__item column" data-animate-el>
-                                <a class="folio-list__item-link" href="javascript:void(0);">
-                                    <div class="folio-list__item-pic">
-                                        <img src="{% static 'images/icons/express.png' %}" 
-                                                srcset="{% static 'images/icons/express.png' %}" alt="">
-                                    </div>
-                                    
-                                    <div class="folio-list__item-text">
-                                        <div class="folio-list__item-cat">
-                                            backend
-                                        </div>
-                                        <div class="folio-list__item-title">
-                                            Express.
-                                        </div>
-                                    </div>
-                                </a>
-                            </li> <!--end folio-list__item -->
-                            <li class="folio-list__item column" data-animate-el>
-                                <a class="folio-list__item-link" href="javascript:void(0);">
-                                    <div class="folio-list__item-pic">
-                                        <img src="{% static 'images/icons/react.png' %}" 
-                                                srcset="{% static 'images/icons/react.png' %}" alt="">
-                                    </div>
-                                    
-                                    <div class="folio-list__item-text">
-                                        <div class="folio-list__item-cat">
-                                            frontend
-                                        </div>
-                                        <div class="folio-list__item-title">
-                                            React.js.
-                                        </div>
-                                    </div>
-                                </a>
-
-                            </li> <!--end folio-list__item -->
-                            <li class="folio-list__item column" data-animate-el>
-                                <a class="folio-list__item-link" href="javascript:void(0);">
-                                    <div class="folio-list__item-pic">
-                                        <img src="{% static 'images/icons/Node.png' %}" 
-                                                srcset="{% static 'images/icons/Node.png' %}" alt="">
-                                    </div>
-                                    
-                                    <div class="folio-list__item-text">
-                                        <div class="folio-list__item-cat">
-                                            backend
-                                        </div>
-                                        <div class="folio-list__item-title">
-                                            Node.js.
-                                        </div>
-                                    </div>
-                                </a>
-                            </li> <!--end folio-list__item -->
-                            <li class="folio-list__item column" data-animate-el>
-                                <a class="folio-list__item-link" href="javascript:void(0);">
-                                    <div class="folio-list__item-pic">
-                                        <img src="{% static 'images/icons/nodered.png' %}" 
-                                                srcset="{% static 'images/icons/nodered.png' %}" alt="">
-                                    </div>
-                                    
-                                    <div class="folio-list__item-text">
-                                        <div class="folio-list__item-cat">
-                                            IOT
-                                        </div>
-                                        <div class="folio-list__item-title">
-                                            Node-red.
-                                        </div>
-                                    </div>
-                                </a>
-                            </li> <!--end folio-list__item -->
-                            <li class="folio-list__item column" data-animate-el>
-                                <a class="folio-list__item-link" href="javascript:void(0);">
-                                    <div class="folio-list__item-pic">
-                                        <img src="{% static 'images/icons/langchain.png' %}" 
-                                                srcset="{% static 'images/icons/langchain.png' %}" alt="">
-                                    </div>
-                                    
-                                    <div class="folio-list__item-text">
-                                        <div class="folio-list__item-cat">
-                                            ML
-                                        </div>
-                                        <div class="folio-list__item-title">
-                                            langchain.
-                                        </div>
-                                    </div>
-                                </a>
-                            </li> <!--end folio-list__item -->
-
+                                </div>
+                            </li>
+                            {% endfor %}
                         </ul> <!-- end folio-list -->
 
                     </div> <!-- end column -->
                 </div> <!-- end skills-portfolio -->
             </section> <!-- end s-skills -->
-             <!--  -->
 
+            {% elif section.slug == 'works' or section.slug == 'projects' %}
             <!-- ### works
             ================================================== -->
-            <section id="works" class="s-works target-section">
+            <section id="{{ section.slug }}" class="s-works target-section">
 
 
                 <div class="row works-portfolio">
@@ -491,192 +549,156 @@
                             Here are some of my favorite projects I have done lately. Feel free to check them out.
                         </p>
     
-                        <ul class="folio-list row block-lg-one-half block-stack-on-1000">
+                        <ul class="folio-list row block-lg-one-half block-tab-one-half block-mob-one-half">
 
+                            {% for project in projects %}
                             <li class="folio-list__item column" data-animate-el>
-                                <a class="folio-list__item-link" href="https://ascendiakapi.pythonanywhere.com/">
+                                <a class="folio-list__item-link" href="#0" onclick="openPreview('{{ project.title|escapejs }}', '{{ project.category|escapejs }}', '{% if project.icon %}{{ project.icon.url }}{% else %}{% static 'images/portfolio/homeocompare.png' %}{% endif %}', '{{ project.description|linebreaksbr|escapejs }}', '{{ project.url|escapejs }}')">
                                     <div class="folio-list__item-pic">
-                                        
-                                        {% load static %}
-                                        <img src="{% static 'images/icons/kapay.png' %}"
-                                             srcset="{% static 'images/icons/kapay.png' %}"  alt="">
+                                        {% if project.icon %}
+                                        <img src="{{ project.icon.url }}" 
+                                             srcset="{{ project.icon.url }}"  alt="{{ project.title }}">
+                                        {% else %}
+                                        <img src="{% static 'images/portfolio/homeocompare.png' %}" 
+                                             srcset="{% static 'images/portfolio/homeocompare.png' %}"  alt="">
+                                        {% endif %}
                                     </div>
                                     
                                     <div class="folio-list__item-text">
                                         <div class="folio-list__item-cat">
-                                            Ascendia
+                                            {{ project.category }}
                                         </div>
                                         <div class="folio-list__item-title">
-                                            Kapay.
+                                            {{ project.title }}
                                         </div>
                                     </div>
                                 </a>
-                                <a class="folio-list__proj-link" href="https://ascendiakapi.pythonanywhere.com/" title="project link">
+                                {% if project.project_link %}
+                                <a class="folio-list__proj-link" href="{{ project.project_link }}" title="project link">
                                     <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.14645 3.14645C8.34171 2.95118 8.65829 2.95118 8.85355 3.14645L12.8536 7.14645C13.0488 7.34171 13.0488 7.65829 12.8536 7.85355L8.85355 11.8536C8.65829 12.0488 8.34171 12.0488 8.14645 11.8536C7.95118 11.6583 7.95118 11.3417 8.14645 11.1464L11.2929 8H2.5C2.22386 8 2 7.77614 2 7.5C2 7.22386 2.22386 7 2.5 7H11.2929L8.14645 3.85355C7.95118 3.65829 7.95118 3.34171 8.14645 3.14645Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
                                 </a>
+                                {% endif %}
+                                {% if project.repo_link %}
+                                <a class="folio-list__proj-link" href="{{ project.repo_link }}" title="repo link" style="margin-right: 30px;">
+                                    <i class="fab fa-github"></i>
+                                </a>
+                                {% endif %}
                             </li> <!--end folio-list__item -->
-
+                            {% empty %}
                             <li class="folio-list__item column" data-animate-el>
-                                <a class="folio-list__item-link" href="https://homeocompare.life/">
-                                    <div class="folio-list__item-pic">
-                                            <img src="{% static 'images/portfolio/homeocompare.png' %}" 
-                                                srcset="{% static 'images/portfolio/homeocompare.png' %}" alt="">
+                                <div class="folio-list__item-text">
+                                    <div class="folio-list__item-title">
+                                        No projects added yet.
                                     </div>
-                                    
-                                    <div class="folio-list__item-text">
-                                        <div class="folio-list__item-cat">
-                                            Ascendia
-                                        </div>
-                                        <div class="folio-list__item-title">
-                                            HomeoCompare.
-                                        </div>
-                                    </div>
-                                </a>
-                                <a class="folio-list__proj-link" href="#" title="project link">
-                                    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.14645 3.14645C8.34171 2.95118 8.65829 2.95118 8.85355 3.14645L12.8536 7.14645C13.0488 7.34171 13.0488 7.65829 12.8536 7.85355L8.85355 11.8536C8.65829 12.0488 8.34171 12.0488 8.14645 11.8536C7.95118 11.6583 7.95118 11.3417 8.14645 11.1464L11.2929 8H2.5C2.22386 8 2 7.77614 2 7.5C2 7.22386 2.22386 7 2.5 7H11.2929L8.14645 3.85355C7.95118 3.65829 7.95118 3.34171 8.14645 3.14645Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
-                                </a>
-                            </li> <!--end folio-list__item -->
-
-                            <li class="folio-list__item column" data-animate-el>
-                                <a class="folio-list__item-link" href="https://snoof.pythonanywhere.com/">
-                                    <div class="folio-list__item-pic">
-                                        <img src="{% static 'images/icons/snoof.png' %}" 
-                                                srcset="{% static 'images/icons/snoof.png' %}" alt="">
-                                    </div>
-                                    
-                                    <div class="folio-list__item-text">
-                                        <div class="folio-list__item-cat">
-                                            Ascendia
-                                        </div>
-                                        <div class="folio-list__item-title">
-                                            Snoof.
-                                        </div>
-                                    </div>
-                                </a>
-                                <a class="folio-list__proj-link" href="https://snoof.pythonanywhere.com/"" title="project link">
-                                    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.14645 3.14645C8.34171 2.95118 8.65829 2.95118 8.85355 3.14645L12.8536 7.14645C13.0488 7.34171 13.0488 7.65829 12.8536 7.85355L8.85355 11.8536C8.65829 12.0488 8.34171 12.0488 8.14645 11.8536C7.95118 11.6583 7.95118 11.3417 8.14645 11.1464L11.2929 8H2.5C2.22386 8 2 7.77614 2 7.5C2 7.22386 2.22386 7 2.5 7H11.2929L8.14645 3.85355C7.95118 3.65829 7.95118 3.34171 8.14645 3.14645Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
-                                </a>
-                            </li> <!--end folio-list__item -->
-
-                            <li class="folio-list__item column" data-animate-el>
-                                <a class="folio-list__item-link" href="https://github.com/Abhaythecoder/Ascendia">
-                                    <div class="folio-list__item-pic">
-                                        <img src="{% static 'images/icons/postit.png' %}"
-                                             srcset="{% static 'images/icons/postit.png' %}" alt="">
-                                    </div>
-                                    
-                                    <div class="folio-list__item-text">
-                                        <div class="folio-list__item-cat">
-                                            Ascendia
-                                        </div>
-                                        <div class="folio-list__item-title">
-                                            postIT.
-                                        </div>
-                                    </div>
-                                </a>
-                                <a class="folio-list__proj-link" href="https://github.com/Abhaythecoder/Ascendia" title="project link">
-                                    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.14645 3.14645C8.34171 2.95118 8.65829 2.95118 8.85355 3.14645L12.8536 7.14645C13.0488 7.34171 13.0488 7.65829 12.8536 7.85355L8.85355 11.8536C8.65829 12.0488 8.34171 12.0488 8.14645 11.8536C7.95118 11.6583 7.95118 11.3417 8.14645 11.1464L11.2929 8H2.5C2.22386 8 2 7.77614 2 7.5C2 7.22386 2.22386 7 2.5 7H11.2929L8.14645 3.85355C7.95118 3.65829 7.95118 3.34171 8.14645 3.14645Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
-                                </a>
-                            </li> <!--end folio-list__item -->
-                            <li class="folio-list__item column" data-animate-el>
-                                <a class="folio-list__item-link" href="https://Ascendiago.onrender.com">
-                                    <div class="folio-list__item-pic">
-                                        <img src="{% static 'images/icons/go.png' %}"
-                                             srcset="{% static 'images/icons/go.png' %}" alt="">
-                                    </div>
-                                    
-                                    <div class="folio-list__item-text">
-                                        <div class="folio-list__item-cat">
-                                            Ascendia
-                                        </div>
-                                        <div class="folio-list__item-title">
-                                            Go.
-                                        </div>
-                                    </div>
-                                </a>
-                                <a class="folio-list__proj-link" href="https://github.com/Abhaythecoder/Ascendia" title="project link">
-                                    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.14645 3.14645C8.34171 2.95118 8.65829 2.95118 8.85355 3.14645L12.8536 7.14645C13.0488 7.34171 13.0488 7.65829 12.8536 7.85355L8.85355 11.8536C8.65829 12.0488 8.34171 12.0488 8.14645 11.8536C7.95118 11.6583 7.95118 11.3417 8.14645 11.1464L11.2929 8H2.5C2.22386 8 2 7.77614 2 7.5C2 7.22386 2.22386 7 2.5 7H11.2929L8.14645 3.85355C7.95118 3.65829 7.95118 3.34171 8.14645 3.14645Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
-                                </a>
-                            </li> <!--end folio-list__item -->
-
-                            <li class="folio-list__item column" data-animate-el>
-                                <a class="folio-list__item-link" href="https://github.com/Abhaythecoder/Holiday-Calendar-Website-">
-                                    <div class="folio-list__item-pic">
-                                        <img src="{% static "images/icons/daylore.png"%}" 
-                                             srcset="{% static "images/icons/daylore.png" %}" alt="">
-                                    </div>
-                                    
-                                    <div class="folio-list__item-text">
-                                        <div class="folio-list__item-cat">
-                                            Ascendia
-                                        </div>
-                                        <div class="folio-list__item-title">
-                                            DayLore.
-                                        </div>
-                                    </div>
-                                </a>
-                                <a class="folio-list__proj-link" href="https://github.com/Abhaythecoder/Holiday-Calendar-Website-" title="project link">
-                                    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.14645 3.14645C8.34171 2.95118 8.65829 2.95118 8.85355 3.14645L12.8536 7.14645C13.0488 7.34171 13.0488 7.65829 12.8536 7.85355L8.85355 11.8536C8.65829 12.0488 8.34171 12.0488 8.14645 11.8536C7.95118 11.6583 7.95118 11.3417 8.14645 11.1464L11.2929 8H2.5C2.22386 8 2 7.77614 2 7.5C2 7.22386 2.22386 7 2.5 7H11.2929L8.14645 3.85355C7.95118 3.65829 7.95118 3.34171 8.14645 3.14645Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
-                                </a>
-                            </li> <!--end folio-list__item -->
-
-                            <li class="folio-list__item column" data-animate-el>
-                                <a class="folio-list__item-link" href="https://github.com/Abhaythecoder/Todo-webpage">
-                                    <div class="folio-list__item-pic">
-                                        <img src="{% static "images/icons/dolt.png" %}" 
-                                             srcset="{% static "images/icons/dolt.png" %}" alt="">
-                                    </div>
-                                    
-                                    <div class="folio-list__item-text">
-                                        <div class="folio-list__item-cat">
-                                            Ascendia
-                                        </div>
-                                        <div class="folio-list__item-title">
-                                            DoLt.
-                                        </div>
-                                    </div>
-                                </a>
-                                <a class="folio-list__proj-link" href="https://github.com/Abhaythecoder/Todo-webpage" title="project link">
-                                    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.14645 3.14645C8.34171 2.95118 8.65829 2.95118 8.85355 3.14645L12.8536 7.14645C13.0488 7.34171 13.0488 7.65829 12.8536 7.85355L8.85355 11.8536C8.65829 12.0488 8.34171 12.0488 8.14645 11.8536C7.95118 11.6583 7.95118 11.3417 8.14645 11.1464L11.2929 8H2.5C2.22386 8 2 7.77614 2 7.5C2 7.22386 2.22386 7 2.5 7H11.2929L8.14645 3.85355C7.95118 3.65829 7.95118 3.34171 8.14645 3.14645Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
-                                </a>
-                            </li> <!--end folio-list__item -->
-
-                            <li class="folio-list__item column" data-animate-el>
-                                <a class="folio-list__item-link" href="https://godrejmb-3sti.onrender.com/">
-                                    <div class="folio-list__item-pic">
-                                        <img src="{% static "images/icons/mb.png" %}" 
-                                             srcset="{% static "images/icons/mb.png" %}" alt="">
-                                    </div>
-                                    
-                                    <div class="folio-list__item-text">
-                                        <div class="folio-list__item-cat">
-                                            Freelance
-                                        </div>
-                                        <div class="folio-list__item-title">
-                                            Godrej Furnitures MB.
-                                        </div>
-                                    </div>
-                                </a>
-                                <a class="folio-list__proj-link" href="https://godrejmb-3sti.onrender.com/" title="project link">
-                                    <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8.14645 3.14645C8.34171 2.95118 8.65829 2.95118 8.85355 3.14645L12.8536 7.14645C13.0488 7.34171 13.0488 7.65829 12.8536 7.85355L8.85355 11.8536C8.65829 12.0488 8.34171 12.0488 8.14645 11.8536C7.95118 11.6583 7.95118 11.3417 8.14645 11.1464L11.2929 8H2.5C2.22386 8 2 7.77614 2 7.5C2 7.22386 2.22386 7 2.5 7H11.2929L8.14645 3.85355C7.95118 3.65829 7.95118 3.34171 8.14645 3.14645Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
-                                </a>
-                            </li> <!--end folio-list__item -->
+                                </div>
+                            </li>
+                            {% endfor %}
 
                         </ul> <!-- end folio-list -->
 
                     </div> <!-- end column -->
 
 
-                    
 
                 </div> <!-- end works-portfolio -->
 
 
             </section> <!-- end s-works -->
 
-
-            <!-- ### contact
+            {% elif not section.is_system %}
+            <!-- ### Dynamic Custom Sections
             ================================================== -->
+            {% if section.is_visible %}
+            <section id="{{ section.slug }}" class="s-{{ section.slug }} target-section">
+                <div class="row">
+                    <div class="column lg-12" data-animate-block>
+                        
+                        <h2 class="text-pretitle" data-animate-el>
+                            {{ section.title }}
+                        </h2>
+                        
+                        <p class="h1" data-animate-el>
+                            <i class="{{ section.icon }}" style="color:var(--color-1); font-size: 0.8em; margin-right: 0.5rem; vertical-align: middle;"></i>
+                            Explore my {{ section.title }}
+                        </p>
+
+                        {% if section.card_layout == 'timeline' %}
+                        <div class="timeline" data-animate-el>
+                            {% for item in section.items.all %}
+                            <div class="timeline__block">
+                                <div class="timeline__bullet"></div>
+                                <div class="timeline__header">
+                                    <h4 class="timeline__title">{{ item.title }}</h4>
+                                    <h5 class="timeline__meta">{{ item.subtitle }}</h5>
+                                    {% if section.show_link_button and item.link %}
+                                    <p class="timeline__timeframe"><a href="{{ item.link }}" target="_blank" style="color: var(--primary);">{{ section.button_text|default:"View Details" }} <i class="fas fa-external-link-alt" style="font-size: 0.8em;"></i></a></p>
+                                    {% endif %}
+                                </div>
+                                <div class="timeline__desc">
+                                    {% if section.show_image and item.icon %}
+                                    <img src="{{ item.icon.url }}" alt="{{ item.title }}" style="width: 100%; max-width: 200px; border-radius: 8px; margin-bottom: 15px; display: block;">
+                                    {% endif %}
+                                    <p>{{ item.description|linebreaksbr }}</p>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="timeline__block">
+                                <div class="timeline__desc">
+                                    <p>No items added yet.</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <!-- Grid or List View -->
+                        <ul class="folio-list row {% if section.card_layout == 'list' %}block-1-1{% else %}block-lg-one-half block-tab-one-half block-mob-one-half{% endif %}">
+                            {% for item in section.items.all %}
+                            <li class="folio-list__item column" data-animate-el>
+                                <a class="folio-list__item-link" href="javascript:void(0);" onclick="openPreview('{{ item.title|escapejs }}', '{{ item.subtitle|escapejs }}', '{% if item.icon %}{{ item.icon.url }}{% else %}{% static 'images/portfolio/homeocompare.png' %}{% endif %}', '{{ item.description|linebreaksbr|escapejs }}', '{{ item.link|escapejs }}', '{{ section.button_text|default:"View Details"|escapejs }}', {{ section.show_link_button|yesno:'true,false' }})">
+                                    {% if section.show_image %}
+                                    <div class="folio-list__item-pic">
+                                        {% if item.icon %}
+                                        <img src="{{ item.icon.url }}" 
+                                             srcset="{{ item.icon.url }}" alt="{{ item.title }}" style="width: 100%; height: 300px; object-fit: cover;">
+                                        {% else %}
+                                        <!-- Placeholder with Icon if no image -->
+                                        <div style="width: 100%; height: 300px; background: linear-gradient(135deg, rgba(var(--color-1-rgb, 99, 102, 241), 0.1), rgba(var(--color-2-rgb, 35, 150, 127), 0.1)); display: flex; align-items: center; justify-content: center;">
+                                            <i class="{{ section.icon }}" style="font-size: 4rem; color: var(--color-1); opacity: 0.5;"></i>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <div class="folio-list__item-text">
+                                        <div class="folio-list__item-cat">
+                                            {{ item.subtitle }}
+                                        </div>
+                                        <div class="folio-list__item-title">
+                                            {{ item.title }}
+                                        </div>
+                                    </div>
+                                </a>
+                            </li> <!--end folio-list__item -->
+                            {% empty %}
+                            <li class="folio-list__item column" data-animate-el>
+                                <div class="folio-list__item-text">
+                                    <div class="folio-list__item-title">
+                                        No items added yet.
+                                    </div>
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul> <!-- end folio-list -->
+                        {% endif %}
+
+                    </div> <!-- end column -->
+                </div> <!-- end row -->
+            </section> <!-- end dynamic section -->
+            {% endif %}
+            
+            {% endif %}
+            {% endfor %}
+            {% if settings.show_contact_section %}
             <section id="contact" class="s-contact target-section">
 
                 <div class="row contact-top">
@@ -686,9 +708,7 @@
                         </h2>
 
                         <p class="h1">
-                            I love to hear from you.
-                            Whether you have a question or just 
-                            want to chat about design, tech & art — shoot me a message.
+                            {{ contact.contact_heading|linebreaksbr }}
                         </p>
                     </div>
                 </div> <!-- end contact-top -->
@@ -697,25 +717,25 @@
                     <div class="column lg-3 md-5 tab-6 stack-on-550 contact-block">
                         <h3 class="text-pretitle">Reach me at</h3>
                         <p class="contact-links">
-                            <a href="mailto:abhay315204@gmail.com" class="mailtoui">abhay315204@gmail.com</a> <br>
-                            <a href="tel:+91 9392687414">+91 9392687414</a>
+                            <a href="mailto:{{ contact.email }}" class="mailtoui">{{ contact.email }}</a> <br>
+                            <a href="tel:{{ contact.phone }}">{{ contact.phone }}</a>
                         </p>
                     </div>
                     <div class="column lg-4 md-5 tab-6 stack-on-550 contact-block">
                         <h3 class="text-pretitle">Social</h3>
                         <ul class="contact-social">
-                            <li><a href="https://www.linkedin.com/in/abhay-s-60938424a/">Linkedin</a></li>
-                        <li><a href="https://leetcode.com/u/abhayArvo">Leetcode</a></li>
-                        <li><a href="https://github.com/Abhaythecoder">Github</a></li>
-                        <li><a href="https://www.instagram.com/ab_arv/">Instagram</a></li>
+                            {% for link in social_links %}
+                            <li><a href="{{ link.url }}">{{ link.get_platform_display }}</a></li>
+                            {% endfor %}
                         </ul>
                     </div>
                     <div class="column lg-4 md-12 contact-block">
-                        <a href="mailto:abhay315204@gmail.com" class="mailtoui btn btn--medium u-fullwidth contact-btn">Say Hello.</a>
+                        <a href="mailto:{{ contact.email }}" class="mailtoui btn btn--medium u-fullwidth contact-btn">Say Hello.</a>
                     </div>
                 </div> <!-- end contact-bottom -->
 
             </section> <!-- end contact -->
+            {% endif %}
 
         </main> <!-- end s-content -->
 
@@ -726,7 +746,12 @@
 
             <div class="row">
                 <div class="column ss-copyright">
-                    <span>© Copyright Abhay 2025</span> 
+                    <span>© Copyright {{ profile.name }} {% now "Y" %}</span>
+                    <div class="ss-copyright__admin-login" style="margin-top: 1rem;">
+                        <a href="{% url 'admin_login' %}" class="btn btn--small btn--stroke" style="font-size: 1rem; padding: 0 1.5rem; line-height: 2.5; height: auto; border-width: 1px;">
+                            Are you {{ profile.name }}?
+                        </a>
+                    </div> 
                 </div>
 
                 <div class="ss-go-top">
@@ -741,11 +766,383 @@
     </div> <!-- end -s-pagewrap -->
 
 
+    <!-- Preview Modal -->
+    <div id="previewModal" class="preview-modal">
+        <div class="preview-modal-content">
+            <span class="preview-modal-close">&times;</span>
+            <div class="preview-modal-body">
+                <div class="preview-img-container">
+                    <img id="previewImage" src="" alt="">
+                </div>
+                <div class="preview-info">
+                    <h3 id="previewTitle" class="text-white"></h3>
+                    <p id="previewCategory" class="preview-category"></p>
+                    <p id="previewDesc" class="preview-description"></p>
+                    <a id="previewLink" href="#" target="_blank" class="btn btn--medium full-width" style="margin-top: 2rem;">View Project</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .preview-modal {
+            display: none;
+            position: fixed;
+            z-index: 9999; /* Top level */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.85); /* Dark overlay */
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+        }
+        .preview-modal-content {
+            background-color: #111;
+            margin: auto;
+            padding: 40px;
+            border: 1px solid rgba(255,255,255,0.1);
+            width: 80%;
+            max-width: 800px;
+            border-radius: 12px;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .preview-modal-close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            position: absolute;
+            right: 20px;
+            top: 10px;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .preview-modal-close:hover,
+        .preview-modal-close:focus {
+            color: #fff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .preview-modal-body {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin-top: 20px;
+        }
+        .preview-img-container {
+            flex: 1 1 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .preview-img-container img {
+            max-width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+            border-radius: 4px;
+        }
+        .preview-info {
+            flex: 1 1 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .preview-category {
+            color: var(--color-1, #eabe7c);
+            font-family: var(--font-1, "DM Sans"), sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+        .preview-description {
+            color: rgba(255,255,255,0.7);
+            font-size: 1.6rem;
+            line-height: 1.8;
+        }
+        @media (max-width: 768px) {
+            .preview-modal-content {
+                width: 90%;
+                padding: 25px;
+            }
+            .preview-modal-body {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+    </style>
+
+    <script>
+    function openPreview(title, category, imageSrc, desc, link, buttonText, showButton) {
+        document.getElementById('previewTitle').innerText = title;
+        document.getElementById('previewCategory').innerText = category;
+        document.getElementById('previewImage').src = imageSrc;
+        
+        // Handle description with line breaks (if passed as HTML from linebreaksbr)
+        document.getElementById('previewDesc').innerHTML = desc; 
+        
+        var linkBtn = document.getElementById('previewLink');
+        // Default to showing button if not specified
+        var shouldShowButton = showButton !== false;
+        
+        if (link && link !== '' && shouldShowButton) {
+            linkBtn.href = link;
+            linkBtn.style.display = 'inline-block';
+            linkBtn.innerText = buttonText || "View Project";
+        } else {
+            linkBtn.style.display = 'none';
+        }
+        
+        document.getElementById('previewModal').style.display = 'flex';
+    }
+
+    // Close Modal Logic
+    var modal = document.getElementById("previewModal");
+    var span = document.getElementsByClassName("preview-modal-close")[0];
+
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+    </script>
+    
     <!-- Java Script
     ================================================== -->
     {% load static %}
     <script src="{% static 'js/plugins.js' %}"></script>
     <script src="{% static 'js/main.js' %}"></script>
+
+    {% if settings.background_style == 'particles' %}
+    <script src="{% static 'js/tech-particles.js' %}"></script>
+    {% endif %}
+
+    <!-- Advanced Backgrounds Scripts -->
+    {% if settings.background_style in 'waves,matrix,starfield' %}
+    <script src="{% static 'js/backgrounds.js' %}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const color = "{{ settings.circle_color }}";
+            {% if settings.background_style == 'waves' %}
+            BackgroundEffects.initWaves('waves-canvas', color);
+            {% elif settings.background_style == 'matrix' %}
+            BackgroundEffects.initMatrix('matrix-canvas', color);
+            {% elif settings.background_style == 'starfield' %}
+            BackgroundEffects.initStarfield('starfield-canvas', color);
+            {% endif %}
+        });
+    </script>
+    {% endif %}
+
+    <!-- Active Section Highlighting -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.main-nav a[data-nav]');
+        
+        // IntersectionObserver to detect visible sections
+        const observerOptions = {
+            root: null,
+            rootMargin: '-20% 0px -60% 0px',
+            threshold: 0
+        };
+        
+        const observerCallback = (entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const sectionId = entry.target.getAttribute('id');
+                    
+                    // Remove 'current' class from all nav items
+                    navLinks.forEach(link => {
+                        link.parentElement.classList.remove('current');
+                    });
+                    
+                    // Add 'current' class to matching nav item
+                    const activeLink = document.querySelector(`.main-nav a[data-nav="${sectionId}"]`);
+                    if (activeLink) {
+                        activeLink.parentElement.classList.add('current');
+                    }
+                    
+                    // Special case: if about section, highlight intro (profile name) when at top
+                    if (sectionId === 'intro') {
+                        const introLink = document.querySelector('.main-nav a[data-nav="intro"]');
+                        if (introLink) {
+                            introLink.parentElement.classList.add('current');
+                        }
+                    }
+                }
+            });
+        };
+        
+        const observer = new IntersectionObserver(observerCallback, observerOptions);
+        
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+        
+        // Set initial state - highlight intro on page load
+        const introLink = document.querySelector('.main-nav a[data-nav="intro"]');
+        if (introLink) {
+            introLink.parentElement.classList.add('current');
+        }
+    });
+    </script>
+    
+    <!-- Side-by-Side Education & Experience (when adjacent) -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const eduSection = document.getElementById('education');
+        const expSection = document.getElementById('experience');
+        
+        if (!eduSection || !expSection) return;
+        
+        // Check if they are adjacent (one is the next sibling of the other)
+        const eduNext = eduSection.nextElementSibling;
+        const expNext = expSection.nextElementSibling;
+        
+        let areAdjacent = false;
+        let firstSection = null;
+        let secondSection = null;
+        
+        if (eduNext === expSection) {
+            areAdjacent = true;
+            firstSection = eduSection;
+            secondSection = expSection;
+        } else if (expNext === eduSection) {
+            areAdjacent = true;
+            firstSection = expSection;
+            secondSection = eduSection;
+        }
+        
+        if (areAdjacent) {
+            // Create wrapper
+            const wrapper = document.createElement('div');
+            wrapper.className = 'edu-exp-wrapper';
+            wrapper.style.cssText = 'display: flex; flex-wrap: wrap; gap: 40px; padding: 0 var(--gutter); max-width: var(--width-wide); margin: 0 auto;';
+            
+            // Style both sections for side-by-side
+            [firstSection, secondSection].forEach(section => {
+                section.style.cssText = 'flex: 1; min-width: 300px; padding: 0 !important;';
+                // Reduce internal padding
+                const innerRow = section.querySelector('.row');
+                if (innerRow) {
+                    innerRow.style.padding = '0';
+                    innerRow.style.margin = '0';
+                }
+            });
+            
+            // Insert wrapper before first section
+            firstSection.parentNode.insertBefore(wrapper, firstSection);
+            
+            // Move both sections into wrapper
+            wrapper.appendChild(firstSection);
+            wrapper.appendChild(secondSection);
+            
+            // Add responsive styles
+            const style = document.createElement('style');
+            style.textContent = `
+                @media (max-width: 900px) {
+                    .edu-exp-wrapper {
+                        flex-direction: column !important;
+                    }
+                    .edu-exp-wrapper > section {
+                        width: 100% !important;
+                        min-width: 100% !important;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    });
+    </script>
+    
+    <!-- Scroll Animations -->
+    <script src="{% static 'js/scroll-animations.js' %}"></script>
+
+    <!-- Dynamic Nav Font Scaler -->
+    <script>
+        (function() {
+            function adjustNavText() {
+                // Determine 901px breakpoint matches CSS
+                if (window.innerWidth < 901) return; 
+
+                const navLinks = document.querySelectorAll('.main-nav a');
+                
+                navLinks.forEach(link => {
+                    // 1. Reset to check natural measurements
+                    link.style.fontSize = ''; 
+                    // Force inline-block or block to ensure clientWidth is respected
+                    
+                    // 2. Shrink loop
+                    let currentSize = parseFloat(window.getComputedStyle(link).fontSize);
+                    const minSize = 9; // Minimum readable font size
+
+                    // While text content is wider than the container (which might be shrunk by flexbox)
+                    // We use scrollWidth > clientWidth to detect overflow
+                    while (link.scrollWidth > link.clientWidth && currentSize > minSize) {
+                        currentSize -= 0.5;
+                        link.style.fontSize = currentSize + 'px';
+                    }
+                });
+            }
+
+            // Run on load and resize
+            window.addEventListener('load', adjustNavText);
+            window.addEventListener('resize', adjustNavText);
+            // Run shortly after load to ensure fonts loaded
+            setTimeout(adjustNavText, 500);
+            setTimeout(adjustNavText, 1500);
+        })();
+    </script>
+
+    <script>
+        // SPOTLIGHT EFFECT
+        const spotlight = document.querySelector('.spotlight');
+        if (spotlight) {
+            document.addEventListener('mousemove', (e) => {
+                spotlight.style.left = e.clientX + 'px';
+                spotlight.style.top = e.clientY + 'px';
+                spotlight.style.opacity = '1';
+            });
+            
+            document.addEventListener('mouseleave', () => {
+                spotlight.style.opacity = '0';
+            });
+        }
+    </script>
+
+    <!-- Theme System JS -->
+    <script src="{% static 'js/themes/theme-loader.js' %}"></script>
+    {% if settings.active_theme == 'terminal_x' %}
+    <script src="{% static 'js/themes/terminal-x.js' %}"></script>
+    {% elif settings.active_theme == 'neural_odyssey' %}
+    <script src="{% static 'js/themes/neural-odyssey.js' %}"></script>
+    {% elif settings.active_theme == 'chrono_story' %}
+    <script src="{% static 'js/themes/chrono-story.js' %}"></script>
+    {% elif settings.active_theme == 'glass_horizon' %}
+    <script src="{% static 'js/themes/glass-horizon.js' %}"></script>
+    {% elif settings.active_theme == 'cinematic_flow' %}
+    <script src="{% static 'js/themes/cinematic-flow.js' %}"></script>
+    {% elif settings.active_theme == 'interactive_3d' %}
+    <script src="{% static 'js/vendor/three.min.js' %}"></script>
+    {% if settings.theme_config.effect_type == 'waves' %}
+    <script src="{% static 'js/vendor/vanta.waves.min.js' %}"></script>
+    {% else %}
+    <script src="{% static 'js/vendor/vanta.net.min.js' %}"></script>
+    {% endif %}
+    <script src="{% static 'js/themes/interactive-3d.js' %}"></script>
+    {% endif %}
 
 </body>
 </html>

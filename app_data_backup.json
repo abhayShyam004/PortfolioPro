@@ -1,0 +1,675 @@
+[
+{
+  "model": "app.profile",
+  "pk": 1,
+  "fields": {
+    "name": "Salila",
+    "greeting": "Hi, I am Salila",
+    "hero_bio": "A web designer \r\n& backend developer \r\nbased in India.",
+    "about_text": "I'm Abhay, a BTech student in Computer Science with a focus on software development and system design. I enjoy turning ideas into functional projects and constantly push myself to grow in areas like algorithms, full-stack development, and cloud technologies. Outside academics, I engage in chess and writing, which help me approach challenges with both logic and creativity.",
+    "about_photo": "profile/W3hatsApp_Image_2025-02-04_at_09.47.45_606524ae.jpg",
+    "cv_link": "https://www.youtube.com/",
+    "ai_assistant_script": "<script>\r\n(function(){if(!window.chatbase||window.chatbase(\"getState\")!==\"initialized\"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop===\"q\"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement(\"script\");script.src=\"https://www.chatbase.co/embed.min.js\";script.id=\"RZtDxmyOHqusGSj4BBckC\";script.domain=\"www.chatbase.co\";document.body.appendChild(script)};if(document.readyState===\"complete\"){onLoad()}else{window.addEventListener(\"load\",onLoad)}})();\r\n</script>"
+  }
+},
+{
+  "model": "app.sociallink",
+  "pk": 1,
+  "fields": {
+    "platform": "linkedin",
+    "display_name": "LinkedIn",
+    "url": "https://www.linkedin.com/in/abhay-s-60938424a/",
+    "order": 1
+  }
+},
+{
+  "model": "app.sociallink",
+  "pk": 2,
+  "fields": {
+    "platform": "leetcode",
+    "display_name": "LeetCode",
+    "url": "https://leetcode.com/u/abhayArvo",
+    "order": 2
+  }
+},
+{
+  "model": "app.sociallink",
+  "pk": 3,
+  "fields": {
+    "platform": "github",
+    "display_name": "GitHub",
+    "url": "https://github.com/Abhaythecoder",
+    "order": 3
+  }
+},
+{
+  "model": "app.sociallink",
+  "pk": 4,
+  "fields": {
+    "platform": "instagram",
+    "display_name": "Instagram",
+    "url": "https://www.youtube.com/watch?v=_NXYpEMEZPc",
+    "order": 4
+  }
+},
+{
+  "model": "app.expertise",
+  "pk": 1,
+  "fields": {
+    "name": "Full-Stack Development",
+    "order": 1
+  }
+},
+{
+  "model": "app.expertise",
+  "pk": 2,
+  "fields": {
+    "name": "Django & REST API",
+    "order": 2
+  }
+},
+{
+  "model": "app.expertise",
+  "pk": 3,
+  "fields": {
+    "name": "Front-End Design",
+    "order": 3
+  }
+},
+{
+  "model": "app.expertise",
+  "pk": 4,
+  "fields": {
+    "name": "Project Management",
+    "order": 4
+  }
+},
+{
+  "model": "app.expertise",
+  "pk": 5,
+  "fields": {
+    "name": "Cloud Deployment",
+    "order": 5
+  }
+},
+{
+  "model": "app.expertise",
+  "pk": 6,
+  "fields": {
+    "name": "abcd",
+    "order": 0
+  }
+},
+{
+  "model": "app.experience",
+  "pk": 1,
+  "fields": {
+    "company": "UL Technology Solutions",
+    "position": "SDE Intern",
+    "timeframe": "December 2024 - March 2025",
+    "description": "During my internship at UL Technology Solutions, I gained hands-on experience in Django and REST API development, building and deploying multiple full-stack web applications. I worked on real-world projects, integrating front-end and back-end systems and managing databases.",
+    "order": 1
+  }
+},
+{
+  "model": "app.experience",
+  "pk": 2,
+  "fields": {
+    "company": "Ascendia group",
+    "position": "Founder",
+    "timeframe": "May 2025 - present",
+    "description": "I founded Ascendia Group to create and manage innovative software projects, focusing on full-stack development and practical solutions. Leading the group has helped me develop technical expertise, project management skills, and the ability to turn ideas into real-world applications.",
+    "order": 3
+  }
+},
+{
+  "model": "app.education",
+  "pk": 1,
+  "fields": {
+    "institution": "VIT Bhopal University",
+    "degree": "Bachelors of Technology in Computer Science",
+    "timeframe": "September 2022",
+    "description": "I am currently pursuing my BTech in Computer Science at VIT Bhopal University, where I am building a strong foundation in programming, algorithms, and software development. Alongside academics, I actively work on projects, enhance my technical skills, and explore innovative solutions to real-world problems.",
+    "order": 1
+  }
+},
+{
+  "model": "app.education",
+  "pk": 2,
+  "fields": {
+    "institution": "Kendriya Vidyalaya Tirumalagiri",
+    "degree": "High School",
+    "timeframe": "April 2020",
+    "description": "I completed my high school education at Kendriya Vidyalaya Tirumalagiri, where I focused on building a strong academic foundation while actively participating in extracurricular activities. This period helped me develop discipline, critical thinking, and a passion for learning that continues to drive me today.",
+    "order": 2
+  }
+},
+{
+  "model": "app.skill",
+  "pk": 1,
+  "fields": {
+    "name": "Django",
+    "category": "backend",
+    "icon": "skills/pngwing_RMaQ8LK.com.png",
+    "description": "abcd",
+    "order": 1
+  }
+},
+{
+  "model": "app.skill",
+  "pk": 2,
+  "fields": {
+    "name": "Rest",
+    "category": "API",
+    "icon": "skills/rest.png",
+    "description": "",
+    "order": 2
+  }
+},
+{
+  "model": "app.skill",
+  "pk": 3,
+  "fields": {
+    "name": "PostgreSQL",
+    "category": "database",
+    "icon": "skills/postgre.png",
+    "description": "",
+    "order": 3
+  }
+},
+{
+  "model": "app.skill",
+  "pk": 4,
+  "fields": {
+    "name": "AWS",
+    "category": "Cloud",
+    "icon": "skills/aws.png",
+    "description": "",
+    "order": 4
+  }
+},
+{
+  "model": "app.skill",
+  "pk": 5,
+  "fields": {
+    "name": "Github",
+    "category": "Version control",
+    "icon": "skills/github.png",
+    "description": "",
+    "order": 5
+  }
+},
+{
+  "model": "app.skill",
+  "pk": 6,
+  "fields": {
+    "name": "MongoDB",
+    "category": "Database",
+    "icon": "",
+    "description": "",
+    "order": 6
+  }
+},
+{
+  "model": "app.skill",
+  "pk": 7,
+  "fields": {
+    "name": "Express",
+    "category": "backend",
+    "icon": "",
+    "description": "",
+    "order": 7
+  }
+},
+{
+  "model": "app.skill",
+  "pk": 8,
+  "fields": {
+    "name": "React.js",
+    "category": "frontend",
+    "icon": "",
+    "description": "",
+    "order": 8
+  }
+},
+{
+  "model": "app.skill",
+  "pk": 9,
+  "fields": {
+    "name": "Node.js",
+    "category": "backend",
+    "icon": "",
+    "description": "",
+    "order": 9
+  }
+},
+{
+  "model": "app.skill",
+  "pk": 10,
+  "fields": {
+    "name": "Node-red",
+    "category": "IOT",
+    "icon": "",
+    "description": "",
+    "order": 10
+  }
+},
+{
+  "model": "app.skill",
+  "pk": 11,
+  "fields": {
+    "name": "langchain",
+    "category": "ML",
+    "icon": "skills/langchain.png",
+    "description": "",
+    "order": 11
+  }
+},
+{
+  "model": "app.project",
+  "pk": 1,
+  "fields": {
+    "title": "Kapay",
+    "category": "Ascendia",
+    "url": "https://ascendiakapi.pythonanywhere.com/",
+    "description": "",
+    "icon": "projects/kapay.png",
+    "order": 1
+  }
+},
+{
+  "model": "app.project",
+  "pk": 2,
+  "fields": {
+    "title": "HomeoCompare",
+    "category": "Ascendia",
+    "url": "https://homeocompare.life/",
+    "description": "",
+    "icon": "projects/Screenshot_2025-06-15_010152-removebg-preview_1_1.png",
+    "order": 2
+  }
+},
+{
+  "model": "app.project",
+  "pk": 3,
+  "fields": {
+    "title": "Snoof",
+    "category": "Ascendia",
+    "url": "https://snoof.pythonanywhere.com/",
+    "description": "",
+    "icon": "projects/snoof.png",
+    "order": 3
+  }
+},
+{
+  "model": "app.project",
+  "pk": 4,
+  "fields": {
+    "title": "postIT",
+    "category": "Ascendia",
+    "url": "https://github.com/Abhaythecoder/Ascendia",
+    "description": "",
+    "icon": "projects/postit.png",
+    "order": 4
+  }
+},
+{
+  "model": "app.project",
+  "pk": 5,
+  "fields": {
+    "title": "Go",
+    "category": "Ascendia",
+    "url": "https://Ascendiago.onrender.com",
+    "description": "",
+    "icon": "",
+    "order": 5
+  }
+},
+{
+  "model": "app.project",
+  "pk": 6,
+  "fields": {
+    "title": "DayLore",
+    "category": "Ascendia",
+    "url": "https://github.com/Abhaythecoder/Holiday-Calendar-Website-",
+    "description": "",
+    "icon": "",
+    "order": 6
+  }
+},
+{
+  "model": "app.project",
+  "pk": 7,
+  "fields": {
+    "title": "DoLt",
+    "category": "Ascendia",
+    "url": "https://github.com/Abhaythecoder/Todo-webpage",
+    "description": "",
+    "icon": "",
+    "order": 7
+  }
+},
+{
+  "model": "app.project",
+  "pk": 8,
+  "fields": {
+    "title": "Godrej Furnitures MB",
+    "category": "Freelance",
+    "url": "https://godrejmb-3sti.onrender.com/",
+    "description": "",
+    "icon": "projects/mb.png",
+    "order": 8
+  }
+},
+{
+  "model": "app.contactinfo",
+  "pk": 1,
+  "fields": {
+    "email": "abhay2022@vitbhopal.ac.in",
+    "phone": "+91 9392687414",
+    "contact_heading": "I love to hear from you. Whether you have a question or just want to chat about design, tech & art  - shoot me a message."
+  }
+},
+{
+  "model": "app.sitesettings",
+  "pk": 1,
+  "fields": {
+    "primary_color": "#eabe7c",
+    "secondary_color": "#23967f",
+    "background_color": "#141516",
+    "text_color": "#a1a1a2",
+    "name_font_size": 12.0,
+    "greeting_font_size": 3.0,
+    "name_font_size_mobile": 8.0,
+    "greeting_font_size_mobile": 1.9,
+    "heading_font": "DM Serif Display",
+    "body_font": "Public Sans",
+    "show_intro_section": true,
+    "show_about_section": true,
+    "show_skills_section": true,
+    "show_works_section": true,
+    "show_contact_section": true,
+    "background_style": "circles",
+    "circle_color": "#eabe7c",
+    "button_style": "square"
+  }
+},
+{
+  "model": "app.savedtheme",
+  "pk": 1,
+  "fields": {
+    "name": "Default",
+    "primary_color": "#eabe7c",
+    "secondary_color": "#23967f",
+    "background_color": "#141516",
+    "text_color": "#a1a1a2",
+    "heading_font": "DM Serif Display",
+    "body_font": "Public Sans",
+    "background_style": "circles",
+    "circle_color": "#eabe7c",
+    "button_style": "square",
+    "created_at": "2025-12-22T10:14:02.483Z"
+  }
+},
+{
+  "model": "app.savedtheme",
+  "pk": 2,
+  "fields": {
+    "name": "Cyberpunk Neon",
+    "primary_color": "#00ff00",
+    "secondary_color": "#00ffff",
+    "background_color": "#000000",
+    "text_color": "#ffffff",
+    "heading_font": "DM Sans",
+    "body_font": "DM Sans",
+    "background_style": "grid",
+    "circle_color": "#ff00ff",
+    "button_style": "square",
+    "created_at": "2025-12-22T16:42:16.956Z"
+  }
+},
+{
+  "model": "app.savedtheme",
+  "pk": 3,
+  "fields": {
+    "name": "Strawberry Blast",
+    "primary_color": "#ff0055",
+    "secondary_color": "#ff6699",
+    "background_color": "#2e0011",
+    "text_color": "#ffddee",
+    "heading_font": "DM Sans",
+    "body_font": "DM Sans",
+    "background_style": "circles",
+    "circle_color": "#ff0055",
+    "button_style": "pill",
+    "created_at": "2025-12-22T16:42:16.968Z"
+  }
+},
+{
+  "model": "app.savedtheme",
+  "pk": 4,
+  "fields": {
+    "name": "Tech Blue",
+    "primary_color": "#0066ff",
+    "secondary_color": "#3399ff",
+    "background_color": "#000a1a",
+    "text_color": "#e6f2ff",
+    "heading_font": "DM Sans",
+    "body_font": "DM Sans",
+    "background_style": "particles",
+    "circle_color": "#0066ff",
+    "button_style": "rounded",
+    "created_at": "2025-12-22T16:42:16.978Z"
+  }
+},
+{
+  "model": "app.savedtheme",
+  "pk": 5,
+  "fields": {
+    "name": "Midnight Void",
+    "primary_color": "#6600cc",
+    "secondary_color": "#9933ff",
+    "background_color": "#050010",
+    "text_color": "#f2e6ff",
+    "heading_font": "DM Sans",
+    "body_font": "DM Sans",
+    "background_style": "gradient",
+    "circle_color": "#9933ff",
+    "button_style": "rounded",
+    "created_at": "2025-12-22T16:42:16.988Z"
+  }
+},
+{
+  "model": "app.savedtheme",
+  "pk": 6,
+  "fields": {
+    "name": "Forest Whisper",
+    "primary_color": "#228b22",
+    "secondary_color": "#32cd32",
+    "background_color": "#051a05",
+    "text_color": "#e6ffe6",
+    "heading_font": "DM Sans",
+    "body_font": "DM Sans",
+    "background_style": "circles",
+    "circle_color": "#32cd32",
+    "button_style": "rounded",
+    "created_at": "2025-12-22T16:42:16.999Z"
+  }
+},
+{
+  "model": "app.savedtheme",
+  "pk": 7,
+  "fields": {
+    "name": "Solar Flare",
+    "primary_color": "#ff4500",
+    "secondary_color": "#ff8c00",
+    "background_color": "#1a0500",
+    "text_color": "#ffe6e6",
+    "heading_font": "DM Sans",
+    "body_font": "DM Sans",
+    "background_style": "gradient",
+    "circle_color": "#ff4500",
+    "button_style": "pill",
+    "created_at": "2025-12-22T16:42:17.009Z"
+  }
+},
+{
+  "model": "app.savedtheme",
+  "pk": 8,
+  "fields": {
+    "name": "Royal Gold",
+    "primary_color": "#ffd700",
+    "secondary_color": "#daa520",
+    "background_color": "#0c0800",
+    "text_color": "#fffbec",
+    "heading_font": "DM Sans",
+    "body_font": "DM Sans",
+    "background_style": "grid",
+    "circle_color": "#ffd700",
+    "button_style": "square",
+    "created_at": "2025-12-22T16:42:17.019Z"
+  }
+},
+{
+  "model": "app.adminuser",
+  "pk": 1,
+  "fields": {
+    "username": "Abhay",
+    "password_hash": "pbkdf2_sha256$1200000$3494JPpM06kwq31LWWfmu2$kSAaDU660L+n+i4GCM5OlN5DiVqNcwKMVdmlM936mFM=",
+    "last_login": null
+  }
+},
+{
+  "model": "app.customsection",
+  "pk": 1,
+  "fields": {
+    "title": "Profile",
+    "slug": "profile",
+    "icon": "fas fa-user-circle",
+    "order": 1,
+    "is_visible": true,
+    "is_system": true
+  }
+},
+{
+  "model": "app.customsection",
+  "pk": 2,
+  "fields": {
+    "title": "Appearance",
+    "slug": "appearance",
+    "icon": "fas fa-palette",
+    "order": 3,
+    "is_visible": true,
+    "is_system": true
+  }
+},
+{
+  "model": "app.customsection",
+  "pk": 3,
+  "fields": {
+    "title": "Projects",
+    "slug": "projects",
+    "icon": "fas fa-layer-group",
+    "order": 4,
+    "is_visible": true,
+    "is_system": true
+  }
+},
+{
+  "model": "app.customsection",
+  "pk": 4,
+  "fields": {
+    "title": "Skills",
+    "slug": "skills",
+    "icon": "fas fa-shapes",
+    "order": 7,
+    "is_visible": true,
+    "is_system": true
+  }
+},
+{
+  "model": "app.customsection",
+  "pk": 5,
+  "fields": {
+    "title": "Experience",
+    "slug": "experience",
+    "icon": "fas fa-briefcase",
+    "order": 5,
+    "is_visible": true,
+    "is_system": true
+  }
+},
+{
+  "model": "app.customsection",
+  "pk": 6,
+  "fields": {
+    "title": "Education",
+    "slug": "education",
+    "icon": "fas fa-graduation-cap",
+    "order": 6,
+    "is_visible": true,
+    "is_system": true
+  }
+},
+{
+  "model": "app.customsection",
+  "pk": 7,
+  "fields": {
+    "title": "Contact & Social",
+    "slug": "social",
+    "icon": "fas fa-share-nodes",
+    "order": 7,
+    "is_visible": true,
+    "is_system": true
+  }
+},
+{
+  "model": "app.customsection",
+  "pk": 8,
+  "fields": {
+    "title": "Expertise",
+    "slug": "expertise",
+    "icon": "fas fa-code",
+    "order": 1,
+    "is_visible": true,
+    "is_system": true
+  }
+},
+{
+  "model": "app.customsection",
+  "pk": 10,
+  "fields": {
+    "title": "About",
+    "slug": "about",
+    "icon": "fas fa-user",
+    "order": 3,
+    "is_visible": true,
+    "is_system": true
+  }
+},
+{
+  "model": "app.customsection",
+  "pk": 12,
+  "fields": {
+    "title": "Certifications",
+    "slug": "certifications",
+    "icon": "fas fa-certificate",
+    "order": 2,
+    "is_visible": true,
+    "is_system": false
+  }
+},
+{
+  "model": "app.customitem",
+  "pk": 2,
+  "fields": {
+    "section": 12,
+    "title": "AWS cloud practitioner",
+    "subtitle": "Amazon Web services",
+    "description": "",
+    "link": "https://www.youtube.com/",
+    "icon": "custom_items/aws.png",
+    "order": 0
+  }
+}
+]

@@ -21,8 +21,17 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('app.urls')),  # Include the app's URLs
+    
+    # API Authentication endpoints
+    path('api/auth/', include('accounts.urls', namespace='accounts')),
+    
+    # Superadmin panel
+    path('superadmin/', include('superadmin.urls', namespace='superadmin')),
+    
+    # Main app URLs (portfolio, admin panel, etc.)
+    path('', include('app.urls')),
 ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,0 +1,805 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PortfolioPro - The Future is Here</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #23967f;
+            --bg-dark: #0a0a0f;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-dark);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* SPOTLIGHT GLOW EFFECT */
+        .spotlight {
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 5;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s;
+            opacity: 0;
+        }
+
+        /* ========== LIQUID MORPHING BACKGROUND ========== */
+        .liquid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a0a2e 100%);
+        }
+        
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.6;
+            animation: morph 20s ease-in-out infinite;
+        }
+        
+        .blob:nth-child(1) {
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(45deg, #6366f1, #8b5cf6);
+            top: -200px;
+            left: -200px;
+            animation-delay: 0s;
+        }
+        
+        .blob:nth-child(2) {
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(45deg, #23967f, #10b981);
+            bottom: -150px;
+            right: -150px;
+            animation-delay: -7s;
+        }
+        
+        .blob:nth-child(3) {
+            width: 350px;
+            height: 350px;
+            background: linear-gradient(45deg, #f59e0b, #ef4444);
+            top: 50%;
+            left: 50%;
+            animation-delay: -14s;
+        }
+        
+        @keyframes morph {
+            0%, 100% { 
+                border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+                transform: translate(0, 0) rotate(0deg);
+            }
+            25% { 
+                border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+                transform: translate(50px, -50px) rotate(90deg);
+            }
+            50% { 
+                border-radius: 40% 60% 60% 40% / 70% 30% 40% 70%;
+                transform: translate(-30px, 30px) rotate(180deg);
+            }
+            75% { 
+                border-radius: 70% 30% 50% 50% / 30% 50% 70% 50%;
+                transform: translate(30px, 50px) rotate(270deg);
+            }
+        }
+
+        /* ========== MESH GRADIENT OVERLAY ========== */
+        .mesh-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0.3;
+            background: 
+                radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(99, 102, 241, 0.3), transparent 50%),
+                radial-gradient(circle at calc(100% - var(--mouse-x, 50%)) calc(100% - var(--mouse-y, 50%)), rgba(35, 150, 127, 0.3), transparent 50%);
+            transition: background 0.3s ease;
+        }
+
+        /* ========== NAVIGATION ========== */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 30px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, #6366f1 50%, #23967f 100%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 3s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+        }
+        
+        .nav-links a:not(.btn) {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .nav-links a:not(.btn):after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #6366f1, #23967f);
+            transition: width 0.3s;
+        }
+        
+        .nav-links a:not(.btn):hover:after {
+            width: 100%;
+        }
+        
+        .nav-links a:not(.btn):hover {
+            color: #fff;
+        }
+
+        /* ========== HERO SECTION ========== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 120px 40px 80px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .hero-content {
+            max-width: 1200px;
+            text-align: center;
+        }
+        
+        .hero-badge {
+            display: inline-block;
+            padding: 10px 24px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            margin-bottom: 25px;
+            backdrop-filter: blur(10px);
+            animation: float 3s ease-in-out infinite;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-badge:before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shine 3s infinite;
+        }
+        
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .hero h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 4.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            letter-spacing: -2px;
+            position: relative;
+        }
+        
+        /* HOLOGRAPHIC TEXT EFFECT */
+        .holographic {
+            background: linear-gradient(
+                90deg,
+                #6366f1 0%,
+                #8b5cf6 20%,
+                #ec4899 40%,
+                #f59e0b 60%,
+                #10b981 80%,
+                #6366f1 100%
+            );
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: holographic 3s linear infinite;
+            filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.5));
+        }
+        
+        @keyframes holographic {
+            to { background-position: 200% center; }
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 40px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 60px;
+        }
+        
+        /* MAGNETIC BUTTONS */
+        .btn {
+            padding: 20px 45px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            border: none;
+            cursor: none;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff;
+            box-shadow: 0 10px 40px rgba(99, 102, 241, 0.4);
+        }
+        
+        .btn-primary:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #8b5cf6, #6366f1);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+        
+        .btn-primary:hover:before {
+            opacity: 1;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 20px 60px rgba(99, 102, 241, 0.6);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            backdrop-filter: blur(10px);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-5px) scale(1.05);
+        }
+        
+        .btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ========== 3D CARD FEATURES ========== */
+        .features {
+            padding: 80px 40px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            perspective: 1000px;
+        }
+        
+        .feature-card {
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            transform-style: preserve-3d;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            backdrop-filter: blur(20px);
+            overflow: hidden;
+        }
+        
+        .feature-card:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                135deg,
+                rgba(99, 102, 241, 0.1) 0%,
+                transparent 50%,
+                rgba(35, 150, 127, 0.1) 100%
+            );
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        
+        .feature-card:hover {
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .feature-card:hover:before {
+            opacity: 1;
+        }
+        
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+            font-size: 2.2rem;
+            position: relative;
+            transition: all 0.5s;
+        }
+        
+        .feature-icon:after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 22px;
+            padding: 2px;
+            background: linear-gradient(45deg, #6366f1, #8b5cf6, #ec4899);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        
+        .feature-card:hover .feature-icon:after {
+            opacity: 1;
+        }
+        
+        .feature-card:hover .feature-icon {
+            transform: rotateY(360deg) scale(1.1);
+        }
+        
+        .feature-card h3 {
+            color: #fff;
+            margin-bottom: 12px;
+            font-weight: 700;
+            font-size: 1.4rem;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        
+        .feature-card p {
+            color: rgba(255,255,255,0.7);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        /* Message Box */
+        .message-box {
+            max-width: 600px;
+            margin: 0 auto 40px;
+            padding: 20px;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 16px;
+            text-align: center;
+            color: var(--primary);
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Footer */
+        .footer {
+            padding: 60px 40px;
+            text-align: center;
+            color: rgba(255,255,255,0.4);
+            font-size: 1rem;
+            position: relative;
+            z-index: 2;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .navbar {
+                padding: 20px 30px;
+            }
+            
+            .logo {
+                font-size: 1.5rem;
+            }
+            
+            .nav-links {
+                gap: 20px;
+            }
+            
+            .hero h1 {
+                font-size: 3.5rem;
+                letter-spacing: -1px;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+            
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 30px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .spotlight {
+                display: none;
+            }
+            
+            .navbar {
+                padding: 15px 20px;
+            }
+            
+            .logo {
+                font-size: 1.3rem;
+            }
+            
+            .nav-links {
+                gap: 15px;
+            }
+            
+            .nav-links a:not(.btn) {
+                display: none; /* Hide non-essential links on mobile */
+            }
+            
+            .hero {
+                padding: 100px 20px 60px;
+            }
+            
+            .hero-badge {
+                font-size: 0.75rem;
+                padding: 8px 20px;
+                margin-bottom: 20px;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+                margin-bottom: 15px;
+                letter-spacing: -1px;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+                margin-bottom: 30px;
+                line-height: 1.5;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                gap: 15px;
+                margin-bottom: 40px;
+            }
+            
+            .btn {
+                padding: 16px 35px;
+                font-size: 1rem;
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .features {
+                padding: 60px 20px;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+            
+            .feature-card {
+                padding: 35px;
+            }
+            
+            .feature-icon {
+                width: 65px;
+                height: 65px;
+                font-size: 2rem;
+                margin-bottom: 20px;
+            }
+            
+            .feature-card h3 {
+                font-size: 1.3rem;
+            }
+            
+            .feature-card p {
+                font-size: 0.95rem;
+            }
+            
+            /* Disable heavy 3D effects on mobile for performance */
+            .feature-card {
+                transform: none !important;
+            }
+            
+            .blob {
+                filter: blur(60px);
+                opacity: 0.4;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .navbar {
+                padding: 12px 15px;
+            }
+            
+            .logo {
+                font-size: 1.1rem;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 0.9rem;
+            }
+            
+            .btn {
+                padding: 14px 30px;
+                font-size: 0.9rem;
+            }
+            
+            .feature-card {
+                padding: 25px;
+            }
+            
+            .feature-icon {
+                width: 55px;
+                height: 55px;
+                font-size: 1.7rem;
+            }
+            
+            .feature-card h3 {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Spotlight Effect -->
+    <div class="spotlight"></div>
+
+    <!-- Liquid Morphing Background -->
+    <div class="liquid-bg">
+        <div class="blob"></div>
+        <div class="blob"></div>
+        <div class="blob"></div>
+    </div>
+    
+    <!-- Mesh Gradient -->
+    <div class="mesh-gradient"></div>
+    
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo">PortfolioPro</div>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="/admin-login/" class="btn btn-secondary" style="padding: 10px 20px;">
+                <i class="fas fa-sign-in-alt"></i> <span>Sign In</span>
+            </a>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">✨ The Future of Portfolio Building</div>
+            
+            <h1>Build Your <span class="holographic">Dream Portfolio</span> in Minutes</h1>
+            
+            <p>Experience the next generation of portfolio creation with cutting-edge design, immersive animations, and unparalleled customization.</p>
+            
+            {% if message %}
+            <div class="message-box">{{ message }}</div>
+            {% endif %}
+            
+            <div class="cta-buttons">
+                <a href="/register/" class="btn btn-primary magnetic-btn">
+                    <span><i class="fas fa-rocket"></i> Get Started Free</span>
+                </a>
+                <a href="#features" class="btn btn-secondary magnetic-btn">
+                    <span><i class="fas fa-play"></i> Explore Features</span>
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="features-grid">
+            <div class="feature-card magnetic-card">
+                <div class="feature-icon">🎨</div>
+                <h3>Hyper-Customizable</h3>
+                <p>Infinite design possibilities with real-time preview, advanced themes, and pixel-perfect control over every element.</p>
+            </div>
+            
+            <div class="feature-card magnetic-card">
+                <div class="feature-icon">🌐</div>
+                <h3>Your Own Domain</h3>
+                <p>Get a professional subdomain instantly - no technical knowledge required. Share your work with the world.</p>
+            </div>
+            
+            <div class="feature-card magnetic-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Blazing Fast</h3>
+                <p>Optimized for performance with instant loading, smooth animations, and cutting-edge web technologies.</p>
+            </div>
+            
+            <div class="feature-card magnetic-card">
+                <div class="feature-icon">🔒</div>
+                <h3>Enterprise Security</h3>
+                <p>Bank-level encryption, secure authentication, and automatic backups keep your data safe 24/7.</p>
+            </div>
+            
+            <div class="feature-card magnetic-card">
+                <div class="feature-icon">📱</div>
+                <h3>Responsive Design</h3>
+                <p>Looks stunning on every device - from desktop monitors to mobile phones and tablets.</p>
+            </div>
+            
+            <div class="feature-card magnetic-card">
+                <div class="feature-icon">🛠️</div>
+                <h3>Intuitive Dashboard</h3>
+                <p>Manage everything with our beautiful, easy-to-use admin panel. No coding required.</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2024 PortfolioPro. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // ========== SPOTLIGHT EFFECT ==========
+        const spotlight = document.querySelector('.spotlight');
+        
+        document.addEventListener('mousemove', (e) => {
+            spotlight.style.left = e.clientX + 'px';
+            spotlight.style.top = e.clientY + 'px';
+            spotlight.style.opacity = '1';
+        });
+        
+        document.addEventListener('mouseleave', () => {
+            spotlight.style.opacity = '0';
+        });
+
+        // ========== MESH GRADIENT MOUSE FOLLOW ==========
+        const meshGradient = document.querySelector('.mesh-gradient');
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth) * 100;
+            const y = (e.clientY / window.innerHeight) * 100;
+            meshGradient.style.setProperty('--mouse-x', x + '%');
+            meshGradient.style.setProperty('--mouse-y', y + '%');
+        });
+
+        // ========== 3D TILT EFFECT FOR CARDS ==========
+        document.querySelectorAll('.magnetic-card').forEach(card => {
+            card.addEventListener('mousemove', function(e) {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = (y - centerY) / 10;
+                const rotateY = (centerX - x) / 10;
+                
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`;
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+            });
+        });
+
+        // ========== MAGNETIC BUTTONS ==========
+        document.querySelectorAll('.magnetic-btn').forEach(btn => {
+            btn.addEventListener('mousemove', function(e) {
+                const rect = btn.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                
+                btn.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
+            });
+            
+            btn.addEventListener('mouseleave', function() {
+                btn.style.transform = 'translate(0, 0)';
+            });
+        });
+    </script>
+</body>
+</html>

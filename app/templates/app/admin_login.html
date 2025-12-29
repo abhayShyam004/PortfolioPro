@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - PortfolioPro</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #0a0a0f;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        /* SPOTLIGHT GLOW EFFECT */
+        .spotlight {
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 5;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s;
+            opacity: 0;
+        }
+
+        /* LIQUID MORPHING BACKGROUND */
+        .liquid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a0a2e 100%);
+        }
+        
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.6;
+            animation: morph 20s ease-in-out infinite;
+        }
+        
+        .blob:nth-child(1) {
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(45deg, #6366f1, #8b5cf6);
+            top: -200px;
+            left: -200px;
+            animation-delay: 0s;
+        }
+        
+        .blob:nth-child(2) {
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(45deg, #23967f, #10b981);
+            bottom: -150px;
+            right: -150px;
+            animation-delay: -7s;
+        }
+        
+        .blob:nth-child(3) {
+            width: 350px;
+            height: 350px;
+            background: linear-gradient(45deg, #f59e0b, #ef4444);
+            top: 50%;
+            left: 50%;
+            animation-delay: -14s;
+        }
+        
+        @keyframes morph {
+            0%, 100% { 
+                border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+                transform: translate(0, 0) rotate(0deg);
+            }
+            25% { 
+                border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+                transform: translate(50px, -50px) rotate(90deg);
+            }
+            50% { 
+                border-radius: 40% 60% 60% 40% / 70% 30% 40% 70%;
+                transform: translate(-30px, 30px) rotate(180deg);
+            }
+            75% { 
+                border-radius: 70% 30% 50% 50% / 30% 50% 70% 50%;
+                transform: translate(30px, 50px) rotate(270deg);
+            }
+        }
+
+        /* MESH GRADIENT */
+        .mesh-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0.3;
+            background: 
+                radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(99, 102, 241, 0.3), transparent 50%);
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            padding: 60px 50px;
+            width: 100%;
+            max-width: 480px;
+            z-index: 10;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-container:before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.03), transparent);
+            animation: shine 3s infinite;
+        }
+        
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .lock-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.1));
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 0 40px rgba(99, 102, 241, 0.2);
+            transition: all 0.5s;
+        }
+        
+        .login-container:hover .lock-icon {
+            transform: rotateY(360deg) scale(1.1);
+        }
+
+        .lock-icon svg {
+            width: 36px;
+            height: 36px;
+            fill: #fff;
+        }
+
+        .login-header h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+            background: linear-gradient(
+                90deg,
+                #6366f1 0%,
+                #8b5cf6 20%,
+                #ec4899 40%,
+                #6366f1 100%
+            );
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: holographic 3s linear infinite;
+        }
+        
+        @keyframes holographic {
+            to { background-position: 200% center; }
+        }
+
+        .login-header p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1rem;
+            font-weight: 300;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-group label {
+            display: block;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding-left: 5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 18px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            color: #ffffff;
+            font-size: 1rem;
+            font-family: 'Outfit', sans-serif;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #6366f1;
+            background: rgba(0, 0, 0, 0.4);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            padding: 16px 20px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            font-size: 0.9rem;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border: none;
+            border-radius: 16px;
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: none;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            box-shadow: 0 10px 40px rgba(99, 102, 241, 0.4);
+            font-family: 'Outfit', sans-serif;
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+        
+        .login-btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #8b5cf6, #6366f1);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+        
+        .login-btn:hover:before {
+            opacity: 1;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(99, 102, 241, 0.5);
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 30px;
+            color: rgba(255, 255, 255, 0.5);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            position: relative;
+            z-index: 1;
+        }
+
+        .back-link:hover {
+            color: #fff;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .login-container { padding: 40px 30px; }
+            .blob { filter: blur(60px); opacity: 0.4; }
+            .spotlight { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="spotlight"></div>
+
+    <div class="liquid-bg">
+        <div class="blob"></div>
+        <div class="blob"></div>
+        <div class="blob"></div>
+    </div>
+    
+    <div class="mesh-gradient"></div>
+
+    <div class="login-container">
+        <div class="login-header">
+            <div class="lock-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M12 1C8.676 1 6 3.676 6 7v2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V11c0-1.1-.9-2-2-2h-2V7c0-3.324-2.676-6-6-6zm0 2c2.276 0 4 1.724 4 4v2H8V7c0-2.276 1.724-4 4-4zm0 10c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2z"/>
+                </svg>
+            </div>
+            <h1>Admin Access</h1>
+            <p>Sign in to manage your portfolio</p>
+        </div>
+
+        {% if error %}
+        <div class="error-message">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <form method="POST" action="{% url 'admin_login' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username" required autocomplete="off">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+
+            <button type="submit" class="login-btn">Sign In</button>
+        </form>
+
+        <a href="{% url 'home' %}" class="back-link">← Back to Homepage</a>
+    </div>
+
+    <script>
+        // SPOTLIGHT EFFECT
+        const spotlight = document.querySelector('.spotlight');
+        
+        document.addEventListener('mousemove', (e) => {
+            spotlight.style.left = e.clientX + 'px';
+            spotlight.style.top = e.clientY + 'px';
+            spotlight.style.opacity = '1';
+        });
+        
+        document.addEventListener('mouseleave', () => {
+            spotlight.style.opacity = '0';
+        });
+
+        // MESH GRADIENT FOLLOW
+        const meshGradient = document.querySelector('.mesh-gradient');
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth) * 100;
+            const y = (e.clientY / window.innerHeight) * 100;
+            meshGradient.style.setProperty('--mouse-x', x + '%');
+            meshGradient.style.setProperty('--mouse-y', y + '%');
+        });
+    </script>
+</body>
+</html>

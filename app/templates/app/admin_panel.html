@@ -1,0 +1,3014 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard • {{ profile.name }}</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Serif+Display&family=Inter:wght@300;400;500;600;700;800&family=Lato:wght@300;400;700&family=Montserrat:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;600;700&family=Outfit:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&family=Public+Sans:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- SortableJS for drag-and-drop -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+
+    <style>
+        :root {
+            /* Dynamic Theme Colors */
+            --primary: {{ settings.primary_color|default:"#6366f1" }};
+            --secondary: {{ settings.secondary_color|default:"#23967f" }};
+            --bg-dark: {{ settings.background_color|default:"#0f172a" }};
+            --text-main: {{ settings.hero_about_text_color|default:"#f8fafc" }};
+            --accent: {{ settings.circle_color|default:"#eabe7c" }};
+            
+            /* Glass UI Tokens */
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.05);
+            --glass-shine: rgba(255, 255, 255, 0.08);
+            --glass-blur: blur(20px);
+            
+            /* Spacing & Layout */
+            --sidebar-width: 280px;
+            --header-height: 80px;
+            
+            /* Animations */
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            
+            /* Dynamic animated background */
+            background-image: 
+                radial-gradient(circle at 15% 50%, var(--primary), transparent 25%),
+                radial-gradient(circle at 85% 30%, var(--secondary), transparent 25%);
+            background-size: 150% 150%;
+            animation: bgPulse 15s ease infinite alternate;
+            background-attachment: fixed;
+        }
+
+        @keyframes bgPulse {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 100% 100%; }
+        }
+
+        /* SPOTLIGHT GLOW EFFECT */
+        .spotlight {
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 5;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s;
+            opacity: 0;
+        }
+
+        /* LIQUID MORPHING BACKGROUND */
+        .liquid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.6;
+            animation: morph 20s ease-in-out infinite;
+        }
+        
+        .blob:nth-child(1) {
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            top: -200px;
+            left: -200px;
+            animation-delay: 0s;
+        }
+        
+        .blob:nth-child(2) {
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(45deg, var(--secondary), var(--accent));
+            bottom: -150px;
+            right: -150px;
+            animation-delay: -7s;
+        }
+        
+        .blob:nth-child(3) {
+            width: 350px;
+            height: 350px;
+            background: linear-gradient(45deg, var(--accent), var(--primary));
+            top: 50%;
+            left: 50%;
+            animation-delay: -14s;
+        }
+        
+        @keyframes morph {
+            0%, 100% { 
+                border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+                transform: translate(0, 0) rotate(0deg);
+            }
+            25% { 
+                border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+                transform: translate(50px, -50px) rotate(90deg);
+            }
+            50% { 
+                border-radius: 40% 60% 60% 40% / 70% 30% 40% 70%;
+                transform: translate(-30px, 30px) rotate(180deg);
+            }
+            75% { 
+                border-radius: 70% 30% 50% 50% / 30% 50% 70% 50%;
+                transform: translate(30px, 50px) rotate(270deg);
+            }
+        }
+
+        /* --- Layout --- */
+        .dashboard-container {
+            display: block;
+            min-height: 100vh;
+            /* backdrop-filter removed to ensure sidebar position:fixed works relative to viewport */
+            background: rgba(0,0,0,0.2); 
+        }
+
+        /* --- Sidebar --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding: 40px 30px;
+            border-right: 1px solid var(--glass-border);
+            background: rgba(15, 23, 42, 0.6); /* Slightly more opaque for better contrast */
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto; /* Internal scrolling */
+        }
+
+        .logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-main);
+            text-decoration: none;
+            margin-bottom: 60px;
+            letter-spacing: -1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .icon-choice.selected {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+        
+        /* Toggle Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+            margin-bottom: 0;
+            vertical-align: middle;
+        }
+        .switch input { 
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+        input:checked + .slider {
+            background-color: var(--primary); /* Use theme primary color */
+        }
+        input:focus + .slider {
+            box-shadow: 0 0 1px var(--primary);
+        }
+        input:checked + .slider:before {
+            -webkit-transform: translateX(20px);
+            -ms-transform: translateX(20px);
+            transform: translateX(20px);
+        }
+        .slider.round {
+            border-radius: 20px;
+        }
+        .slider.round:before {
+            border-radius: 50%;
+        }
+
+        /* Icon Picker Styles */
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
+            gap: 10px;
+            padding: 15px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+        .icon-choice {
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.6);
+        }
+        .icon-choice:hover {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+        .icon-choice.selected {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+
+
+        .logo span { color: var(--primary); }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            color: rgba(255,255,255,0.6);
+            text-decoration: none;
+            border-radius: 16px;
+            transition: var(--transition);
+            font-weight: 500;
+            font-size: 1.05rem;
+            border: 1px solid transparent;
+        }
+
+        .nav-link i {
+            width: 24px;
+            margin-right: 15px;
+            font-size: 1.2rem;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: var(--glass-bg);
+            color: #fff;
+            border-color: var(--glass-border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(90deg, var(--glass-bg) 0%, transparent 100%);
+            border-left: 3px solid var(--primary);
+        }
+
+        .nav-link:hover i, .nav-link.active i {
+            color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        /* --- Main Content --- */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 60px;
+            max-width: 1600px;
+        }
+
+        .page-header {
+            margin-bottom: 60px;
+            animation: slideDown 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .page-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 4rem;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1;
+            letter-spacing: -2px;
+            background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.5) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-subtitle {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.5);
+            margin-top: 15px;
+            font-weight: 300;
+        }
+
+        /* --- Review Stats Widget --- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 60px;
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 25px;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            background: var(--glass-shine);
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        .stat-value {
+            font-size: 3rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+
+        .stat-label {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-icon {
+            position: absolute;
+            right: -20px;
+            top: -20px;
+            font-size: 8rem;
+            opacity: 0.05;
+            color: #fff;
+            transform: rotate(15deg);
+        }
+
+        /* --- Cards --- */
+        section { width: 100%; }
+        .card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            margin-bottom: 40px;
+            overflow: hidden;
+            animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .card-header {
+            padding: 30px 40px;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0,0,0,0.1);
+        }
+
+        .card-header h3 {
+            font-size: 1.5rem;
+            margin: 0;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .card-header h3 i { color: var(--primary); }
+
+        .card-body { padding: 40px; }
+
+        /* --- Forms --- */
+        .form-group { margin-bottom: 30px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+
+        label {
+            display: block;
+            margin-bottom: 12px;
+            color: rgba(255,255,255,0.8);
+            font-size: 0.95rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control {
+            width: 100%;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid var(--glass-border);
+            padding: 20px 24px;
+            border-radius: 12px;
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            background: rgba(0,0,0,0.4);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        textarea.form-control { min-height: 180px; resize: vertical; line-height: 1.6; }
+
+        /* --- Buttons --- */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 18px 36px;
+            border-radius: 14px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            text-decoration: none;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 10px 30px -10px var(--primary);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 20px 40px -10px var(--primary);
+            filter: brightness(1.2);
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-danger:hover {
+            background: #ef4444;
+            color: #fff;
+        }
+        
+        .btn-sm { padding: 10px 20px; font-size: 0.9rem; }
+
+        /* --- Lists --- */
+        .list-item {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--glass-border);
+            margin-bottom: 15px;
+            border-radius: 16px;
+            transition: var(--transition);
+        }
+
+        .list-item:hover {
+            transform: translateX(10px);
+            background: rgba(255,255,255,0.05);
+            border-color: rgba(255,255,255,0.1);
+        }
+
+        .list-item strong { font-size: 1.2rem; }
+
+        /* --- Color Pickers --- */
+        .color-picker-wrapper {
+            display: flex;
+            align-items: center;
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+        }
+        
+        input[type="color"] {
+            -webkit-appearance: none;
+            width: 50px;
+            height: 50px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: none;
+            padding: 0;
+            margin-right: 15px;
+        }
+        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type="color"]::-webkit-color-swatch { border: none; border-radius: 8px; }
+
+        /* --- Section Visibility Checks --- */
+        .visibility-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .visibility-check {
+            background: rgba(255,255,255,0.03);
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: var(--transition);
+        }
+
+        .visibility-check:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.1); }
+        .visibility-check input { width: 24px; height: 24px; accent-color: var(--primary); }
+
+        /* --- Animations --- */
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideDown { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal.active { display: flex; animation: fadeIn 0.3s ease; }
+        .modal-content {
+            background: #1e1e1e;
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            width: 600px;
+            max-width: 90%;
+            position: relative;
+            max-height: 85vh;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+        }
+        
+        .modal-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .modal-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .modal-content::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+        
+        .modal-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.5);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* --- Info Icons & Tooltips --- */
+        .info-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            font-size: 0.75rem;
+            margin-left: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .info-icon:hover {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .info-tooltip {
+            position: fixed; 
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid var(--glass-border);
+            padding: 15px;
+            border-radius: 12px;
+            width: 280px;
+            max-width: 90vw;
+            z-index: 3000;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            transform: translateY(10px);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .info-tooltip.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        .tooltip-title {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: block;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .tooltip-example {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.5);
+            font-style: italic;
+        }
+
+        /* --- Mobile Responsiveness --- */
+        /* Hamburger Button */
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .mobile-toggle:active { transform: scale(0.9); }
+
+        /* Sidebar Overlay */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 1100px) {
+            .mobile-toggle { display: flex; }
+            
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px; 
+                transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+                padding: 40px 30px;
+                background: rgba(15, 23, 42, 0.95);
+            }
+            
+            .sidebar.active { transform: translateX(0); }
+            .sidebar-overlay.active { display: block; }
+
+            .logo span, .nav-link span, .logo { display: block; } /* Restore logo/text for mobile drawer */
+            .logo::after { display: none; }
+            .nav-link { justify-content: flex-start; padding: 16px 20px; }
+            .nav-link i { margin-right: 15px; font-size: 1.2rem; }
+
+            .main-content {
+                margin-left: 0;
+                padding: 100px 20px 40px 20px; /* Top padding for toggle button area */
+                width: 100%;
+            }
+            
+            /* Visibility Toggles */
+            .desktop-only { display: block !important; }
+            .mobile-only { display: none !important; }
+
+            @media (max-width: 768px) {
+                .desktop-only { display: none !important; }
+                .mobile-only { display: block !important; }
+            }
+
+            .page-title { font-size: 2.5rem; }
+            .stats-grid { grid-template-columns: 1fr; gap: 15px; }
+            
+            .form-row { grid-template-columns: 1fr; gap: 20px; }
+            
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .card-header .btn { width: 100%; }
+            
+            .theme-card { min-height: auto; }
+            
+            /* Mobile Modals */
+            .modal { padding: 0; align-items: flex-end; }
+            .modal-content {
+                width: 100%;
+                max-width: 100%;
+                height: 90vh;
+                max-height: 90vh;
+                border-radius: 20px 20px 0 0;
+                padding: 30px 20px;
+            }
+            
+            .list-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .list-item > div:last-child {
+                width: 100%;
+                display: flex;
+                gap: 10px;
+            }
+            .list-item .btn { flex: 1; justify-content: center; }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Spotlight Effect -->
+    <div class="spotlight"></div>
+    
+    <!-- Liquid Morphing Background -->
+    <div class="liquid-bg">
+        <div class="blob"></div>
+        <div class="blob"></div>
+        <div class="blob"></div>
+    </div>
+
+    <!-- Mobile Toggle -->
+    <button id="mobileToggle" class="mobile-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- Overlay -->
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+    
+    <!-- Info Tooltip -->
+    <div id="infoTooltip" class="info-tooltip">
+        <span class="tooltip-title">Title</span>
+        <div class="tooltip-content">Description here.</div>
+        <div class="tooltip-example">Example: ...</div>
+    </div>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <a href="/?subdomain={{ request.user.subdomain }}" class="logo" target="_blank" title="View your portfolio">
+                {{ profile.name }}<span>.</span>
+            </a>
+
+            <ul class="nav-menu">
+                {% for section in all_sections %}
+                {% if section.slug != 'about' %}
+                <li>
+                    <a href="?section={{ section.slug }}" class="nav-link {% if request.GET.section == section.slug %}active{% endif %}">
+                        <i class="{{ section.icon }}"></i> <span>{{ section.title }}</span>
+                    </a>
+                </li>
+                {% endif %}
+                {% endfor %}
+
+                <li style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+                    <a href="?section=manage-sections" class="nav-link {% if request.GET.section == 'manage-sections' %}active{% endif %}" style="color: var(--primary);">
+                        <i class="fas fa-plus-circle"></i> <span>Manage Sections</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div style="margin-top: auto;">
+                <a href="{% url 'admin_logout' %}" class="nav-link" style="color: #ef4444;">
+                    <i class="fas fa-arrow-right-from-bracket"></i> <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            
+            <header class="page-header">
+                <div>
+                    <h1 class="page-title">
+                        {% if request.GET.section == 'appearance' %}Look & Feel
+                        {% elif request.GET.section == 'projects' %}My Work
+                        {% elif request.GET.section == 'skills' %}Tech Stack
+                        {% elif request.GET.section == 'experience' %}Experience
+                        {% elif request.GET.section == 'education' %}Education
+                        {% elif request.GET.section == 'social' %}Contact & Social
+                        {% elif request.GET.section == 'expertise' %}Expertise
+                        {% elif request.GET.section == 'manage-sections' %}Manage Sections
+                        {% else %}
+                            {% for section in custom_sections %}
+                                {% if request.GET.section == section.slug %}{{ section.title }}{% endif %}
+                            {% endfor %}
+                            {% if not request.GET.section or request.GET.section == 'profile' %}Overview{% endif %}
+                        {% endif %}
+                    </h1>
+                    <div class="page-subtitle">Manage your portfolio content and settings</div>
+                </div>
+            </header>
+
+            {% if messages %}
+            <div style="margin-bottom: 40px;">
+                {% for message in messages %}
+                <div style="background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.4); color: #10b981; padding: 20px; border-radius: 12px; display: flex; align-items: center; gap: 15px;">
+                    <i class="fas fa-check-circle"></i> {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Dynamic Dashboard Stats -->
+            {% if not request.GET.section or request.GET.section == 'profile' %}
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">{{ projects|length }}</div>
+                    <div class="stat-label">Projects</div>
+                    <i class="fas fa-project-diagram stat-icon"></i>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ skills|length }}</div>
+                    <div class="stat-label">Skills</div>
+                    <i class="fas fa-code stat-icon"></i>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ experiences|length }}</div>
+                    <div class="stat-label">Roles</div>
+                    <i class="fas fa-briefcase stat-icon"></i>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ education_list|length }}</div>
+                    <div class="stat-label">Education</div>
+                    <i class="fas fa-graduation-cap stat-icon"></i>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Profile Section -->
+            <section id="section-profile" style="display: {% if not request.GET.section or request.GET.section == 'profile' %}block{% else %}none{% endif %};">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-user-edit"></i> Personal Details</h3>
+                    </div>
+                    <div class="card-body">
+                        <form action="{% url 'update_profile' %}" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Display Name <i class="fas fa-info info-icon" data-desc="The name that appears in the main title of your portfolio." data-example="Abhay S"></i></label>
+                                    <input type="text" name="name" value="{{ profile.name }}" class="form-control" placeholder="e.g. John Doe">
+                                </div>
+                                <div class="form-group">
+                                    <label>Greeting Text <i class="fas fa-info info-icon" data-desc="The small introductory text displayed above your name." data-example="Hi, I am"></i></label>
+                                    <input type="text" name="greeting" value="{{ profile.greeting }}" class="form-control" placeholder="e.g. Hello, I'm">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Hero Bio (Short & Punchy) <i class="fas fa-info info-icon" data-desc="A concise summary of who you are, displayed prominently in the hero section." data-example="A web designer & backend developer based in India."></i></label>
+                                <textarea name="hero_bio" class="form-control" style="min-height: 120px;">{{ profile.hero_bio }}</textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Full About Description <i class="fas fa-info info-icon" data-desc="A detailed description of your background, experience, and skills for the About section." data-example="I have over 5 years of experience in building scalable web applications..."></i></label>
+                                <textarea name="about_text" class="form-control" style="min-height: 200px;">{{ profile.about_text }}</textarea>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>CV / Resume URL <i class="fas fa-info info-icon" data-desc="A link to your downloadable resume or CV, typically a Google Drive or Dropbox link." data-example="https://drive.google.com/file/d/..."></i></label>
+                                    <input type="url" name="cv_link" value="{{ profile.cv_link }}" class="form-control" placeholder="https://drive.google.com/...">
+                                </div>
+                                <div class="form-group">
+                                    <label>Profile Photo <i class="fas fa-info info-icon" data-desc="Your profile picture, displayed in the sidebar and about section. Square ratio recommended." data-example="Upload a high-quality JPG or PNG."></i></label>
+                                    <input type="file" name="about_photo" class="form-control" style="padding: 16px;" onchange="previewImage(this)">
+                                    {% if profile.about_photo %}
+                                    <div style="margin-top: 10px;">
+                                        <img id="profilePreview" src="{{ profile.about_photo.url }}" alt="Profile Preview" style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%; border: 2px solid var(--primary);">
+                                    </div>
+                                    {% else %}
+                                    <div style="margin-top: 10px;">
+                                        <img id="profilePreview" src="" alt="Profile Preview" style="display: none; width: 80px; height: 80px; object-fit: cover; border-radius: 50%; border: 2px solid var(--primary);">
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                                <script>
+                                    function previewImage(input) {
+                                        var preview = document.getElementById('profilePreview');
+                                        if (input.files && input.files[0]) {
+                                            var reader = new FileReader();
+                                            reader.onload = function(e) {
+                                                preview.src = e.target.result;
+                                                preview.style.display = 'block';
+                                            }
+                                            reader.readAsDataURL(input.files[0]);
+                                        }
+                                    }
+                                </script>
+                            <div class="form-group">
+                                <label>AI Assistant Script <i class="fas fa-info info-icon" data-desc="Copy and paste the JavaScript snippet provided by your AI chatbot service (e.g., Chatbase) to enable the chat widget on your site." data-example="&lt;script&gt;...&lt;/script&gt;"></i></label>
+                                <textarea name="ai_assistant_script" class="form-control" style="min-height: 150px; font-family: monospace; font-size: 0.9rem;" placeholder="<script>...</script>">{{ profile.ai_assistant_script }}</textarea>
+                                <small style="color: rgba(255,255,255,0.5);">Paste the full JS snippet provided by your 3rd party AI assistant (e.g., Chatbase).</small>
+                            </div>
+                            
+                            <div style="text-align: right; margin-top: 20px;">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Appearance Section -->
+            <section id="section-appearance" style="display: {% if request.GET.section == 'appearance' %}block{% else %}none{% endif %};">
+                <form action="{% url 'update_appearance' %}" method="POST">
+                    {% csrf_token %}
+                    
+                    <div id="theme-colors-card" class="card theme-dependent-card" style="position: relative;">
+                        <div class="card-header">
+                            <h3><i class="fas fa-swatchbook"></i> Theme Colors</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Primary <i class="fas fa-info info-icon" data-desc="The main brand color used for buttons, links, and highlights." data-example="#6366f1"></i></label>
+                                    <div class="color-picker-wrapper">
+                                        <input type="color" name="primary_color" value="{{ settings.primary_color }}">
+                                        <input type="text" value="{{ settings.primary_color }}" class="form-control" readonly>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Secondary <i class="fas fa-info info-icon" data-desc="A complementary color used for gradients and accents." data-example="#23967f"></i></label>
+                                    <div class="color-picker-wrapper">
+                                        <input type="color" name="secondary_color" value="{{ settings.secondary_color }}">
+                                        <input type="text" value="{{ settings.secondary_color }}" class="form-control" readonly>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Background <i class="fas fa-info info-icon" data-desc="The main background color of the site (dark theme recommended)." data-example="#0f172a"></i></label>
+                                    <div class="color-picker-wrapper">
+                                        <input type="color" name="background_color" value="{{ settings.background_color }}">
+                                        <input type="text" value="{{ settings.background_color }}" class="form-control" readonly>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Text <i class="fas fa-info info-icon" data-desc="The default text color for body paragraphs (should contrast well with background)." data-example="#f8fafc"></i></label>
+                                    <div class="color-picker-wrapper">
+                                        <input type="color" name="text_color" value="{{ settings.hero_about_text_color }}">
+                                        <input type="text" value="{{ settings.hero_about_text_color }}" class="form-control" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Unsupported Theme Overlay -->
+                        <div class="theme-unsupported-overlay" style="display: none;">
+                            <i class="fas fa-info-circle"></i>
+                            <span>This theme has fixed styling</span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div id="typography-card" class="card theme-dependent-card" style="flex: 1; position: relative;">
+                            <div class="card-header">
+                                <h3><i class="fas fa-font"></i> Typography</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label>Headings <i class="fas fa-info info-icon" data-desc="The font family used for titles and headers (H1-H6)." data-example="Space Grotesk"></i></label>
+                                    <select name="heading_font" class="form-control" style="font-family: var(--heading-font-preview, sans-serif);">
+                                        {% for value, label in font_choices %}
+                                        <option value="{{ value }}" style="font-family: '{{ value }}', sans-serif;" {% if settings.heading_font == value %}selected{% endif %}>{{ label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Body Text <i class="fas fa-info info-icon" data-desc="The font used for paragraphs and general reading text." data-example="Outfit"></i></label>
+                                    <select name="body_font" class="form-control" style="font-family: var(--body-font-preview, sans-serif);">
+                                        {% for value, label in font_choices %}
+                                        <option value="{{ value }}" style="font-family: '{{ value }}', sans-serif;" {% if settings.body_font == value %}selected{% endif %}>{{ label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <!-- Unsupported Theme Overlay -->
+                            <div class="theme-unsupported-overlay" style="display: none;">
+                                <i class="fas fa-info-circle"></i>
+                                <span>This theme has fixed styling</span>
+                            </div>
+                        </div>
+
+                        <div id="visual-effects-card" class="card theme-dependent-card" style="flex: 1; position: relative;">
+                            <div class="card-header">
+                                <h3><i class="fas fa-magic"></i> Visual Effects</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label>Background Style <i class="fas fa-info info-icon" data-desc="The visual animation or pattern on your site background." data-example="Gradient Mesh"></i></label>
+                                    <select name="background_style" class="form-control">
+                                        {% for value, label in style_choices %}
+                                        <option value="{{ value }}" {% if settings.background_style == value %}selected{% endif %}>{{ label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Accent Color <i class="fas fa-info info-icon" data-desc="Used for the animated background elements (circles, particles)." data-example="#eabe7c"></i></label>
+                                    <div class="color-picker-wrapper">
+                                        <input type="color" name="circle_color" value="{{ settings.circle_color }}">
+                                        <input type="text" value="{{ settings.circle_color }}" class="form-control" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Unsupported Theme Overlay -->
+                            <div class="theme-unsupported-overlay" style="display: none;">
+                                <i class="fas fa-info-circle"></i>
+                                <span>This theme uses its own background effects</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Typography Size Controls -->
+                    <div class="card" style="margin-top: 30px;">
+                        <div class="card-header">
+                            <h3><i class="fas fa-text-height"></i> Typography Size</h3>
+                        </div>
+                        <div class="card-body">
+                            <div style="display: flex; flex-direction: column; gap: 30px;">
+                                <div style="width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                    <!-- Desktop Sliders -->
+                                    <div class="form-group desktop-only">
+                                        <label>Name Size (Desktop) (rem): <span id="nameSizeValue" style="color: var(--primary); font-weight: bold;">{{ settings.name_font_size }}</span> <i class="fas fa-info info-icon" data-desc="Adjusts the size of your name on desktop screens." data-example="10.5"></i></label>
+                                        <input type="range" name="name_font_size" id="nameSizeSlider" min="6" max="20" step="0.5" value="{{ settings.name_font_size }}" class="form-control" oninput="updatePreview()" style="padding: 0;">
+                                    </div>
+                                    <div class="form-group desktop-only">
+                                        <label>Greeting Size (Desktop) (rem): <span id="greetingSizeValue" style="color: var(--primary); font-weight: bold;">{{ settings.greeting_font_size }}</span> <i class="fas fa-info info-icon" data-desc="Adjusts the size of the greeting text on desktop screens." data-example="1.5"></i></label>
+                                        <input type="range" name="greeting_font_size" id="greetingSizeSlider" min="1" max="5" step="0.1" value="{{ settings.greeting_font_size }}" class="form-control" oninput="updatePreview()" style="padding: 0;">
+                                    </div>
+
+                                    <!-- Mobile Sliders -->
+                                    <div class="form-group mobile-only" style="display: none;">
+                                        <label>Name Size (Mobile) (rem): <span id="nameSizeValueMobile" style="color: var(--primary); font-weight: bold;">{{ settings.name_font_size_mobile }}</span> <i class="fas fa-info info-icon" data-desc="For mobile compatible size edit this on a mobile device." data-example="4.0"></i></label>
+                                        <input type="range" name="name_font_size_mobile" id="nameSizeSliderMobile" min="2" max="10" step="0.2" value="{{ settings.name_font_size_mobile }}" class="form-control" oninput="updatePreview()" style="padding: 0;">
+                                    </div>
+                                    <div class="form-group mobile-only" style="display: none;">
+                                        <label>Greeting Size (Mobile) (rem): <span id="greetingSizeValueMobile" style="color: var(--primary); font-weight: bold;">{{ settings.greeting_font_size_mobile }}</span> <i class="fas fa-info info-icon" data-desc="For mobile compatible size edit this on a mobile device." data-example="1.5"></i></label>
+                                        <input type="range" name="greeting_font_size_mobile" id="greetingSizeSliderMobile" min="0.5" max="3" step="0.1" value="{{ settings.greeting_font_size_mobile }}" class="form-control" oninput="updatePreview()" style="padding: 0;">
+                                    </div>
+                                </div>
+                                
+                                <!-- Live Preview Box -->
+                                <div style="width: 100%; min-height: 250px; background: #000; padding: 40px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden;">
+                                     <div style="text-align: left; z-index: 2; width: 100%;">
+                                        <div id="previewGreeting" style="font-family: var(--body-font-preview, sans-serif); color: {{ settings.primary_color }}; margin-bottom: 0; word-break: break-word; overflow-wrap: break-word;">Hi, I am</div>
+                                        <h1 id="previewName" style="font-family: var(--heading-font-preview, serif); color: #fff; line-height: 1.1; margin-top: 0; word-break: break-word; overflow-wrap: break-word;">ARVO</h1>
+                                    </div>
+                                    <div style="position: absolute; bottom: 10px; right: 10px; color: rgba(255,255,255,0.2); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">Live Preview</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    
+                    <!-- Intermediate Save Button Removed to use the main one at the bottom -->
+                    
+                <!-- Form continues below... -->
+
+
+                    <div style="margin-top: 60px;">
+                         <h2 class="page-title" style="font-size: 2rem; margin-bottom: 20px;">Theme Presets (Color/Font Configurations)</h2>
+                    </div>
+                
+                    <div id="quick-presets-card" class="card theme-dependent-card" style="position: relative;">
+                        <div class="card-header">
+                            <h3><i class="fas fa-swatchbook"></i> Quick Presets</h3>
+                        </div>
+                        <div class="card-body">
+                            <p style="color: rgba(255,255,255,0.6); margin-bottom: 20px;">Click a preset to apply its colors, fonts, and sizes:</p>
+                            <div class="grid-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
+                                {% for theme in saved_themes %}
+                                <div class="theme-card preset-card" data-preset-id="{{ forloop.counter }}" onclick="applyTheme(this, '{{ theme.primary_color }}', '{{ theme.secondary_color }}', '{{ theme.background_color }}', '{{ theme.text_color }}', '{{ theme.heading_font }}', '{{ theme.body_font }}', '{{ theme.circle_color }}', {{ theme.name_font_size|default:'4.5' }}, {{ theme.greeting_font_size|default:'1.3' }}, {{ theme.section_heading_font_size|default:'1.0' }})" style="cursor: pointer; border: 2px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 15px; background: rgba(255,255,255,0.03); transition: all 0.3s ease; position: relative;">
+                                    <div style="height: 80px; border-radius: 8px; background: linear-gradient(135deg, {{ theme.primary_color }}, {{ theme.secondary_color }}); margin-bottom: 10px; position: relative; overflow: hidden;">
+                                        <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 40%; background: {{ theme.background_color }}; opacity: 0.9;"></div>
+                                        <div style="position: absolute; top: 8px; right: 8px; width: 16px; height: 16px; border-radius: 50%; background: {{ theme.circle_color }}; box-shadow: 0 0 10px rgba(0,0,0,0.3);"></div>
+                                    </div>
+                                    <h4 style="margin: 0 0 5px 0; font-size: 1rem;">{{ theme.name }}</h4>
+                                    <p style="font-size: 0.75rem; color: rgba(255,255,255,0.5); margin: 0;">{{ theme.heading_font }} / {{ theme.body_font }}</p>
+                                    <div class="preset-check" style="position: absolute; top: 10px; left: 10px; width: 24px; height: 24px; background: #10b981; border-radius: 50%; display: none; align-items: center; justify-content: center;"><i class="fas fa-check" style="color: #fff; font-size: 12px;"></i></div>
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                            <style>
+                                .preset-card.selected {
+                                    border-color: #10b981 !important;
+                                    box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+                                    transform: scale(1.02);
+                                }
+                                .preset-card.selected .preset-check {
+                                    display: flex !important;
+                                }
+                                
+                                /* Theme Compatibility Styles */
+                                .theme-dependent-card.unsupported {
+                                    pointer-events: none;
+                                }
+                                .theme-dependent-card.unsupported .card-body {
+                                    filter: blur(2px);
+                                    opacity: 0.4;
+                                }
+                                .theme-unsupported-overlay {
+                                    position: absolute;
+                                    top: 0;
+                                    left: 0;
+                                    right: 0;
+                                    bottom: 0;
+                                    background: rgba(0, 0, 0, 0.6);
+                                    display: flex;
+                                    flex-direction: column;
+                                    align-items: center;
+                                    justify-content: center;
+                                    z-index: 10;
+                                    border-radius: 12px;
+                                    gap: 10px;
+                                    color: rgba(255, 255, 255, 0.8);
+                                    font-size: 0.95rem;
+                                    text-align: center;
+                                    padding: 20px;
+                                }
+                                .theme-unsupported-overlay i {
+                                    font-size: 2rem;
+                                    color: var(--primary);
+                                }
+                            </style>
+
+                            <script>
+                                function applyTheme(card, primary, secondary, bg, text, heading, body, circle, nameSize, greetingSize, sectionSize) {
+                                    // Remove selected state from all cards
+                                    document.querySelectorAll('.preset-card').forEach(c => c.classList.remove('selected'));
+                                    
+                                    // Add selected state to clicked card
+                                    card.classList.add('selected');
+                                    
+                                    // Update color inputs
+                                    const colorFields = [
+                                        ['primary_color', primary],
+                                        ['secondary_color', secondary],
+                                        ['background_color', bg],
+                                        ['text_color', text],
+                                        ['circle_color', circle]
+                                    ];
+                                    
+                                    colorFields.forEach(([name, value]) => {
+                                        const colorInput = document.querySelector(`input[name="${name}"]`);
+                                        if (colorInput) {
+                                            colorInput.value = value;
+                                            if (colorInput.nextElementSibling && colorInput.nextElementSibling.type === 'text') {
+                                                colorInput.nextElementSibling.value = value;
+                                            }
+                                        }
+                                    });
+
+                                    // Update Font Selects
+                                    const hFont = document.querySelector('select[name="heading_font"]');
+                                    const bFont = document.querySelector('select[name="body_font"]');
+                                    
+                                    if(hFont && heading) {
+                                        hFont.value = heading;
+                                        hFont.dispatchEvent(new Event('change'));
+                                    }
+                                    if(bFont && body) {
+                                        bFont.value = body;
+                                        bFont.dispatchEvent(new Event('change'));
+                                    }
+                                    
+                                    // Update Font Size Sliders
+                                    const nameSizeSlider = document.getElementById('nameSizeSlider');
+                                    const greetingSizeSlider = document.getElementById('greetingSizeSlider');
+                                    const sectionSizeSlider = document.getElementById('sectionHeadingSizeSlider');
+                                    
+                                    if (nameSizeSlider && nameSize) {
+                                        nameSizeSlider.value = nameSize;
+                                        const nameSizeValue = document.getElementById('nameSizeValue');
+                                        if (nameSizeValue) nameSizeValue.textContent = nameSize;
+                                    }
+                                    
+                                    if (greetingSizeSlider && greetingSize) {
+                                        greetingSizeSlider.value = greetingSize;
+                                        const greetingSizeValue = document.getElementById('greetingSizeValue');
+                                        if (greetingSizeValue) greetingSizeValue.textContent = greetingSize;
+                                    }
+                                    
+                                    if (sectionSizeSlider && sectionSize) {
+                                        sectionSizeSlider.value = sectionSize;
+                                        const sectionSizeValue = document.getElementById('sectionHeadingSizeValue');
+                                        if (sectionSizeValue) sectionSizeValue.textContent = sectionSize;
+                                    }
+                                    
+                                    // Update preview if available
+                                    if (typeof updatePreview === 'function') {
+                                        updatePreview();
+                                    }
+                                }
+                            </script>
+                        </div>
+                        <!-- Unsupported Theme Overlay -->
+                        <div class="theme-unsupported-overlay" style="display: none;">
+                            <i class="fas fa-info-circle"></i>
+                            <span>This theme has fixed styling</span>
+                        </div>
+                    </div>
+
+             <script>
+                // Color Picker Synchronization
+                document.querySelectorAll('.color-picker-wrapper').forEach(wrapper => {
+                    const colorInput = wrapper.querySelector('input[type="color"]');
+                    const textInput = wrapper.querySelector('input[type="text"]');
+                    
+                    if(colorInput && textInput) {
+                        // Update text when color changes
+                        colorInput.addEventListener('input', (e) => {
+                            textInput.value = e.target.value;
+                        });
+                        
+                        // Update color when text changes (if valid hex)
+                        textInput.addEventListener('input', (e) => {
+                            const val = e.target.value;
+                            if(/^#[0-9A-F]{6}$/i.test(val)) {
+                                colorInput.value = val;
+                            }
+                        });
+                    }
+                });
+
+                // Font Preview Update for Select Box itself
+                const headingSelect = document.querySelector('select[name="heading_font"]');
+                const bodySelect = document.querySelector('select[name="body_font"]');
+                
+                function updateFontPreview(select) {
+                    if(select) {
+                        select.style.fontFamily = `"${select.value}", sans-serif`;
+                    }
+                }
+                
+                if(headingSelect) {
+                    headingSelect.addEventListener('change', () => updateFontPreview(headingSelect));
+                    updateFontPreview(headingSelect);
+                }
+                
+                // Typography Size Preview
+                function updatePreview() {
+                    const nameSize = document.getElementById('nameSizeSlider').value;
+                    const greetingSize = document.getElementById('greetingSizeSlider').value;
+                    
+                    document.getElementById('nameSizeValue').textContent = nameSize;
+                    document.getElementById('greetingSizeValue').textContent = greetingSize;
+                    
+                    document.getElementById('previewName').style.fontSize = nameSize + 'rem';
+                    document.getElementById('previewGreeting').style.fontSize = greetingSize + 'rem';
+                }
+                
+                // Initialize preview
+                updatePreview();
+                
+                if(bodySelect) {
+                    bodySelect.addEventListener('change', () => updateFontPreview(bodySelect));
+                    updateFontPreview(bodySelect);
+                }
+            </script>
+                    <!-- Saved Themes moved below main form to fix nested form issues -->
+
+                    <!-- Theme Gallery -->
+                    <div class="card" style="margin-top: 30px;">
+                        <div class="card-header">
+                            <h3><i class="fas fa-palette"></i> Theme Gallery <i class="fas fa-info info-icon" data-desc="Choose a complete visual theme for your portfolio. Each theme has a unique layout and interaction style." data-example="Terminal X, Glass Horizon"></i></h3>
+                        </div>
+                        <div class="card-body">
+                            <p style="color: rgba(255,255,255,0.6); margin-bottom: 20px;">Select a theme to completely transform your portfolio's look and feel:</p>
+                            
+                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
+                                {% for value, label in theme_choices %}
+                                <label class="theme-card" style="
+                                    background: {% if value == 'classic' %}linear-gradient(135deg, #1a1a2e 0%, #16213e 100%){% elif value == 'developer_folio' %}linear-gradient(135deg, #0f0f23 0%, #1a1a3e 100%){% elif value == 'irish_spring' %}linear-gradient(135deg, #f0f9f0 0%, #2CD889 100%){% elif value == 'neural_odyssey' %}linear-gradient(135deg, #050510 0%, #1a0a2e 100%){% elif value == 'chrono_story' %}linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%){% elif value == 'glass_horizon' %}linear-gradient(135deg, #1e1b4b 0%, #312e81 100%){% elif value == 'cinematic_flow' %}linear-gradient(135deg, #000000 0%, #0a0a0a 100%){% elif value == 'interactive_3d' %}linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%){% endif %};
+                                    border: 2px solid {% if settings.active_theme == value %}var(--primary){% else %}rgba(255,255,255,0.1){% endif %};
+                                    border-radius: 16px;
+                                    padding: 20px;
+                                    cursor: pointer;
+                                    transition: all 0.3s ease;
+                                    display: flex;
+                                    flex-direction: column;
+                                    min-height: 160px;
+                                    position: relative;
+                                    {% if settings.active_theme == value %}box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);{% endif %}
+                                ">
+                                    <input type="radio" name="active_theme" value="{{ value }}" 
+                                           {% if settings.active_theme == value %}checked{% endif %}
+                                           style="position: absolute; opacity: 0; pointer-events: none;">
+                                    
+                                    <!-- Theme Icon -->
+                                    <div style="font-size: 2rem; margin-bottom: 15px;">
+                                        {% if value == 'classic' %}🎨{% elif value == 'developer_folio' %}💻{% elif value == 'irish_spring' %}🍀{% elif value == 'neural_odyssey' %}🌌{% elif value == 'chrono_story' %}📖{% elif value == 'glass_horizon' %}🔮{% elif value == 'cinematic_flow' %}🎬{% elif value == 'interactive_3d' %}💠{% endif %}
+                                    </div>
+                                    
+                                    <!-- Theme Name -->
+                                    <h4 style="margin: 0 0 8px 0; font-size: 1.1rem; font-weight: 700; color: {% if value == 'irish_spring' %}#1a1a2e{% else %}#fff{% endif %};">{{ label }}</h4>
+                                    
+                                    <!-- Theme Description -->
+                                    <p style="font-size: 0.8rem; color: {% if value == 'irish_spring' %}rgba(26,26,46,0.7){% else %}rgba(255,255,255,0.5){% endif %}; margin: 0; flex-grow: 1;">
+                                        {% if value == 'classic' %}Original portfolio style{% elif value == 'developer_folio' %}Matrix-style code theme{% elif value == 'irish_spring' %}Fresh mint & playful design{% elif value == 'neural_odyssey' %}3D parallax space{% elif value == 'chrono_story' %}Interactive storytelling{% elif value == 'glass_horizon' %}Glassmorphism design{% elif value == 'cinematic_flow' %}Scroll-driven cinema{% elif value == 'interactive_3d' %}Interactive 3D backgrounds{% endif %}
+                                    </p>
+                                    
+                                    <!-- Active Badge -->
+                                    <div class="active-badge" style="
+                                        position: absolute; 
+                                        top: 10px; 
+                                        right: 10px; 
+                                        background: var(--primary); 
+                                        color: #fff; 
+                                        font-size: 0.7rem; 
+                                        padding: 3px 8px; 
+                                        border-radius: 10px; 
+                                        font-weight: 600;
+                                        display: {% if settings.active_theme == value %}block{% else %}none{% endif %};
+                                    ">
+                                        ACTIVE
+                                    </div>
+                                    
+                                    <!-- Coming Soon Badge (only for unimplemented themes) -->
+                                    {% if value != 'classic' and value != 'interactive_3d' and value != 'developer_folio' and value != 'irish_spring' %}
+                                    <div style="position: absolute; bottom: 10px; right: 10px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); font-size: 0.65rem; padding: 2px 6px; border-radius: 8px;">
+                                        COMING SOON
+                                    </div>
+                                    {% endif %}
+                                </label>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Interactive 3D Configuration Card -->
+                            <div id="interactive-3d-config" style="display: none; margin-top: 30px; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; background: rgba(0,0,0,0.3); padding: 20px;">
+                                <h4 style="margin-top: 0; display: flex; align-items: center; gap: 10px;">
+                                    <i class="fas fa-cube" style="color: var(--primary);"></i> 
+                                    Interactive 3D Settings
+                                </h4>
+                                <p style="font-size: 0.9em; color: rgba(255,255,255,0.6);">Configure the Vanta.js interactive background effect.</p>
+                                
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                                    <div class="form-group">
+                                        <label for="vanta_effect_type">Effect Type</label>
+                                        <select id="vanta_effect_type" name="vanta_effect_type" class="form-control" style="background: rgba(0,0,0,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.1);">
+                                            <option value="waves" {% if settings.theme_config.effect_type == 'waves' %}selected{% endif %}>Waves (Ocean)</option>
+                                            <option value="birds" {% if settings.theme_config.effect_type == 'birds' %}selected{% endif %}>Birds (Flocking)</option>
+                                            <option value="fog" {% if settings.theme_config.effect_type == 'fog' %}selected{% endif %}>Fog (Atmospheric)</option>
+                                            <option value="globe" {% if settings.theme_config.effect_type == 'globe' %}selected{% endif %}>Globe (Earth)</option>
+                                            <option value="clouds" {% if settings.theme_config.effect_type == 'clouds' %}selected{% endif %}>Clouds (Sky)</option>
+                                            <option value="halo" {% if settings.theme_config.effect_type == 'halo' %}selected{% endif %}>Halo (Cosmic Rings)</option>
+                                            <option value="cells" {% if settings.theme_config.effect_type == 'cells' %}selected{% endif %}>Cells (Organic)</option>
+                                            <option value="dots" {% if settings.theme_config.effect_type == 'dots' %}selected{% endif %}>Dots (Parallax)</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="vanta_color">Effect Color</label>
+                                        <div style="display: flex; gap: 10px;">
+                                            <input type="color" id="vanta_color" name="vanta_color" value="{{ settings.theme_config.color|default:'#6366f1' }}" style="height: 38px; width: 50px; padding: 0; border: none;">
+                                            <input type="text" id="vanta_color_text" value="{{ settings.theme_config.color|default:'#6366f1' }}" class="form-control" style="flex: 1; background: rgba(0,0,0,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.1);">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="vanta_bg_color">Background Color</label>
+                                        <div style="display: flex; gap: 10px;">
+                                            <input type="color" id="vanta_bg_color" name="vanta_bg_color" value="{{ settings.theme_config.background_color|default:'#0a0a0a' }}" style="height: 38px; width: 50px; padding: 0; border: none;">
+                                            <input type="text" id="vanta_bg_color_text" value="{{ settings.theme_config.background_color|default:'#0a0a0a' }}" class="form-control" style="flex: 1; background: rgba(0,0,0,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.1);">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="vanta_intensity">Intensity / Scale (0.5 - 2.0)</label>
+                                        <input type="range" id="vanta_intensity" name="vanta_intensity" min="0.5" max="2.0" step="0.1" value="{{ settings.theme_config.intensity|default:'1.0' }}" style="width: 100%;">
+                                        <div style="display: flex; justify-content: space-between; font-size: 0.8em; opacity: 0.6;">
+                                            <span>Low</span>
+                                            <span id="vanta_intensity_val">{{ settings.theme_config.intensity|default:'1.0' }}</span>
+                                            <span>High</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="vanta_speed">Animation Speed (0.1 - 2.0)</label>
+                                        <input type="range" id="vanta_speed" name="vanta_speed" min="0.1" max="2.0" step="0.1" value="{{ settings.theme_config.speed|default:'1.0' }}" style="width: 100%;">
+                                        <div style="display: flex; justify-content: space-between; font-size: 0.8em; opacity: 0.6;">
+                                            <span>Slow</span>
+                                            <span id="vanta_speed_val">{{ settings.theme_config.speed|default:'1.0' }}</span>
+                                            <span>Fast</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="vanta_opacity">Background Opacity (0.1 - 1.0)</label>
+                                        <input type="range" id="vanta_opacity" name="vanta_opacity" min="0.1" max="1.0" step="0.1" value="{{ settings.theme_config.opacity|default:'1.0' }}" style="width: 100%;">
+                                        <div style="display: flex; justify-content: space-between; font-size: 0.8em; opacity: 0.6;">
+                                            <span>Transparent</span>
+                                            <span id="vanta_opacity_val">{{ settings.theme_config.opacity|default:'1.0' }}</span>
+                                            <span>Opaque</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="glass_opacity">Card Frost Opacity (0.1 - 0.9)</label>
+                                        <input type="range" id="glass_opacity" name="glass_opacity" min="0.1" max="0.9" step="0.1" value="{{ settings.theme_config.glass_opacity|default:'0.1' }}" style="width: 100%;">
+                                        <div style="display: flex; justify-content: space-between; font-size: 0.8em; opacity: 0.6;">
+                                            <span>Clear</span>
+                                            <span id="glass_opacity_val">{{ settings.theme_config.glass_opacity|default:'0.1' }}</span>
+                                            <span>Frosted</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div style="margin-top: 15px;">
+                                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                                        <input type="checkbox" name="vanta_mouse_controls" value="true" {% if settings.theme_config.mouse_controls != False %}checked{% endif %}>
+                                        <span>Enable Mouse/Touch Interaction</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <script>
+                                (function() {
+                                    const themeInputs = document.querySelectorAll('input[name="active_theme"]');
+                                    const configCard = document.getElementById('interactive-3d-config');
+                                    const themeCards = document.querySelectorAll('.theme-card');
+                                    
+                                    // Themes that support Background Styles and Quick Presets
+                                    const themesWithBgStyles = ['classic', 'developer_folio'];
+                                    
+                                    // Themes with completely fixed styling (no customization)
+                                    const themesWithFixedStyling = ['irish_spring'];
+                                    
+                                    function checkTheme() {
+                                        const selected = document.querySelector('input[name="active_theme"]:checked');
+                                        const selectedTheme = selected ? selected.value : '';
+                                        
+                                        // Update Configuration Visibility for Interactive 3D
+                                        if (selected && selected.value === 'interactive_3d') {
+                                            configCard.style.display = 'block';
+                                        } else {
+                                            configCard.style.display = 'none';
+                                        }
+                                        
+                                        // Check if theme has fixed styling (no customization allowed)
+                                        const hasFixedStyling = themesWithFixedStyling.includes(selectedTheme);
+                                        
+                                        // Helper function to show/hide cards
+                                        function toggleCardDisabled(cardId, disabled) {
+                                            const card = document.getElementById(cardId);
+                                            if (card) {
+                                                const overlay = card.querySelector('.theme-unsupported-overlay');
+                                                if (disabled) {
+                                                    card.classList.add('unsupported');
+                                                    if (overlay) overlay.style.display = 'flex';
+                                                } else {
+                                                    card.classList.remove('unsupported');
+                                                    if (overlay) overlay.style.display = 'none';
+                                                }
+                                            }
+                                        }
+                                        
+                                        // For Irish Spring: disable ALL customization cards
+                                        if (hasFixedStyling) {
+                                            toggleCardDisabled('theme-colors-card', true);
+                                            toggleCardDisabled('typography-card', true);
+                                            toggleCardDisabled('visual-effects-card', true);
+                                            toggleCardDisabled('quick-presets-card', true);
+                                        } else {
+                                            // Enable colors and typography for all other themes
+                                            toggleCardDisabled('theme-colors-card', false);
+                                            toggleCardDisabled('typography-card', false);
+                                            
+                                            // Visual Effects and Quick Presets depend on theme support
+                                            const supportsStyles = themesWithBgStyles.includes(selectedTheme);
+                                            toggleCardDisabled('visual-effects-card', !supportsStyles);
+                                            toggleCardDisabled('quick-presets-card', false); // Presets work for most themes
+                                        }
+                                        
+                                        // Update Visuals (Border, Shadow, Badge) for Theme Gallery cards
+                                        themeCards.forEach(card => {
+                                            const input = card.querySelector('input[name="active_theme"]');
+                                            const badge = card.querySelector('.active-badge');
+                                            
+                                            if (input && input.checked) {
+                                                // Active State
+                                                card.style.borderColor = 'var(--primary)';
+                                                card.style.boxShadow = '0 0 20px rgba(99, 102, 241, 0.3)';
+                                                if (badge) badge.style.display = 'block';
+                                            } else {
+                                                // Inactive State
+                                                card.style.borderColor = 'rgba(255,255,255,0.1)';
+                                                card.style.boxShadow = 'none';
+                                                if (badge) badge.style.display = 'none';
+                                            }
+                                        });
+                                    }
+                                    
+                                    themeInputs.forEach(input => {
+                                        input.addEventListener('change', checkTheme);
+                                    });
+                                    
+                                    // Sync color inputs
+                                    const syncColor = (colorInput, textInput) => {
+                                        if(!colorInput || !textInput) return;
+                                        colorInput.addEventListener('input', (e) => textInput.value = e.target.value);
+                                        textInput.addEventListener('input', (e) => colorInput.value = e.target.value);
+                                    };
+                                    
+                                    syncColor(document.getElementById('vanta_color'), document.getElementById('vanta_color_text'));
+                                    syncColor(document.getElementById('vanta_bg_color'), document.getElementById('vanta_bg_color_text'));
+                                    
+                                    // Sync sliders
+                                    const syncSlider = (id, displayId) => {
+                                        const el = document.getElementById(id);
+                                        const display = document.getElementById(displayId);
+                                        if(el && display) {
+                                            el.addEventListener('input', (e) => display.textContent = e.target.value);
+                                        }
+                                    };
+
+                                    syncSlider('vanta_intensity', 'vanta_intensity_val');
+                                    syncSlider('vanta_speed', 'vanta_speed_val');
+                                    syncSlider('vanta_opacity', 'vanta_opacity_val');
+                                    syncSlider('glass_opacity', 'glass_opacity_val');
+                                    
+                                    // Check initially
+                                    checkTheme();
+                                })();
+                            </script>
+                            </div>
+                        </div>
+
+                    <!-- Terminal X Specific Settings (Condensed) -->
+                    <div id="terminal-settings-card" class="card" style="margin-top: 30px; display: none; border-color: var(--primary);">
+                        <div class="card-header" style="background: rgba(0, 255, 0, 0.05); border-bottom-color: var(--primary);">
+                            <h3 style="color: var(--primary);"><i class="fas fa-terminal"></i> Terminal X Configuration</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Prompt User <i class="fas fa-info info-icon" data-desc="The username displayed in the prompt (e.g. user@portfolio:~$)" data-example="guest"></i></label>
+                                    <input type="text" name="terminal_prompt_user" value="{{ settings.theme_config.prompt_user|default:'guest' }}" class="form-control" style="font-family: monospace;">
+                                </div>
+                                <div class="form-group">
+                                    <label>Boot Speed (ms) <i class="fas fa-info info-icon" data-desc="Time per line during boot sequence. Lower is faster." data-example="50"></i></label>
+                                    <input type="number" name="terminal_boot_speed" value="{{ settings.theme_config.boot_speed|default:'100' }}" class="form-control">
+                                </div>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 15px; background: rgba(255,255,255,0.02); border-radius: 8px;">
+                                    <input type="checkbox" name="terminal_enable_scanlines" {% if settings.theme_config.enable_scanlines %}checked{% endif %} style="width: 20px; height: 20px; accent-color: var(--primary);">
+                                    <span>Enable CRT Scanlines</span>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 15px; background: rgba(255,255,255,0.02); border-radius: 8px;">
+                                    <input type="checkbox" name="terminal_enable_sound" {% if settings.theme_config.enable_sound %}checked{% endif %} style="width: 20px; height: 20px; accent-color: var(--primary);">
+                                    <span>Enable Sound Effects</span>
+                                </label>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Custom ASCII Logo <i class="fas fa-info info-icon" data-desc="ASCII art displayed at the top of the 'whoami' command. Keep it generic if empty." data-example="..."></i></label>
+                                <textarea name="terminal_ascii_logo" class="form-control" style="font-family: monospace; min-height: 150px; white-space: pre;">{{ settings.theme_config.ascii_logo|default:'' }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const themeInputs = document.querySelectorAll('input[name="active_theme"]');
+                            const terminalSettings = document.getElementById('terminal-settings-card');
+                            
+                            function updateVisibility() {
+                                const active = document.querySelector('input[name="active_theme"]:checked');
+                                if(active && active.value === 'terminal_x') {
+                                    terminalSettings.style.display = 'block';
+                                } else {
+                                    terminalSettings.style.display = 'none';
+                                }
+                            }
+                            
+                            themeInputs.forEach(input => {
+                                input.addEventListener('change', updateVisibility);
+                            });
+                            
+                            updateVisibility(); // Initial check
+                        });
+                    </script>
+
+                    <style>
+                        .btn-save-appearance {
+                            padding: 15px 50px;
+                            font-size: 1.1rem;
+                            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+                            border-radius: 30px;
+                            letter-spacing: 0.5px;
+                            font-weight: 600;
+                            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                            border: none;
+                            position: relative;
+                            overflow: hidden;
+                            min-width: 250px;
+                        }
+
+                        .btn-save-appearance:hover {
+                            transform: translateY(-2px);
+                            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.6);
+                            filter: brightness(1.1);
+                        }
+
+                        .btn-save-appearance:active {
+                            transform: translateY(1px);
+                            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
+                        }
+
+                        /* Mobile Responsiveness */
+                        @media (max-width: 768px) {
+                            .btn-save-appearance {
+                                width: 100%;
+                                padding: 15px 20px;
+                                min-width: unset;
+                            }
+                        }
+                    </style>
+                    <div style="text-align: center; margin-top: 40px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 30px;">
+                        <button type="submit" class="btn btn-primary btn-save-appearance">
+                            <i class="fas fa-save"></i> Save Appearance
+                        </button>
+                    </div>
+                </form>
+
+            </section>
+
+            <!-- Other sections rendered simply as placeholders for brevity in this rewrite, 
+                 but logic would repeat for Education, Skills etc with the new classes -->
+            
+            <!-- Example: Projects Section -->
+            <section id="section-projects" style="display: {% if request.GET.section == 'projects' %}block{% else %}none{% endif %};">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-project-diagram"></i> Project Portfolio</h3>
+                        <button onclick="openModal('addProjectModal')" class="btn btn-sm btn-primary"><i class="fas fa-plus"></i> Add New</button>
+                    </div>
+                    <div class="card-body">
+                         {% for project in projects %}
+                         <div class="list-item">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                 {% if project.icon %}
+                                    <img src="{{ project.icon.url }}" alt="icon" style="width: 30px; height: 30px; object-fit: cover; border-radius: 4px;">
+                                 {% endif %}
+                                 <div>
+                                     <strong>{{ project.title }}</strong>
+                                     <div style="font-size: 0.9rem; color: rgba(255,255,255,0.5);">{{ project.category }}</div>
+                                 </div>
+                             </div>
+                             <div style="display: flex; gap: 10px;">
+                                 <button onclick="openEditProject('{{ project.id }}', '{{ project.title|escapejs }}', '{{ project.category|escapejs }}', '{{ project.client|escapejs }}', '{{ project.project_link|escapejs }}', '{{ project.repo_link|escapejs }}', '{{ project.description|escapejs }}')" class="btn btn-sm btn-primary">Edit</button>
+                                 <button onclick="confirmDelete('{% url 'delete_project' project.id %}', '{{ project.title|escapejs }}')" class="btn btn-sm btn-danger">Delete</button>
+                             </div>
+                         </div>
+                         {% endfor %}
+                    </div>
+                </div>
+            </section>
+            
+            <!-- (Logic for Skills, Experience, Education would follow same pattern) -->
+            <!-- Placeholder for Skills -->
+            <section id="section-skills" style="display: {% if request.GET.section == 'skills' %}block{% else %}none{% endif %};">
+                 <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-shapes"></i> Technical Skills</h3>
+                        <button onclick="openModal('addSkillModal')" class="btn btn-sm btn-primary"><i class="fas fa-plus"></i> Add New</button>
+                    </div>
+                    <div class="card-body">
+                        {% for skill in skills %}
+                        <div class="list-item">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                {% if skill.icon %}
+                                    <img src="{{ skill.icon.url }}" alt="icon" style="width: 24px; height: 24px; object-fit: contain;">
+                                {% endif %}
+                                <strong>{{ skill.name }}</strong>
+                            </div>
+                             <div style="display: flex; gap: 10px;">
+                                <button onclick="openEditSkill('{{ skill.id }}', '{{ skill.name|escapejs }}', '{{ skill.category|escapejs }}', '{{ skill.description|escapejs }}')" class="btn btn-sm btn-primary">Edit</button>
+                                <button onclick="confirmDelete('{% url 'delete_skill' skill.id %}', '{{ skill.name|escapejs }}')" class="btn btn-sm btn-danger">Delete</button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                 </div>
+            </section>
+             <!-- Placeholder for Education -->
+             <section id="section-education" style="display: {% if request.GET.section == 'education' %}block{% else %}none{% endif %};">
+                 <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-graduation-cap"></i> Education</h3>
+                        <button onclick="openModal('addEducationModal')" class="btn btn-sm btn-primary"><i class="fas fa-plus"></i> Add New</button>
+                    </div>
+                    <div class="card-body">
+                        {% for edu in education_list %}
+                        <div class="list-item">
+                            <div>
+                                <strong>{{ edu.degree }}</strong>
+                                <div style="font-size: 0.9rem; color: rgba(255,255,255,0.5);">{{ edu.institution }}</div>
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <button onclick="openEditEducation('{{ edu.id }}', '{{ edu.degree|escapejs }}', '{{ edu.institution|escapejs }}', '{{ edu.timeframe|escapejs }}', '{{ edu.description|escapejs }}')" class="btn btn-sm btn-primary">Edit</button>
+                                <button onclick="confirmDelete('{% url 'delete_education' edu.id %}', '{{ edu.degree|escapejs }}')" class="btn btn-sm btn-danger">Delete</button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                 </div>
+            </section>
+            
+            <!-- Placeholder for Social -->
+             <section id="section-social" style="display: {% if request.GET.section == 'social' %}block{% else %}none{% endif %};">
+                 
+                 <!-- Contact Info Card -->
+                 <div class="card" style="margin-bottom: 30px;">
+                    <div class="card-header">
+                        <h3><i class="fas fa-address-card"></i> Contact Information</h3>
+                    </div>
+                    <div class="card-body">
+                        <form action="{% url 'update_contact' %}" method="POST">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label>Contact Heading / Message <i class="fas fa-info info-icon" data-desc="The text displayed above your contact details." data-example="Feel free to reach out!"></i></label>
+                                <textarea name="contact_heading" class="form-control" style="min-height: 100px;">{{ contact.contact_heading }}</textarea>
+                                <small style="color: rgba(255,255,255,0.5);">This text appears above the contact details on your site.</small>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Email Address <i class="fas fa-info info-icon" data-desc="Your primary contact email displayed on the site." data-example="me@example.com"></i></label>
+                                    <input type="email" name="email" value="{{ contact.email }}" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>Phone Number <i class="fas fa-info info-icon" data-desc="Your contact phone number (optional)." data-example="+1 234 567 890"></i></label>
+                                    <input type="text" name="phone" value="{{ contact.phone }}" class="form-control">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Contact Info</button>
+                        </form>
+                    </div>
+                 </div>
+
+                 <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-share-nodes"></i> Social Links <i class="fas fa-info info-icon" data-desc="Add your social media profile URLs. Click Edit to add your profile link for each platform. Leave empty links will be hidden on your portfolio." data-example="https://linkedin.com/in/yourprofile"></i></h3>
+                        <button onclick="openModal('addSocialModal')" class="btn btn-sm btn-primary"><i class="fas fa-plus"></i> Add New</button>
+                    </div>
+                     <div class="card-body">
+                        {% for link in social_links %}
+                        <div class="list-item">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <i class="{{ link.icon_class }}" style="font-size: 1.2rem;"></i>
+                                <strong>{{ link.platform }}</strong>
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <button onclick="openEditSocial('{{ link.id }}', '{{ link.platform|escapejs }}', '{{ link.url|escapejs }}')" class="btn btn-sm btn-primary">Edit</button>
+                                <button onclick="confirmDelete('{% url 'delete_social_link' link.id %}', '{{ link.platform|escapejs }}')" class="btn btn-sm btn-danger">Delete</button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                 </div>
+            </section>
+            
+             <!-- Placeholder for Expertise -->
+            <section id="section-expertise" style="display: {% if request.GET.section == 'expertise' %}block{% else %}none{% endif %};">
+                  <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-code"></i> Main Expertise</h3>
+                         <button onclick="openModal('addExpertiseModal')" class="btn btn-sm btn-primary"><i class="fas fa-plus"></i> Add New</button>
+                    </div>
+                    <div class="card-body">
+                        {% for exp in expertise_list %}
+                        <div class="list-item">
+                            <strong>{{ exp.name }}</strong>
+                             <div style="display: flex; gap: 10px;">
+                                <button onclick="openEditExpertise('{{ exp.id }}', '{{ exp.name|escapejs }}')" class="btn btn-sm btn-primary">Edit</button>
+                                <button onclick="confirmDelete('{% url 'delete_expertise' exp.id %}', '{{ exp.name|escapejs }}')" class="btn btn-sm btn-danger">Delete</button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                  </div>
+            </section>
+            
+             <!-- Experience Section (Restored) -->
+            <section id="section-experience" style="display: {% if request.GET.section == 'experience' %}block{% else %}none{% endif %};">
+                  <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-briefcase"></i> Work Experience</h3>
+                         <button onclick="openModal('addExperienceModal')" class="btn btn-sm btn-primary"><i class="fas fa-plus"></i> Add New</button>
+                    </div>
+                    <div class="card-body">
+                        {% for job in experiences %}
+                        <div class="list-item">
+                             <div>
+                                <strong>{{ job.position }}</strong>
+                                <div style="font-size: 0.9rem; color: rgba(255,255,255,0.5);">{{ job.company }}</div>
+                            </div>
+                             <div style="display: flex; gap: 10px;">
+                                <button onclick="openEditExperience('{{ job.id }}', '{{ job.position|escapejs }}', '{{ job.company|escapejs }}', '{{ job.timeframe|escapejs }}', '{{ job.description|escapejs }}')" class="btn btn-sm btn-primary">Edit</button>
+                                <button onclick="confirmDelete('{% url 'delete_experience' job.id %}', '{{ job.position|escapejs }}')" class="btn btn-sm btn-danger">Delete</button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                  </div>
+            </section>
+
+            <!-- Manage Sections -->
+            <section id="section-manage-sections" style="display: {% if request.GET.section == 'manage-sections' %}block{% else %}none{% endif %};">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-layer-group"></i> Manage Custom Sections</h3>
+                        <div style="display: flex; gap: 10px;">
+                            <button id="saveOrderBtn" class="btn btn-primary" onclick="saveOrder()" style="display: none; background: #10b981;">
+                                <i class="fas fa-save"></i> Save Order
+                            </button>
+                            <button class="btn btn-primary" onclick="openModal('addNewSectionModal')">
+                                <i class="fas fa-plus"></i> Add New Section
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- Static Sections Visibility -->
+                        <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <h4 style="margin-bottom: 15px; font-size: 1rem; color: rgba(255,255,255,0.7);">Fixed Sections</h4>
+                            <div style="display: flex; gap: 20px;">
+                                <div class="list-item" style="flex: 1; justify-content: space-between;">
+                                    <strong>Intro Section</strong>
+                                    <label class="switch">
+                                        <input type="checkbox" onchange="toggleVisibility('show_intro_section', 'setting')" {% if settings.show_intro_section %}checked{% endif %}>
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>
+                                <div class="list-item" style="flex: 1; justify-content: space-between;">
+                                    <strong>Contact Section</strong>
+                                    <label class="switch">
+                                        <input type="checkbox" onchange="toggleVisibility('show_contact_section', 'setting')" {% if settings.show_contact_section %}checked{% endif %}>
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h4 style="margin-bottom: 15px; font-size: 1rem; color: rgba(255,255,255,0.7);">Reorderable Sections</h4>
+
+                        {% if main_page_sections %}
+                        <div class="list-container" id="sortable-sections">
+                            {% for section in main_page_sections %}
+                            <div class="list-item" data-id="{{ section.id }}" style="cursor: move;">
+                                <div style="display: flex; align-items: center; gap: 15px;">
+                                    <div style="width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                                        <i class="{{ section.icon }}"></i>
+                                    </div>
+                                    <div>
+                                        <strong>{{ section.title }}</strong>
+                                        <div style="font-size: 0.9rem; opacity: 0.6;">
+                                            Slug: {{ section.slug }} 
+                                            {% if section.is_system %}<span style="background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-left: 5px;">SYSTEM</span>{% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <i class="fas fa-grip-lines" style="opacity: 0.3; margin-right: 15px;"></i>
+                                    {% if not section.is_system %}
+                                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete('{% url 'delete_section' section.pk %}', '{{ section.title|escapejs }}')">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                    {% endif %}
+                                    
+                                    <!-- Visibility Toggle -->
+                                    <div style="margin-left: 10px; display: inline-block;">
+                                        <label class="switch" title="Toggle Visibility">
+                                            <input type="checkbox" onchange="toggleVisibility('{{ section.id }}', 'section')" {% if section.is_visible %}checked{% endif %}>
+                                            <span class="slider round"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div id="saveFeedback" style="display: none; text-align: center; margin-top: 10px; color: #10b981;">
+                            <i class="fas fa-check-circle"></i> Order Saved Successfully!
+                        </div>
+                        
+                        <script>
+                            let sortable;
+                            document.addEventListener('DOMContentLoaded', function() {
+                                const el = document.getElementById('sortable-sections');
+                                const saveBtn = document.getElementById('saveOrderBtn');
+                                
+                                sortable = new Sortable(el, {
+                                    animation: 150,
+                                    handle: '.list-item', // Drag handle
+                                    onEnd: function() {
+                                        // Show save button when order changes
+                                        saveBtn.style.display = 'inline-block';
+                                    }
+                                });
+                            });
+
+                            function saveOrder() {
+                                const order = sortable.toArray(); // Returns array of data-id
+                                const saveBtn = document.getElementById('saveOrderBtn');
+                                const feedback = document.getElementById('saveFeedback');
+                                
+                                saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                                
+                                fetch('{% url "update_section_order" %}', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRFToken': '{{ csrf_token }}'
+                                    },
+                                    body: JSON.stringify({ order: order })
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.status === 'success') {
+                                        saveBtn.style.display = 'none';
+                                        saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Order';
+                                        feedback.style.display = 'block';
+                                        setTimeout(() => {
+                                            feedback.style.display = 'none';
+                                            location.reload(); // Refresh to update sidebar
+                                        }, 1000);
+                                    } else {
+                                        alert('Error saving order: ' + data.message);
+                                        saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Order';
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    alert('An error occurred.');
+                                    saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Order';
+                                });
+                            }
+                        </script>
+                        {% else %}
+                        <div style="text-align: center; padding: 40px; opacity: 0.5;">
+                            <i class="fas fa-layer-group" style="font-size: 3rem; margin-bottom: 20px; display: block;"></i>
+                            No sections found.
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </section>
+
+            <!-- Dynamic Custom Sections Rendering -->
+            {% for section in custom_sections %}
+            <section id="section-{{ section.slug }}" style="display: {% if request.GET.section == section.slug %}block{% else %}none{% endif %};">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="{{ section.icon }}"></i> {{ section.title }}</h3>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-secondary" onclick="openEditSectionModal('{{ section.id }}', '{{ section.title|escapejs }}', '{{ section.icon|escapejs }}', '{{ section.card_layout|default:'grid' }}', {{ section.show_image|yesno:'true,false' }}, {{ section.show_link_button|yesno:'true,false' }}, '{{ section.button_text|default:'View Details'|escapejs }}', {{ section.is_system|yesno:'true,false' }})" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">
+                                <i class="fas fa-cog"></i> Settings
+                            </button>
+                            <button class="btn btn-primary" onclick="openModal('addItemModal-{{ section.id }}')">
+                                <i class="fas fa-plus"></i> Add Item
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        {% if section.items.all %}
+                        <div class="list-container">
+                            {% for item in section.items.all %}
+                            <div class="list-item">
+                                <div style="display: flex; align-items: center; gap: 15px;">
+                                    {% if item.icon %}
+                                    <img src="{{ item.icon.url }}" style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover;">
+                                    {% else %}
+                                    <div style="width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-star" style="opacity: 0.5;"></i>
+                                    </div>
+                                    {% endif %}
+                                    <div>
+                                        <strong>{{ item.title }}</strong>
+                                        <div style="font-size: 0.9rem; opacity: 0.6;">{{ item.subtitle }}</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm" type="button" onclick="openEditItemModal('{{ item.title|escapejs }}', '{{ item.subtitle|escapejs }}', '{{ item.link|escapejs }}', '{{ item.order }}', '{{ item.description|escapejs }}', '{% url 'update_custom_item' item.pk %}')" style="background: rgba(255,255,255,0.1); margin-right: 10px;">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete('{% url 'delete_custom_item' item.pk %}', '{{ item.title|escapejs }}')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div style="text-align: center; padding: 40px; opacity: 0.5;">
+                            No items in this section yet.
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Add Item Modal for this Section -->
+                <div id="addItemModal-{{ section.id }}" class="modal">
+                    <div class="modal-content">
+                        <button class="modal-close" onclick="closeModal('addItemModal-{{ section.id }}')">&times;</button>
+                        <h3>Add New Item to {{ section.title }}</h3>
+                        <form action="{% url 'add_custom_item' section.id %}" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label>Title</label>
+                                <input type="text" name="title" class="form-control" required placeholder="Project Name, Job Title, etc.">
+                            </div>
+                            <div class="form-group">
+                                <label>Subtitle / Client</label>
+                                <input type="text" name="subtitle" class="form-control" placeholder="Company, Date, or Subtitle">
+                            </div>
+                            <div class="form-group">
+                                <label>Link (Optional)</label>
+                                <input type="url" name="link" class="form-control" placeholder="https://...">
+                            </div>
+                            <div class="form-group">
+                                <label>Order</label>
+                                <input type="number" name="order" class="form-control" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea name="description" class="form-control" style="min-height: 100px;"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Icon / Image</label>
+                                <input type="file" name="icon" class="form-control">
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">Add Item</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+            {% endfor %}
+
+        </main>
+    </div>
+
+    <!-- Modals -->
+    
+    <!-- Add Project Modal -->
+    <div id="addProjectModal" class="modal">
+        <div class="modal-content">
+            <span onclick="closeModal('addProjectModal')" class="modal-close">&times;</span>
+            <h3 style="font-size: 2rem; margin-bottom: 30px;">Add New Project</h3>
+            <form action="{% url 'add_project' %}" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group"><label>Title <i class="fas fa-info info-icon" data-desc="The name of your project." data-example="Portfolio Website"></i></label><input type="text" name="title" class="form-control" required></div>
+                <div class="form-group"><label>Category <i class="fas fa-info info-icon" data-desc="The type of project it is." data-example="Web Design"></i></label><input type="text" name="category" class="form-control" placeholder="e.g. Web Design" required></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Client <i class="fas fa-info info-icon" data-desc="Who this project was for (optional)." data-example="Acme Corp"></i></label><input type="text" name="client" class="form-control"></div>
+                    <div class="form-group"><label>Date/Year <i class="fas fa-info info-icon" data-desc="When this project was completed." data-example="Jan 2024"></i></label><input type="text" name="project_date" class="form-control"></div>
+                </div>
+                <div class="form-group"><label>Project Link <i class="fas fa-info info-icon" data-desc="Live URL to view the project." data-example="https://mysite.com"></i></label><input type="url" name="project_link" class="form-control"></div>
+                <div class="form-group"><label>Repo Link <i class="fas fa-info info-icon" data-desc="Link to the source code (GitHub/GitLab)." data-example="https://github.com/..."></i></label><input type="url" name="repo_link" class="form-control"></div>
+                <div class="form-group"><label>Description <i class="fas fa-info info-icon" data-desc="A brief summary of what you built and the technologies used." data-example="Built with Django and React..."></i></label><textarea name="description" class="form-control" style="min-height: 100px;"></textarea></div>
+                <div class="form-group"><label>Image/Icon <i class="fas fa-info info-icon" data-desc="A representative image or logo for the project." data-example="project-thumbnail.jpg"></i></label><input type="file" name="icon" class="form-control"></div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Create Project</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Edit Project Modal -->
+    <div id="editProjectModal" class="modal">
+        <div class="modal-content">
+            <span onclick="closeModal('editProjectModal')" class="modal-close">&times;</span>
+            <h3>Edit Project</h3>
+            <form id="editProjectForm" action="" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group"><label>Title <i class="fas fa-info info-icon" data-desc="The name of your project." data-example="Portfolio Website"></i></label><input type="text" id="edit_project_title" name="title" class="form-control" required></div>
+                <div class="form-group"><label>Category <i class="fas fa-info info-icon" data-desc="The type of project it is." data-example="Web Design"></i></label><input type="text" id="edit_project_category" name="category" class="form-control" required></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Client <i class="fas fa-info info-icon" data-desc="Who this project was for (optional)." data-example="Acme Corp"></i></label><input type="text" id="edit_project_client" name="client" class="form-control"></div>
+                    <div class="form-group"><label>Date/Year <i class="fas fa-info info-icon" data-desc="When this project was completed." data-example="Jan 2024"></i></label><input type="text" name="project_date" class="form-control"></div>
+                </div>
+                <div class="form-group"><label>Project Link <i class="fas fa-info info-icon" data-desc="Live URL to view the project." data-example="https://mysite.com"></i></label><input type="url" id="edit_project_link" name="project_link" class="form-control"></div>
+                <div class="form-group"><label>Repo Link <i class="fas fa-info info-icon" data-desc="Link to the source code (GitHub/GitLab)." data-example="https://github.com/..."></i></label><input type="url" id="edit_repo_link" name="repo_link" class="form-control"></div>
+                <div class="form-group"><label>Description <i class="fas fa-info info-icon" data-desc="A brief summary of what you built and the technologies used." data-example="Built with Django and React..."></i></label><textarea id="edit_project_desc" name="description" class="form-control"></textarea></div>
+                <div class="form-group"><label>Change Image/Icon <i class="fas fa-info info-icon" data-desc="Upload a new image to replace the current one." data-example="project-thumbnail.jpg"></i></label><input type="file" name="icon" class="form-control"></div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Update Project</button>
+            </form>
+        </div>
+    </div>
+    
+     <!-- Add Skill Modal -->
+    <div id="addSkillModal" class="modal">
+        <div class="modal-content">
+            <span onclick="closeModal('addSkillModal')" class="modal-close">&times;</span>
+            <h3>Add New Skill</h3>
+            <form action="{% url 'add_skill' %}" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group"><label>Skill Name <i class="fas fa-info info-icon" data-desc="The name of the technology or skill." data-example="Python"></i></label><input type="text" name="name" class="form-control" required></div>
+                <div class="form-group"><label>Category <i class="fas fa-info info-icon" data-desc="Group for this skill." data-example="Backend"></i></label><input type="text" name="category" class="form-control" placeholder="e.g. Tech, Design" required></div>
+                <div class="form-group"><label>Bio/Description (Optional) <i class="fas fa-info info-icon" data-desc="A short comment or proficiency level." data-example="Advanced knowledge"></i></label><textarea name="description" class="form-control" placeholder="Short description for preview modal..."></textarea></div>
+                <div class="form-group"><label>Icon (Optional) <i class="fas fa-info info-icon" data-desc="A logo for this skill/tech stack." data-example="python-logo.png"></i></label><input type="file" name="icon" class="form-control"></div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Add Skill</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Skill Modal -->
+    <div id="editSkillModal" class="modal">
+        <div class="modal-content">
+            <span onclick="closeModal('editSkillModal')" class="modal-close">&times;</span>
+            <h3>Edit Skill</h3>
+            <form id="editSkillForm" action="" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group"><label>Skill Name <i class="fas fa-info info-icon" data-desc="The name of the technology or skill." data-example="Python"></i></label><input type="text" id="edit_skill_name" name="name" class="form-control" required></div>
+                <div class="form-group"><label>Category <i class="fas fa-info info-icon" data-desc="Group for this skill." data-example="Backend"></i></label><input type="text" id="edit_skill_category" name="category" class="form-control" required></div>
+                <div class="form-group"><label>Bio/Description <i class="fas fa-info info-icon" data-desc="A short comment or proficiency level." data-example="Advanced knowledge"></i></label><textarea id="edit_skill_desc" name="description" class="form-control"></textarea></div>
+                <div class="form-group"><label>Change Icon <i class="fas fa-info info-icon" data-desc="Upload a new logo to replace the current one." data-example="python-logo.png"></i></label><input type="file" name="icon" class="form-control"></div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Update Skill</button>
+            </form>
+        </div>
+    </div>
+    
+            <!-- Manage Sections -->
+
+
+            <!-- Add Section Modal with Icon Picker -->
+            <div id="addSectionModal" class="modal">
+                <div class="modal-content">
+                    <button class="modal-close" onclick="closeModal('addSectionModal')">&times;</button>
+                    <h3>Create New Section</h3>
+                    <form action="{% url 'add_section' %}" method="POST">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label>Section Title</label>
+                            <input type="text" name="title" class="form-control" required placeholder="e.g. Certifications, Volunteer Work, Awards">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Choose Icon</label>
+                            <input type="hidden" name="icon" id="selectedIcon" value="fas fa-layer-group">
+                            
+                            <div class="icon-grid" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-top: 10px;">
+                                {% for icon in icon_choices %}
+                                <div class="icon-option" onclick="selectIcon(this, '{{ icon }}')" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 8px; height: 50px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;">
+                                    <i class="{{ icon }}" style="font-size: 1.2rem; pointer-events: none;"></i>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <script>
+                                function selectIcon(el, iconClass) {
+                                    // Remove active class from all
+                                    document.querySelectorAll('.icon-option').forEach(opt => {
+                                        opt.style.background = 'rgba(255,255,255,0.05)';
+                                        opt.style.borderColor = 'var(--glass-border)';
+                                        opt.style.color = 'inherit';
+                                    });
+                                    // Set active
+                                    el.style.background = 'var(--primary)';
+                                    el.style.borderColor = 'var(--primary)';
+                                    el.style.color = '#fff';
+                                    // Update input
+                                    document.getElementById('selectedIcon').value = iconClass;
+                                }
+                            </script>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Create Section</button>
+                    </form>
+                </div>
+            </div>
+
+    <!-- Add Social Modal -->
+    <div id="addSocialModal" class="modal">
+        <div class="modal-content">
+            <span onclick="closeModal('addSocialModal')" class="modal-close">&times;</span>
+            <h3>Add New Social Link</h3>
+            <form action="{% url 'add_social_link' %}" method="POST">
+                {% csrf_token %}
+                <div class="form-group"><label>Platform <i class="fas fa-info info-icon" data-desc="The name of the social platform." data-example="LinkedIn"></i></label><input type="text" name="platform" class="form-control" required></div>
+                <div class="form-group"><label>URL <i class="fas fa-info info-icon" data-desc="The full link to your profile." data-example="https://linkedin.com/in/..."></i></label><input type="url" name="url" class="form-control" required></div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Add Link</button>
+            </form>
+        </div>
+    </div>
+    
+    <div id="editSocialModal" class="modal">
+        <div class="modal-content">
+            <span onclick="closeModal('editSocialModal')" class="modal-close">&times;</span>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin: 0;">Edit Social Link</h3>
+                <form id="deleteSocialForm" method="POST" action="">
+                    {% csrf_token %}
+                    <button type="button" class="btn btn-secondary" onclick="confirmDelete(this.form)" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2);">Delete</button>
+                </form>
+            </div>
+            
+            <form id="editSocialForm" action="" method="POST">
+                {% csrf_token %}
+                <div class="form-group"><label>Platform <i class="fas fa-info info-icon" data-desc="The name of the social platform." data-example="LinkedIn"></i></label><input type="text" id="edit_social_platform" name="platform" class="form-control" required></div>
+                <div class="form-group"><label>URL <i class="fas fa-info info-icon" data-desc="The full link to your profile." data-example="https://linkedin.com/in/..."></i></label><input type="url" id="edit_social_url" name="url" class="form-control" required></div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Update Link</button>
+            </form>
+        </div>
+    </div>
+    
+     <!-- Add Experience Modal -->
+    <div id="addExperienceModal" class="modal">
+        <div class="modal-content">
+            <span onclick="closeModal('addExperienceModal')" class="modal-close">&times;</span>
+            <h3>Add New Experience</h3>
+            <form action="{% url 'add_experience' %}" method="POST">
+                {% csrf_token %}
+                <div class="form-group"><label>Role <i class="fas fa-info info-icon" data-desc="Your job title." data-example="Senior Developer"></i></label><input type="text" name="role" class="form-control" required></div>
+                <div class="form-group"><label>Company <i class="fas fa-info info-icon" data-desc="The organization you worked for." data-example="Google"></i></label><input type="text" name="company" class="form-control" required></div>
+                <div class="form-group"><label>Duration <i class="fas fa-info info-icon" data-desc="Time period of employment." data-example="2020 - Present"></i></label><input type="text" name="duration" class="form-control" required></div>
+                <div class="form-group"><label>Description <i class="fas fa-info info-icon" data-desc="Key responsibilities and achievements." data-example="Led a team of 5 developers..."></i></label><textarea name="description" class="form-control" style="min-height: 100px;"></textarea></div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Add Experience</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Experience Modal -->
+    <div id="editExperienceModal" class="modal">
+        <div class="modal-content">
+            <span onclick="closeModal('editExperienceModal')" class="modal-close">&times;</span>
+            <h3>Edit Experience</h3>
+            <form id="editExperienceForm" action="" method="POST">
+                {% csrf_token %}
+                <div class="form-group"><label>Role <i class="fas fa-info info-icon" data-desc="Your job title." data-example="Senior Developer"></i></label><input type="text" id="edit_exp_role" name="role" class="form-control" required></div>
+                <div class="form-group"><label>Company <i class="fas fa-info info-icon" data-desc="The organization you worked for." data-example="Google"></i></label><input type="text" id="edit_exp_company" name="company" class="form-control" required></div>
+                <div class="form-group"><label>Duration <i class="fas fa-info info-icon" data-desc="Time period of employment." data-example="2020 - Present"></i></label><input type="text" id="edit_exp_duration" name="duration" class="form-control" required></div>
+                <div class="form-group"><label>Description <i class="fas fa-info info-icon" data-desc="Key responsibilities and achievements." data-example="Led a team of 5 developers..."></i></label><textarea id="edit_exp_desc" name="description" class="form-control" style="min-height: 100px;"></textarea></div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Update Experience</button>
+            </form>
+        </div>
+    </div>
+    
+     <!-- Add Education Modal -->
+    <div id="addEducationModal" class="modal">
+        <div class="modal-content">
+            <span onclick="closeModal('addEducationModal')" class="modal-close">&times;</span>
+            <h3>Add New Education</h3>
+            <form action="{% url 'add_education' %}" method="POST">
+                {% csrf_token %}
+                <div class="form-group"><label>Degree <i class="fas fa-info info-icon" data-desc="The qualification you received." data-example="B.Sc. Computer Science"></i></label><input type="text" name="degree" class="form-control" required></div>
+                <div class="form-group"><label>Institution <i class="fas fa-info info-icon" data-desc="University or School name." data-example="Stanford University"></i></label><input type="text" name="institution" class="form-control" required></div>
+                <div class="form-group"><label>Timeframe <i class="fas fa-info info-icon" data-desc="Years attended." data-example="2016 - 2020"></i></label><input type="text" name="timeframe" class="form-control" required></div>
+                <div class="form-group"><label>Description <i class="fas fa-info info-icon" data-desc="Relevant coursework or honors." data-example="Graduated with First Class Honors"></i></label><textarea name="description" class="form-control" style="min-height: 100px;"></textarea></div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Add Education</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Education Modal -->
+    <div id="editEducationModal" class="modal">
+        <div class="modal-content">
+            <span onclick="closeModal('editEducationModal')" class="modal-close">&times;</span>
+            <h3>Edit Education</h3>
+            <form id="editEducationForm" action="" method="POST">
+                {% csrf_token %}
+                <div class="form-group"><label>Degree <i class="fas fa-info info-icon" data-desc="The qualification you received." data-example="B.Sc. Computer Science"></i></label><input type="text" id="edit_edu_degree" name="degree" class="form-control" required></div>
+                <div class="form-group"><label>Institution <i class="fas fa-info info-icon" data-desc="University or School name." data-example="Stanford University"></i></label><input type="text" id="edit_edu_institution" name="institution" class="form-control" required></div>
+                <div class="form-group"><label>Timeframe <i class="fas fa-info info-icon" data-desc="Years attended." data-example="2016 - 2020"></i></label><input type="text" id="edit_edu_timeframe" name="timeframe" class="form-control" required></div>
+                <div class="form-group"><label>Description <i class="fas fa-info info-icon" data-desc="Relevant coursework or honors." data-example="Graduated with First Class Honors"></i></label><textarea id="edit_edu_desc" name="description" class="form-control" style="min-height: 100px;"></textarea></div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Update Education</button>
+            </form>
+        </div>
+    </div>
+    
+      <!-- Add Expertise Modal -->
+    <div id="addExpertiseModal" class="modal">
+        <div class="modal-content">
+            <span onclick="closeModal('addExpertiseModal')" class="modal-close">&times;</span>
+            <h3>Add New Expertise</h3>
+            <form action="{% url 'add_expertise' %}" method="POST">
+                {% csrf_token %}
+                <div class="form-group"><label>Name <i class="fas fa-info info-icon" data-desc="A core competency or service you offer." data-example="UI/UX Design"></i></label><input type="text" name="name" class="form-control" required></div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Add Expertise</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="editExpertiseModal" class="modal">
+        <div class="modal-content">
+            <span onclick="closeModal('editExpertiseModal')" class="modal-close">&times;</span>
+            <h3>Edit Expertise</h3>
+            <form id="editExpertiseForm" action="" method="POST">
+                {% csrf_token %}
+                <div class="form-group"><label>Name <i class="fas fa-info info-icon" data-desc="A core competency or service you offer." data-example="Backend Development"></i></label><input type="text" id="edit_expertise_name" name="name" class="form-control" required></div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Update Expertise</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Section Modal -->
+    <!-- Add Section Modal -->
+    <div id="addNewSectionModal" class="modal">
+        <div class="modal-content">
+            <span onclick="closeModal('addNewSectionModal')" class="modal-close">&times;</span>
+            <h3 style="font-size: 1.8rem; margin-bottom: 25px;">Add New Custom Section</h3>
+            <form action="{% url 'add_section' %}" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Section Title <i class="fas fa-info info-icon" data-desc="The name of your section." data-example="Awards, Certifications"></i></label>
+                    <input type="text" name="title" class="form-control" placeholder="e.g. Awards, Certifications" required>
+                </div>
+                <div class="form-group">
+                    <label>Choose Icon <i class="fas fa-info info-icon" data-desc="Select an icon to represent this section." data-example="fas fa-layer-group"></i></label>
+                    <div class="icon-grid">
+                        <div class="icon-choice selected" onclick="selectSectionIcon(this, 'fas fa-layer-group')"><i class="fas fa-layer-group"></i></div>
+                        <div class="icon-choice" onclick="selectSectionIcon(this, 'fas fa-columns')"><i class="fas fa-columns"></i></div>
+                        <div class="icon-choice" onclick="selectSectionIcon(this, 'fas fa-th')"><i class="fas fa-th"></i></div>
+                        <div class="icon-choice" onclick="selectSectionIcon(this, 'fas fa-list')"><i class="fas fa-list"></i></div>
+                        <div class="icon-choice" onclick="selectSectionIcon(this, 'fas fa-trophy')"><i class="fas fa-trophy"></i></div>
+                        <div class="icon-choice" onclick="selectSectionIcon(this, 'fas fa-award')"><i class="fas fa-award"></i></div>
+                        <div class="icon-choice" onclick="selectSectionIcon(this, 'fas fa-certificate')"><i class="fas fa-certificate"></i></div>
+                        <div class="icon-choice" onclick="selectSectionIcon(this, 'fas fa-star')"><i class="fas fa-star"></i></div>
+                        <div class="icon-choice" onclick="selectSectionIcon(this, 'fas fa-briefcase')"><i class="fas fa-briefcase"></i></div>
+                        <div class="icon-choice" onclick="selectSectionIcon(this, 'fas fa-building')"><i class="fas fa-building"></i></div>
+                        <div class="icon-choice" onclick="selectSectionIcon(this, 'fas fa-users')"><i class="fas fa-users"></i></div>
+                        <div class="icon-choice" onclick="selectSectionIcon(this, 'fas fa-laptop-code')"><i class="fas fa-laptop-code"></i></div>
+                        <div class="icon-choice" onclick="selectSectionIcon(this, 'fas fa-code')"><i class="fas fa-code"></i></div>
+                        <div class="icon-choice" onclick="selectSectionIcon(this, 'fas fa-terminal')"><i class="fas fa-terminal"></i></div>
+                        <div class="icon-choice" onclick="selectSectionIcon(this, 'fas fa-robot')"><i class="fas fa-robot"></i></div>
+                        <div class="icon-choice" onclick="selectSectionIcon(this, 'fas fa-paint-brush')"><i class="fas fa-paint-brush"></i></div>
+                        <div class="icon-choice" onclick="selectSectionIcon(this, 'fas fa-camera')"><i class="fas fa-camera"></i></div>
+                        <div class="icon-choice" onclick="selectSectionIcon(this, 'fas fa-music')"><i class="fas fa-music"></i></div>
+                        <div class="icon-choice" onclick="selectSectionIcon(this, 'fas fa-graduation-cap')"><i class="fas fa-graduation-cap"></i></div>
+                        <div class="icon-choice" onclick="selectSectionIcon(this, 'fas fa-book')"><i class="fas fa-book"></i></div>
+                        <div class="icon-choice" onclick="selectSectionIcon(this, 'fas fa-globe')"><i class="fas fa-globe"></i></div>
+                        <div class="icon-choice" onclick="selectSectionIcon(this, 'fas fa-lightbulb')"><i class="fas fa-lightbulb"></i></div>
+                        <div class="icon-choice" onclick="selectSectionIcon(this, 'fas fa-rocket')"><i class="fas fa-rocket"></i></div>
+                        <div class="icon-choice" onclick="selectSectionIcon(this, 'fas fa-handshake')"><i class="fas fa-handshake"></i></div>
+                    </div>
+                    <input type="hidden" name="icon" id="sectionIconInput" value="fas fa-layer-group">
+                </div>
+                <script>
+                    function selectSectionIcon(element, iconClass) {
+                        // Remove selected class from all siblings
+                        var grid = element.parentElement;
+                        var options = grid.getElementsByClassName('icon-choice');
+                        for (var i = 0; i < options.length; i++) {
+                            options[i].classList.remove('selected');
+                        }
+                        
+                        // Add selected class to clicked element
+                        element.classList.add('selected');
+                        
+                        // Update hidden input
+                        document.getElementById('sectionIconInput').value = iconClass;
+                    }
+                </script>
+                
+                <div style="background: rgba(255,255,255,0.03); padding: 20px; border-radius: 12px; margin: 20px 0; border: 1px solid rgba(255,255,255,0.05);">
+                    <h4 style="margin: 0 0 15px 0; font-size: 1rem; color: var(--primary);">
+                        <i class="fas fa-sliders-h"></i> Customization Options
+                    </h4>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 10px; background: rgba(255,255,255,0.02); border-radius: 8px;">
+                            <input type="checkbox" name="show_image" checked style="width: 18px; height: 18px; accent-color: var(--primary);">
+                            <span>Show Images</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 10px; background: rgba(255,255,255,0.02); border-radius: 8px;">
+                            <input type="checkbox" name="show_link_button" checked style="width: 18px; height: 18px; accent-color: var(--primary);">
+                            <span>Show Link Button</span>
+                        </label>
+                    </div>
+                    
+                    <div class="form-group" style="margin-top: 15px; margin-bottom: 0;">
+                        <label>Button Text <i class="fas fa-info info-icon" data-desc="The text displayed on the link button." data-example="View Details"></i></label>
+                        <input type="text" name="button_text" class="form-control" value="View Details" placeholder="View Details, Learn More, Read More">
+                    </div>
+                    
+                    <div class="form-group" style="margin-top: 15px; margin-bottom: 0;">
+                        <label>Card Layout <i class="fas fa-info info-icon" data-desc="How items are displayed in this section." data-example="Grid, List, Timeline"></i></label>
+                        <select name="card_layout" class="form-control">
+                            <option value="grid">Grid (Cards)</option>
+                            <option value="list">List View</option>
+                            <option value="timeline">Timeline</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Create Section</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteConfirmModal" class="modal">
+        <div class="modal-content" style="width: 450px; text-align: center;">
+            <span onclick="closeModal('deleteConfirmModal')" class="modal-close">&times;</span>
+            <div style="margin-bottom: 25px; margin-top: 10px;">
+                <div style="width: 80px; height: 80px; background: rgba(239, 68, 68, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto;">
+                    <i class="fas fa-trash-alt" style="font-size: 2rem; color: #ef4444;"></i>
+                </div>
+                <h3 style="margin-bottom: 10px;">Are you sure?</h3>
+                <p style="color: rgba(255,255,255,0.6); font-size: 0.95rem; line-height: 1.5;">
+                    You are about to delete <strong id="deleteItemName" style="color: #fff;">this item</strong>.<br>This action cannot be undone.
+                </p>
+            </div>
+            <form id="deleteForm" action="" method="POST">
+                {% csrf_token %}
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <button type="button" onclick="closeModal('deleteConfirmModal')" class="btn" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); width: 100%;">Cancel</button>
+                    <button type="submit" class="btn btn-danger" style="width: 100%;">Delete Item</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+
+        function confirmDelete(actionUrl, name) {
+            document.getElementById('deleteForm').action = actionUrl;
+            document.getElementById('deleteItemName').innerText = name ? `"${name}"` : 'this item';
+            openModal('deleteConfirmModal');
+        }
+
+        function openEditProject(id, title, category, client, link, repo, desc) {
+            const form = document.getElementById('editProjectForm');
+            form.action = `/api/project/${id}/update/`;
+            document.getElementById('edit_project_title').value = title;
+            document.getElementById('edit_project_category').value = category;
+            document.getElementById('edit_project_client').value = client == 'None' ? '' : client;
+            document.getElementById('edit_project_link').value = link == 'None' ? '' : link;
+            document.getElementById('edit_repo_link').value = repo == 'None' ? '' : repo;
+            document.getElementById('edit_project_desc').value = desc == 'None' ? '' : desc;
+            openModal('editProjectModal');
+        }
+
+        function openEditSkill(id, name, category, desc) {
+            const form = document.getElementById('editSkillForm');
+            form.action = `/api/skill/${id}/update/`;
+            document.getElementById('edit_skill_name').value = name;
+            document.getElementById('edit_skill_category').value = category;
+            document.getElementById('edit_skill_desc').value = desc == 'None' ? '' : desc;
+            openModal('editSkillModal');
+        }
+
+        function openEditSocial(id, platform, url) {
+            const form = document.getElementById('editSocialForm');
+            form.action = `/api/social/${id}/update/`;
+            document.getElementById('edit_social_platform').value = platform;
+            document.getElementById('edit_social_url').value = url;
+            openModal('editSocialModal');
+        }
+
+        function openEditExperience(id, role, company, duration, desc) {
+            const form = document.getElementById('editExperienceForm');
+            form.action = `/api/experience/${id}/update/`;
+            document.getElementById('edit_exp_role').value = role;
+            document.getElementById('edit_exp_company').value = company;
+            document.getElementById('edit_exp_duration').value = duration;
+            document.getElementById('edit_exp_desc').value = desc == 'None' ? '' : desc;
+            openModal('editExperienceModal');
+        }
+
+        function openEditEducation(id, degree, inst, time, desc) {
+            const form = document.getElementById('editEducationForm');
+            form.action = `/api/education/${id}/update/`;
+            document.getElementById('edit_edu_degree').value = degree;
+            document.getElementById('edit_edu_inst').value = inst;
+            document.getElementById('edit_edu_time').value = time;
+            document.getElementById('edit_edu_desc').value = desc == 'None' ? '' : desc;
+            openModal('editEducationModal');
+        }
+
+        function openEditExpertise(id, name) {
+            const form = document.getElementById('editExpertiseForm');
+            form.action = `/api/expertise/${id}/update/`;
+            document.getElementById('edit_xp_name').value = name;
+            openModal('editExpertiseModal');
+        }
+
+
+        function updatePreview() {
+            let nameSize, greetingSize;
+            const isMobile = window.matchMedia('(max-width: 768px)').matches;
+
+            if (isMobile) {
+                // Mobile Context
+                const nameInput = document.getElementById('nameSizeSliderMobile');
+                const greetingInput = document.getElementById('greetingSizeSliderMobile');
+                
+                if (nameInput && greetingInput) {
+                    nameSize = nameInput.value;
+                    greetingSize = greetingInput.value;
+                    const valName = document.getElementById('nameSizeValueMobile');
+                    const valGreet = document.getElementById('greetingSizeValueMobile');
+                    if(valName) valName.textContent = nameSize;
+                    if(valGreet) valGreet.textContent = greetingSize;
+                }
+            } else {
+                // Desktop Context
+                const nameInput = document.getElementById('nameSizeSlider');
+                const greetingInput = document.getElementById('greetingSizeSlider');
+                
+                if (nameInput && greetingInput) {
+                    nameSize = nameInput.value;
+                    greetingSize = greetingInput.value;
+                    const valName = document.getElementById('nameSizeValue');
+                    const valGreet = document.getElementById('greetingSizeValue');
+                    if(valName) valName.textContent = nameSize;
+                    if(valGreet) valGreet.textContent = greetingSize;
+                }
+            }
+            
+            if (nameSize && greetingSize) {
+                document.getElementById('previewName').style.fontSize = nameSize + 'rem';
+                document.getElementById('previewGreeting').style.fontSize = greetingSize + 'rem';
+            }
+        }
+        
+        // Initialize preview on load and resize
+        document.addEventListener('DOMContentLoaded', updatePreview);
+        window.addEventListener('resize', updatePreview);
+        
+        // Window click to close modals
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+            }
+        }
+
+        // --- Mobile Sidebar Logic ---
+        const mobileToggle = document.getElementById('mobileToggle');
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+            
+            // Icon swap
+            const icon = mobileToggle.querySelector('i');
+            if(sidebar.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        }
+
+        function closeSidebar() {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            mobileToggle.querySelector('i').classList.remove('fa-times');
+            mobileToggle.querySelector('i').classList.add('fa-bars');
+        }
+
+        if(mobileToggle) {
+            mobileToggle.addEventListener('click', toggleSidebar);
+            overlay.addEventListener('click', closeSidebar);
+            
+            // Close sidebar when a link is clicked
+            navLinks.forEach(link => {
+                link.addEventListener('click', closeSidebar);
+            });
+        }
+        
+        // --- Info Tooltip Logic ---
+        const tooltip = document.getElementById('infoTooltip');
+        const tooltipTitle = tooltip.querySelector('.tooltip-title');
+        const tooltipContent = tooltip.querySelector('.tooltip-content');
+        const tooltipExample = tooltip.querySelector('.tooltip-example');
+        let activeTooltip = false;
+
+        document.addEventListener('click', function(e) {
+            // Check if clicked icon
+            if (e.target.classList.contains('info-icon')) {
+                const icon = e.target;
+                const rect = icon.getBoundingClientRect();
+                const desc = icon.getAttribute('data-desc');
+                const example = icon.getAttribute('data-example');
+                const label = icon.parentElement.textContent.replace(icon.textContent, '').trim(); // Get label text only
+
+                // Populate content
+                tooltipTitle.textContent = label;
+                tooltipContent.textContent = desc;
+                if (example) {
+                    tooltipExample.textContent = "Example: " + example;
+                    tooltipExample.style.display = 'block';
+                } else {
+                    tooltipExample.style.display = 'none';
+                }
+
+                // Position tooltip
+                // Default position: Bottom Left relative to icon
+                let top = rect.bottom + 10;
+                let left = rect.left;
+
+                // Check overflow (Right)
+                if (left + 280 > window.innerWidth) {
+                    left = window.innerWidth - 300; // Align right
+                }
+                
+                // Check overflow (Bottom) - flip to top if needed
+                if (top + 150 > window.innerHeight) {
+                    top = rect.top - 10 - tooltip.scrollHeight; // This might need approx height if hidden
+                    // Use a rough estimate or calculate after showing
+                }
+
+                tooltip.style.top = `${top}px`;
+                tooltip.style.left = `${left}px`;
+                tooltip.classList.add('active');
+                activeTooltip = true;
+                
+                e.stopPropagation(); // Prevent immediate closing
+            } else if (activeTooltip && !tooltip.contains(e.target)) {
+                // Click outside tooltip closes it
+                tooltip.classList.remove('active');
+                activeTooltip = false;
+            }
+        });
+        
+        // Mobile scroll fix for tooltip
+        window.addEventListener('scroll', function() {
+            if(activeTooltip) {
+                tooltip.classList.remove('active');
+                activeTooltip = false;
+            }
+        });
+    </script>
+    <script>
+        // Toggle Section Visibility
+        function toggleVisibility(id, type) {
+            fetch('{% url "toggle_section_visibility" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    id: id,
+                    type: type
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showToast(data.message, 'success');
+                } else {
+                    showToast('Failed to toggle visibility: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('An error occurred', 'error');
+            });
+        }
+    </script>
+    <!-- Edit Section Modal -->
+    <div id="editSectionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-cog"></i> Edit Section</h2>
+                <span class="close" onclick="closeModal('editSectionModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="editSectionForm" onsubmit="submitEditSection(event)">
+                    <input type="hidden" id="editSectionId">
+                    
+                    <div class="form-group">
+                        <label>Section Title</label>
+                        <input type="text" id="editSectionTitle" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Choose Icon</label>
+                        <input type="hidden" id="editSectionIcon">
+                        <div id="editSectionIconGrid" class="icon-grid" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-top: 10px; max-height: 200px; overflow-y: auto; padding-right: 5px;">
+                            {% for icon in icon_choices %}
+                            <div class="icon-choice-edit" onclick="selectEditSectionIcon(this, '{{ icon }}')" data-icon="{{ icon }}" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; height: 50px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;">
+                                <i class="{{ icon }}" style="font-size: 1.2rem; pointer-events: none;"></i>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <script>
+                        function selectEditSectionIcon(el, iconClass) {
+                            // Remove selected class from all
+                            document.querySelectorAll('.icon-choice-edit').forEach(opt => {
+                                opt.style.background = 'rgba(255,255,255,0.05)';
+                                opt.style.borderColor = 'rgba(255,255,255,0.1)';
+                                opt.style.color = 'inherit';
+                            });
+                            // Set active
+                            el.style.background = 'var(--primary)';
+                            el.style.borderColor = 'var(--primary)';
+                            el.style.color = '#fff';
+                            // Update input
+                            document.getElementById('editSectionIcon').value = iconClass;
+                        }
+                    </script>
+
+                    <div class="form-group">
+                        <label>Layout Style</label>
+                        <select id="editSectionLayout" class="form-control">
+                            <option value="grid">Grid (Cards)</option>
+                            <option value="list">List View</option>
+                            <option value="timeline">Timeline</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="display: flex; gap: 20px; margin-top: 15px;">
+                        <label class="switch-label" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                            <input type="checkbox" id="editSectionShowImage">
+                            <span>Show Images</span>
+                        </label>
+                        <label class="switch-label" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                            <input type="checkbox" id="editSectionShowLink">
+                            <span>Show Link Button</span>
+                        </label>
+                    </div>
+
+                    <div class="form-group" id="btnTextGroup">
+                        <label>Button Text</label>
+                        <input type="text" id="editSectionBtnText" class="form-control" placeholder="View Details">
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('editSectionModal')">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openEditSectionModal(id, title, icon, layout, showImage, showLink, btnText, isSystem) {
+            document.getElementById('editSectionId').value = id;
+            document.getElementById('editSectionTitle').value = title;
+            document.getElementById('editSectionIcon').value = icon;
+            document.getElementById('editSectionLayout').value = layout;
+            document.getElementById('editSectionShowImage').checked = showImage;
+            document.getElementById('editSectionShowLink').checked = showLink;
+            document.getElementById('editSectionBtnText').value = btnText;
+            
+            // Pre-select icon in grid
+            document.querySelectorAll('.icon-choice-edit').forEach(opt => {
+                // Reset style
+                opt.style.background = 'rgba(255,255,255,0.05)';
+                opt.style.borderColor = 'rgba(255,255,255,0.1)';
+                opt.style.color = 'inherit';
+                
+                // Highlight match
+                if(opt.dataset.icon === icon) {
+                    opt.style.background = 'var(--primary)';
+                    opt.style.borderColor = 'var(--primary)';
+                    opt.style.color = '#fff';
+                    // Scroll into view if needed
+                    opt.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+                }
+            });
+            
+            openModal('editSectionModal');
+        }
+
+        function submitEditSection(e) {
+            e.preventDefault();
+            const id = document.getElementById('editSectionId').value;
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalBtn = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            
+            const data = {
+                title: document.getElementById('editSectionTitle').value,
+                icon: document.getElementById('editSectionIcon').value,
+                card_layout: document.getElementById('editSectionLayout').value,
+                show_image: document.getElementById('editSectionShowImage').checked,
+                show_link_button: document.getElementById('editSectionShowLink').checked,
+                button_text: document.getElementById('editSectionBtnText').value
+            };
+
+            fetch(`/api/section/${id}/edit/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    showToast('Section updated successfully', 'success');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showToast('Error: ' + data.message, 'error');
+                    btn.innerHTML = originalBtn;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('An error occurred', 'error');
+                btn.innerHTML = originalBtn;
+            });
+        }
+        
+        // Live icon preview update
+        document.getElementById('editSectionIcon').addEventListener('input', function(e) {
+            document.getElementById('editSectionIconPreview').innerHTML = `<i class="${e.target.value}"></i>`;
+        });
+    </script>
+    <!-- Global Edit Item Modal -->
+    <div id="editItemModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('editItemModal')">&times;</button>
+            <h3>Edit Item</h3>
+            <form id="editItemForm" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="editItemTitle" name="title" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Subtitle / Client</label>
+                    <input type="text" id="editItemSubtitle" name="subtitle" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Link (Optional)</label>
+                    <input type="url" id="editItemLink" name="link" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Order</label>
+                    <input type="number" id="editItemOrder" name="order" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="editItemDescription" name="description" class="form-control" style="min-height: 100px;"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Icon / Image</label>
+                    <input type="file" name="icon" class="form-control">
+                    <small style="color: rgba(255,255,255,0.5);">Leave empty to keep current image</small>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openEditItemModal(title, subtitle, link, order, description, actionUrl) {
+            document.getElementById('editItemTitle').value = title;
+            document.getElementById('editItemSubtitle').value = subtitle;
+            document.getElementById('editItemLink').value = link;
+            document.getElementById('editItemOrder').value = order;
+            document.getElementById('editItemDescription').value = description; // description might have newlines
+            
+            // Set form action
+            document.getElementById('editItemForm').action = actionUrl;
+            
+            openModal('editItemModal');
+        }
+
+        // SPOTLIGHT EFFECT
+        const spotlight = document.querySelector('.spotlight');
+        if (spotlight) {
+            document.addEventListener('mousemove', (e) => {
+                spotlight.style.left = e.clientX + 'px';
+                spotlight.style.top = e.clientY + 'px';
+                spotlight.style.opacity = '1';
+            });
+            
+            document.addEventListener('mouseleave', () => {
+                spotlight.style.opacity = '0';
+            });
+        }
+    </script>
+</body>
+</html>

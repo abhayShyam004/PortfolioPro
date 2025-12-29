@@ -535,6 +535,7 @@ body {
     -webkit-tap-highlight-color : rgba(0, 0, 0, 0);
     -webkit-font-smoothing      : antialiased;
     -moz-osx-font-smoothing     : grayscale;
+    overflow-x                  : hidden; /* Prevent horizontal scroll */
 }
 
 p {
@@ -2678,6 +2679,8 @@ img.u-pull-left {
     margin-left    : .2rem;
     margin-bottom  : var(--vspace-0_5);
     position       : relative;
+    overflow-wrap  : break-word;
+    word-break     : break-word;
 }
 
 .text-pretitle.with-line {
@@ -2702,6 +2705,11 @@ img.u-pull-left {
     font-size   : var(--text-huge);
     line-height : 1.0740;
     margin-top  : 0;
+    /* Prevent overflow */
+    word-break: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    max-width: 100%;
 }
 
 /* ------------------------------------------------------------------- 
@@ -3694,9 +3702,57 @@ img.u-pull-left {
 
 /* Media Queries for Responsiveness */
 @media (max-width: 768px) {
+    .folio-list {
+        gap: 0 !important;
+    }
+
     .folio-list__item {
-        flex: 1 1 100%;
-        max-width: 100%;
+        width: 50% !important; 
+        max-width: none !important;
+        flex: 0 0 50% !important;
+        margin-bottom: 2rem;
+        padding: 0 0.5rem;
+    }
+
+    .folio-list__item-link {
+        padding: 1.5rem 0.5rem;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important; /* Horizontally center flex items */
+        text-align: center !important;
+    }
+
+    .folio-list__item-pic {
+        width: 50px !important;
+        height: 50px !important;
+        margin-bottom: 1rem;
+        margin-left: auto !important; /* Force block centering */
+        margin-right: auto !important;
+        display: block !important; /* Ensure it behaves as a block for margins */
+    }
+
+    .folio-list__item-text {
+        width: 100% !important;
+        text-align: center !important; /* Center content inside text wrapper */
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+
+    .folio-list__item-title {
+        font-size: 1rem;
+        text-align: center !important;
+        width: 100%;
+        margin-bottom: 0.2rem;
+        display: block !important;
+    }
+
+    .folio-list__item-cat {
+        font-size: 0.7rem;
+        letter-spacing: 1px;
+        text-align: center !important;
+        width: 100%;
+        display: block !important;
     }
 }
 
@@ -4177,3 +4233,199 @@ img.u-pull-left {
         right : 6vw;
     }
 }
+ 
+
+/* -------------------------------------------------------------------
+ * ## Advanced Backgrounds
+ * ------------------------------------------------------------------- */
+
+/* Aurora Borealis */
+.aurora-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background: linear-gradient(
+        135deg,
+        var(--color-body, #0f0f10) 20%, 
+        var(--color-1, #eabe7c) 60%, 
+        var(--color-2, #23967f) 100%
+    );
+    background-size: 200% 200%;
+    animation: aurora 10s ease infinite alternate;
+}
+
+@keyframes aurora {
+    0% { background-position: 0% 50%; opacity: 0.8; }
+    50% { background-position: 100% 50%; opacity: 1; }
+    100% { background-position: 0% 50%; opacity: 0.8; }
+}
+
+/* Neon Hexagons */
+.hexagons-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background-color: var(--color-body, #0a0a0a);
+    background-image: 
+        linear-gradient(30deg, var(--color-2, #23967f) 12%, transparent 12.5%, transparent 87%, var(--color-2, #23967f) 87.5%, var(--color-2, #23967f)),
+        linear-gradient(150deg, var(--color-2, #23967f) 12%, transparent 12.5%, transparent 87%, var(--color-2, #23967f) 87.5%, var(--color-2, #23967f)),
+        linear-gradient(30deg, var(--color-2, #23967f) 12%, transparent 12.5%, transparent 87%, var(--color-2, #23967f) 87.5%, var(--color-2, #23967f)),
+        linear-gradient(150deg, var(--color-2, #23967f) 12%, transparent 12.5%, transparent 87%, var(--color-2, #23967f) 87.5%, var(--color-2, #23967f)),
+        linear-gradient(60deg, var(--color-1, #eabe7c) 25%, transparent 25.5%, transparent 75%, var(--color-1, #eabe7c) 75%, var(--color-1, #eabe7c)),
+        linear-gradient(60deg, var(--color-1, #eabe7c) 25%, transparent 25.5%, transparent 75%, var(--color-1, #eabe7c) 75%, var(--color-1, #eabe7c));
+    background-size: 50px 88px;
+    background-position: 0 0, 0 0, 25px 44px, 25px 44px, 0 0, 25px 44px;
+    opacity: 0.15;
+    animation: pulseGrid 4s ease-in-out infinite;
+}
+
+@keyframes pulseGrid {
+    0% { opacity: 0.1; }
+    50% { opacity: 0.2; }
+    100% { opacity: 0.1; }
+}
+
+/* ===================================================================
+ * # FINAL MOBILE OVERRIDES (NUCLEAR OPTION)
+ * Ensure this is at the VERY END of the file to override everything else
+ * =================================================================== */
+@media screen and (max-width: 768px) {
+    /* --- LAYOUT: 2 Columns --- */
+    .folio-list {
+        gap: 0 !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    .folio-list .column {
+        flex: 0 0 50% !important;
+        width: 50% !important;
+        max-width: 50% !important;
+        margin: 0 !important;
+        padding: 0 0.5rem 2rem 0.5rem !important;
+        float: none !important;
+    }
+    
+    .folio-list__item {
+        margin-bottom: 0 !important;
+        width: 100% !important;
+        float: none !important;
+    }
+
+    /* --- CARD CONTENT: Centering --- */
+    .folio-list__item-link {
+        padding: 1.5rem 0.5rem !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        text-align: center !important;
+        height: 100% !important;
+    }
+
+    /* --- ICON: Sizing & Centering --- */
+    .folio-list__item-pic {
+        width: 60px !important;
+        height: 60px !important;
+        margin: 0 auto 1rem auto !important;
+        position: relative !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        float: none !important;
+        border: none !important;
+    }
+
+    .folio-list__item-pic img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: contain !important;
+        max-width: none !important; 
+        margin: 0 !important;
+        display: block !important;
+    }
+
+    /* --- TEXT: Visibility & Centering --- */
+    .folio-list__item-text {
+        display: block !important; /* Override potential display:none on small screens */
+        width: 100% !important;
+        text-align: center !important;
+        margin-top: auto !important;
+        border-top: 1px solid rgba(255,255,255,0.05) !important;
+        padding-top: 1rem !important;
+    }
+
+    .folio-list__item-title {
+        font-size: 1.4rem !important; /* Increased from 1.25rem */
+        line-height: 1.1 !important; /* Tighter line height for larger text */
+        text-align: center !important;
+        display: block !important;
+        width: 100% !important;
+        color: var(--color-text-dark) !important;
+    }
+
+    .folio-list__item-cat {
+        font-size: 0.95rem !important; /* Increased from 0.85rem */
+        text-align: center !important;
+        display: block !important;
+        width: 100% !important;
+        margin-bottom: 0.5rem !important;
+    }
+}
+
+/* Fix Navigation Highlight - Ensure full width background */
+.main-nav li.current a,
+.main-nav li.current > a {
+    display: block !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+    border-radius: 4px; 
+}
+
+/* Ensure proper spacing for the nav items to allow full highlight */
+.main-nav li {
+    margin: 0 0.2rem !important;
+}
+
+
+/* Fix Navigation Overflow - Force Single Line & Flex Shrink */
+.main-nav ul {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    white-space: nowrap !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 0;
+    padding-right: 0;
+    justify-content: center; /* or flex-start */
+    overflow: hidden;
+}
+
+.main-nav li {
+    display: flex !important;
+    flex: 1 1 auto !important; /* Allow growing and shrinking */
+    min-width: 0 !important;   /* Crucial for flex items to shrink below content size */
+    margin: 0 2px !important;
+}
+
+.main-nav a {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: clip !important; /* We handle ellipsis via font shrinking */
+    display: block !important;
+    width: 100% !important;
+    text-align: center;
+    padding-left: 0.5rem !important; /* Reduced padding when squeezed */
+    padding-right: 0.5rem !important;
+}
+

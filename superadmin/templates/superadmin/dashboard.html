@@ -1,0 +1,121 @@
+{% extends 'superadmin/base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="header">
+    <h1>Dashboard</h1>
+    <div class="header-actions">
+        <a href="{% url 'superadmin:user_list' %}" class="btn btn-primary">
+            <i class="fas fa-users"></i>
+            Manage Users
+        </a>
+    </div>
+</div>
+
+<!-- Stats Grid -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-value">{{ total_users }}</div>
+        <div class="stat-label">Total Users</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ active_users }}</div>
+        <div class="stat-label">Active Users</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ banned_users }}</div>
+        <div class="stat-label">Banned Users</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ superadmins }}</div>
+        <div class="stat-label">Superadmins</div>
+    </div>
+</div>
+
+<!-- Recent Users -->
+<div class="card">
+    <h2 class="card-title">Recent Users</h2>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Subdomain</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in recent_users %}
+                <tr>
+                    <td><strong>{{ user.username }}</strong></td>
+                    <td><code>{{ user.subdomain }}</code></td>
+                    <td>{{ user.email }}</td>
+                    <td>
+                        {% if user.role == 'SUPERADMIN' %}
+                            <span class="badge badge-warning">Superadmin</span>
+                        {% else %}
+                            <span class="badge badge-info">User</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user.is_banned %}
+                            <span class="badge badge-danger">Banned</span>
+                        {% elif user.is_active %}
+                            <span class="badge badge-success">Active</span>
+                        {% else %}
+                            <span class="badge badge-secondary">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ user.created_at|date:"M d, Y" }}</td>
+                    <td>
+                        <a href="{% url 'superadmin:user_detail' user.id %}" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align: center; color: #666;">No users found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Top Users by Content -->
+<div class="card">
+    <h2 class="card-title">Top Users by Content</h2>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Subdomain</th>
+                    <th>Projects</th>
+                    <th>Skills</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in top_users %}
+                <tr>
+                    <td><strong>{{ user.username }}</strong></td>
+                    <td><code>{{ user.subdomain }}</code></td>
+                    <td>{{ user.project_count }}</td>
+                    <td>{{ user.skill_count }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="text-align: center; color: #666;">No data available</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

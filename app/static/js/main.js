@@ -132,8 +132,8 @@
     }; // end ssMobileMenu
 
 
-   /* Highlight active menu link on pagescroll
-    * ------------------------------------------------------ */
+    /* Highlight active menu link on pagescroll
+     * ------------------------------------------------------ */
     const ssScrollSpy = function() {
 
         const sections = document.querySelectorAll(".target-section");
@@ -145,24 +145,40 @@
         
             // Get current scroll position
             let scrollY = window.pageYOffset;
-        
-            // Loop through sections to get height(including padding and border), 
-            // top and ID values for each
+            let activeIDs = new Set();
+
+            // 1. Identify all active sections
+            const scrollY = window.pageYOffset;
+            const viewportHeight = window.innerHeight;
+            const triggerPoint = viewportHeight * 0.35; // Highlight when top of section is at 35% of detection zone (upper screen)
+
             sections.forEach(function(current) {
-                const sectionHeight = current.offsetHeight;
-                const sectionTop = current.offsetTop - 50;
-                const sectionId = current.getAttribute("id");
-            
-               /* If our current scroll position enters the space where current section 
-                * on screen is, add .current class to parent element(li) of the thecorresponding 
-                * navigation link, else remove it. To know which link is active, we use 
-                * sectionId variable we are getting while looping through sections as 
-                * an selector
-                */
-                if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
-                    document.querySelector(".main-nav a[href*=" + sectionId + "]").parentNode.classList.add("current");
-                } else {
-                    document.querySelector(".main-nav a[href*=" + sectionId + "]").parentNode.classList.remove("current");
+                const rect = current.getBoundingClientRect();
+                
+                // Active if the section's top is above the trigger point (scrolled into view)
+                // AND the section's bottom is still below the trigger point (hasn't scrolled past)
+                if (rect.top <= triggerPoint && rect.bottom >= triggerPoint) {
+                    activeIDs.add(current.getAttribute("id"));
+                }
+            });
+
+            // 2. Handle Grouping (Experience & Education)
+            if (activeIDs.has('experience') || activeIDs.has('education')) {
+                activeIDs.add('experience');
+                activeIDs.add('education');
+            }
+
+            // 3. Apply Classes
+            document.querySelectorAll(".main-nav a").forEach(function(link) {
+                // Get the ID from the href (e.g., #about -> about)
+                const href = link.getAttribute("href");
+                if (href && href.startsWith("#")) {
+                   const id = href.substring(1);
+                   if (activeIDs.has(id)) {
+                       link.parentNode.classList.add("current");
+                   } else {
+                       link.parentNode.classList.remove("current");
+                   }
                 }
             });
         }
