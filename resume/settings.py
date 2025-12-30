@@ -330,11 +330,6 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'verbose',
         },
-        'security_file': {
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs', 'security.log') if not DEBUG else os.path.join(BASE_DIR, 'security.log'),
-            'formatter': 'verbose',
-        },
     },
     'loggers': {
         'django': {
@@ -346,7 +341,7 @@ LOGGING = {
             'level': 'DEBUG' if DEBUG else 'INFO',
         },
         'security': {
-            'handlers': ['console', 'security_file'] if not DEBUG else ['console'],
+            'handlers': ['console'],
             'level': 'INFO',
         },
     },
