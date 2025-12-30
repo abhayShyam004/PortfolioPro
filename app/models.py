@@ -96,9 +96,9 @@ class Experience(models.Model):
         blank=True
     )
     company = models.CharField(max_length=200)
-    position = models.CharField(max_length=200)
-    timeframe = models.CharField(max_length=100)
-    description = models.TextField()
+    position = models.CharField(max_length=200, blank=True, default='')
+    timeframe = models.CharField(max_length=100, blank=True, default='')
+    description = models.TextField(blank=True, default='')
     order = models.IntegerField(default=0)
 
     class Meta:
