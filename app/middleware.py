@@ -132,22 +132,15 @@ class SubdomainMiddleware:
     
     def _get_tenant_by_subdomain(self, subdomain):
         """
-        Get user by subdomain with caching.
+        Get user by subdomain.
         
         Returns None if:
         - Subdomain not found
         - User is inactive
         - User is banned
+        
+        Note: Caching disabled temporarily to fix Render deployment issues.
         """
-        cache_key = f'tenant_{subdomain}'
-        
-        # Try cache first
-        cached_user = cache.get(cache_key)
-        if cached_user is not None:
-            # Cache hit - could be a user or False (not found marker)
-            return cached_user if cached_user else None
-        
-        # Cache miss - query database
         try:
             from django.contrib.auth import get_user_model
             User = get_user_model()
@@ -159,12 +152,10 @@ class SubdomainMiddleware:
             ).first()
             
             if user:
-                # Cache the user
-                cache.set(cache_key, user, self.CACHE_TIMEOUT)
+                logger.info(f"Tenant found for subdomain '{subdomain}': {user.username}")
                 return user
             else:
-                # Cache the "not found" result to avoid repeated DB queries
-                cache.set(cache_key, False, self.CACHE_TIMEOUT)
+                logger.warning(f"No active/unbanned user found for subdomain '{subdomain}'")
                 return None
                 
         except Exception as e:
