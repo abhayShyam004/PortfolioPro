@@ -151,7 +151,7 @@
             transform: translateY(-2px);
         }
         
-        /* Mobile Menu Toggle */
+        /* Mobile Nav Toggle */
         .menu-toggle {
             display: none;
             flex-direction: column;
@@ -159,6 +159,10 @@
             cursor: pointer;
             padding: 10px;
             z-index: 1001;
+        }
+
+        .hero-mobile-header {
+            display: none;
         }
         
         .menu-toggle span {
@@ -903,6 +907,7 @@
         .reveal-delay-3 { transition-delay: 0.3s; }
         
         /* ========== RESPONSIVE ========== */
+        /* ========== RESPONSIVE ========== */
         @media (max-width: 1024px) {
             .featured-grid,
             .projects-grid {
@@ -913,10 +918,38 @@
                 padding: 80px 40px;
             }
         }
+
+        /* Coding Activity Grid */
+        .coding-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .coding-item {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .coding-item.github {
+            max-width: 700px;
+        }
+
+        .coding-item.leetcode {
+            max-width: 500px;
+        }
+
+        .coding-item img {
+            max-width: 100%;
+        }
         
         @media (max-width: 768px) {
+            /* Top Bar & Nav */
             .top-bar {
-                padding: 0 25px;
+                padding: 0 20px;
+                height: 80px;
             }
             
             .nav-links {
@@ -925,16 +958,59 @@
             
             .menu-toggle {
                 display: flex;
+                position: fixed;
+                top: 25px;
+                right: 20px;
+                z-index: 1001; /* Above mobile nav */
+                opacity: 0; /* Hidden by default at top */
+                pointer-events: none;
+                transition: opacity 0.3s;
+            }
+
+            .menu-toggle.visible {
+                opacity: 1;
+                pointer-events: auto;
+            }
+
+            .hero-mobile-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                position: absolute;
+                top: 20px;
+                left: 20px;
+                right: 20px;
+                z-index: 10;
+            }
+
+            .mobile-nav {
+                top: 80px; /* Match new top-bar height */
+                padding: 20px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             }
             
+            /* Hero adjustments */
             .hero {
-                padding: 100px 25px 60px;
+                padding: 100px 20px 60px;
+                min-height: 100vh; /* Force full screen */
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
             }
             
+            .hero-nav {
+                display: none; /* Hide floating nav on mobile to avoid clutter */
+            }
+            
+            .hero-photo-wrapper {
+                margin-top: 40px;
+                margin-bottom: 30px;
+            }
+
             .hero-photo,
             .hero-photo-placeholder {
-                width: 240px;
-                height: 240px;
+                width: 260px;
+                height: 260px;
                 border-width: 8px;
             }
             
@@ -942,17 +1018,36 @@
                 font-size: 1.5rem;
             }
             
+            /* Section details */
             .section {
-                padding: 70px 25px;
+                padding: 70px 20px;
+                min-height: 100vh; /* All sections take full screen height */
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
             }
             
             .section-title {
                 font-size: 2.2rem;
             }
             
+            /* Grids to single column */
             .featured-grid,
-            .projects-grid {
+            .projects-grid,
+            .education-grid,
+            .custom-grid {
                 grid-template-columns: 1fr;
+            }
+
+            /* Skills grid - keep flexible but smaller gaps */
+            .skills-grid {
+                gap: 15px;
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+
+            .skill-chip {
+                padding: 10px 15px;
+                font-size: 0.9rem;
             }
             
             .contact-title {
@@ -962,11 +1057,45 @@
             .contact-section {
                 padding: 80px 25px;
             }
+            
+            /* Modal responsiveness */
+            .project-modal {
+                width: 90%;
+                max-height: 85vh;
+            }
+            
+            .project-modal-image {
+                height: 200px;
+            }
+
+            /* Coding Activity - Force vertical stack and fit screen */
+            .coding-grid {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 30px;
+            }
+
+            .coding-item {
+                min-width: unset;
+                max-width: 100% !important;
+                flex: none;
+                width: 100%;
+            }
+
+            .coding-item img {
+                min-width: unset !important;
+                width: 100% !important;
+            }
         }
         
         @media (max-width: 480px) {
             .top-bar {
                 height: 70px;
+                padding: 0 15px;
+            }
+            
+            .mobile-nav {
+                top: 70px;
             }
             
             .logo {
@@ -986,16 +1115,41 @@
                 font-size: 1.3rem;
             }
             
+            .section-title {
+                font-size: 1.8rem;
+            }
+            
             .projects-header h2 {
                 font-size: 2rem;
             }
             
             .contact-email {
-                font-size: 1.2rem;
+                font-size: 1.1rem;
             }
             
-            .education-grid {
-                grid-template-columns: 1fr;
+            .contact-title {
+                font-size: 2rem;
+            }
+
+            .contact-btn {
+                width: 100%; /* Full width button for easier tapping */
+                text-align: center;
+            }
+            
+            /* Experience timeline adjustment */
+            .experience-item {
+                padding-left: 25px;
+            }
+            
+            .experience-item::before {
+                width: 14px;
+                height: 14px;
+                border-width: 3px;
+                left: -7px;
+            }
+            
+            .experience-card {
+                padding: 20px;
             }
         }
         
@@ -1217,6 +1371,12 @@
 
     <!-- HERO SECTION -->
     <section class="hero" id="hero">
+        <!-- Mobile Header (Logo + Contact) -->
+        <div class="hero-mobile-header">
+            <a href="#hero" class="logo" style="font-size: 1.5rem; font-weight: 800; color: var(--dark); text-decoration: none;">{{ profile.name|slice:":2"|upper }}</a>
+            <a href="mailto:{{ contact.email }}" class="mailtoui nav-contact-btn" style="padding: 10px 20px; font-size: 0.9rem; border-width: 3px; text-decoration: none;">Contact Me</a>
+        </div>
+
         <!-- Floating Hero Nav (visible when at top of page) -->
         <nav class="hero-nav">
             <a href="#hero" class="logo">{{ profile.name|slice:":2"|upper }}</a>
@@ -1242,7 +1402,7 @@
         </div>
         
         <p class="hero-text">
-            {{ profile.greeting|default:"Hey, I'm" }} <span class="name">{{ profile.name }}.</span> 
+            Hi, I'm <span class="name">{{ profile.name }}.</span> 
             {{ profile.hero_bio|default:"Here, you can check out what I'm working on. I try my best to create things with" }} 
             <span class="emoji">❤️</span>
         </p>
@@ -1412,6 +1572,39 @@
     </section>
     {% endfor %}
 
+    <!-- CODING ACTIVITY -->
+    {% if settings.show_coding_activity %}
+    {% if settings.github_username or settings.leetcode_username %}
+    <section class="section section-light" id="coding-activity">
+        <div class="container">
+            <div class="section-header reveal">
+                <h2 class="section-title"><i class="fas fa-chart-line"></i> Coding Activity</h2>
+            </div>
+            <div class="coding-grid">
+                {% if settings.github_username %}
+                <div class="coding-item github reveal">
+                    <h4 style="color: var(--mint); margin-bottom: 20px; font-size: 1.1rem; font-weight: 700;">
+                        <i class="fab fa-github" style="margin-right: 10px;"></i>GitHub Contributions
+                    </h4>
+                    <div style="overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 12px; background: var(--darker); padding: 20px;">
+                        <img src="https://ghchart.rshah.org/39d353/{{ settings.github_username }}" alt="GitHub Contributions" style="width: 100%; min-width: 600px; display: block;">
+                    </div>
+                </div>
+                {% endif %}
+                {% if settings.leetcode_username %}
+                <div class="coding-item leetcode reveal">
+                    <h4 style="color: #ffa116; margin-bottom: 20px; font-size: 1.1rem; font-weight: 700;">
+                        <i class="fas fa-code" style="margin-right: 10px;"></i>LeetCode Stats
+                    </h4>
+                    <img src="https://leetcard.jacoblin.cool/{{ settings.leetcode_username }}?theme=dark&font=Inter&ext=heatmap" alt="LeetCode Stats" style="max-width: 100%; border-radius: 12px;">
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+    {% endif %}
+
     <!-- CONTACT -->
     <section class="section section-dark contact-section" id="contact">
         <h2 class="contact-title reveal">Get In Touch</h2>
@@ -1491,8 +1684,17 @@
             
             if (window.scrollY > heroBottom) {
                 topBar.classList.add('visible');
+                // Show sticky menu toggle
+                if (window.innerWidth <= 768) {
+                    menuToggle.classList.add('visible');
+                }
             } else {
                 topBar.classList.remove('visible');
+                // Hide sticky menu toggle at top
+                menuToggle.classList.remove('visible');
+                // Close menu if open when returning to top
+                menuToggle.classList.remove('active');
+                mobileNav.classList.remove('active');
             }
         }, { passive: true });
         

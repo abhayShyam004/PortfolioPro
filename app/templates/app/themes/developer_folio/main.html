@@ -1580,7 +1580,8 @@
         {% endfor %}
 
         <!-- Coding Activity Section (No nav link as per user request) -->
-        {% if settings.show_coding_activity and settings.github_username or settings.leetcode_username %}
+        {% if settings.show_coding_activity %}
+        {% if settings.github_username or settings.leetcode_username %}
         <section class="coding-activity-section reveal" style="padding: 100px 0;">
             <h2 class="section-heading" data-num="0{{ custom_sections|length|add:6 }}.">Coding Activity</h2>
             <div style="display: flex; flex-wrap: wrap; gap: 40px; justify-content: center; margin-top: 50px;">
@@ -1589,7 +1590,9 @@
                     <h3 style="color: var(--lightest-slate); font-size: 1.2rem; margin-bottom: 20px; font-family: var(--font-mono);">
                         <i class="fab fa-github" style="color: var(--green); margin-right: 10px;"></i>GitHub Contributions
                     </h3>
-                    <img src="https://ghchart.rshah.org/64ffda/{{ settings.github_username }}" alt="GitHub Contributions" style="width: 100%; border-radius: 8px; background: var(--light-navy); padding: 20px;">
+                    <div style="overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; background: var(--light-navy); padding: 20px;">
+                        <img src="https://ghchart.rshah.org/39d353/{{ settings.github_username }}" alt="GitHub Contributions" style="width: 100%; min-width: 600px; display: block;">
+                    </div>
                 </div>
                 {% endif %}
                 {% if settings.leetcode_username %}
@@ -1602,6 +1605,7 @@
                 {% endif %}
             </div>
         </section>
+        {% endif %}
         {% endif %}
 
         <!-- Contact Section -->

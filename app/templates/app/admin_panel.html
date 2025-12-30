@@ -1044,7 +1044,7 @@
                             
                             <div class="form-group" style="margin-bottom: 25px;">
                                 <label style="display: flex; align-items: center; gap: 15px; cursor: pointer;">
-                                    <input type="checkbox" name="show_coding_activity" {% if site_settings.show_coding_activity %}checked{% endif %} style="width: 20px; height: 20px; accent-color: var(--primary);">
+                                    <input type="checkbox" name="show_coding_activity" {% if settings.show_coding_activity %}checked{% endif %} style="width: 20px; height: 20px; accent-color: var(--primary);">
                                     <span style="font-size: 1.1rem;">Show Coding Activity Section</span>
                                 </label>
                                 <small style="opacity: 0.5; display: block; margin-top: 8px;">When enabled, displays your GitHub contribution graph and LeetCode stats on your portfolio.</small>
@@ -1053,28 +1053,28 @@
                             <div class="form-row">
                                 <div class="form-group">
                                     <label><i class="fab fa-github" style="margin-right: 8px;"></i>GitHub Username</label>
-                                    <input type="text" name="github_username" value="{{ site_settings.github_username }}" class="form-control" placeholder="e.g. abhayShyam004">
+                                    <input type="text" name="github_username" value="{{ settings.github_username }}" class="form-control" placeholder="e.g. abhayShyam004">
                                     <small style="opacity: 0.5;">Your GitHub username to display contribution graph</small>
                                 </div>
                                 <div class="form-group">
                                     <label><i class="fas fa-code" style="margin-right: 8px; color: #ffa116;"></i>LeetCode Username</label>
-                                    <input type="text" name="leetcode_username" value="{{ site_settings.leetcode_username }}" class="form-control" placeholder="e.g. abhay123">
+                                    <input type="text" name="leetcode_username" value="{{ settings.leetcode_username }}" class="form-control" placeholder="e.g. abhay123">
                                     <small style="opacity: 0.5;">Your LeetCode username to display stats card</small>
                                 </div>
                             </div>
                             
-                            {% if site_settings.github_username or site_settings.leetcode_username %}
+                            {% if settings.github_username or settings.leetcode_username %}
                             <div style="background: rgba(255,255,255,0.03); padding: 20px; border-radius: 12px; margin: 20px 0; border: 1px solid rgba(255,255,255,0.05);">
                                 <h4 style="margin: 0 0 15px 0; font-size: 0.95rem; color: var(--primary);"><i class="fas fa-eye"></i> Preview</h4>
                                 <div style="display: flex; flex-wrap: wrap; gap: 20px;">
-                                    {% if site_settings.github_username %}
+                                    {% if settings.github_username %}
                                     <div>
-                                        <img src="https://ghchart.rshah.org/{{ site_settings.github_username }}" alt="GitHub Contributions" style="max-width: 100%; border-radius: 8px;">
+                                        <img src="https://ghchart.rshah.org/39d353/{{ settings.github_username }}" alt="GitHub Contributions" style="max-width: 100%; border-radius: 8px;">
                                     </div>
                                     {% endif %}
-                                    {% if site_settings.leetcode_username %}
+                                    {% if settings.leetcode_username %}
                                     <div>
-                                        <img src="https://leetcard.jacoblin.cool/{{ site_settings.leetcode_username }}?theme=dark&font=Karma&ext=heatmap" alt="LeetCode Stats" style="max-width: 400px; border-radius: 8px;">
+                                        <img src="https://leetcard.jacoblin.cool/{{ settings.leetcode_username }}?theme=dark&font=Karma&ext=heatmap" alt="LeetCode Stats" style="max-width: 400px; border-radius: 8px;">
                                     </div>
                                     {% endif %}
                                 </div>

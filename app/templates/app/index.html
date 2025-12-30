@@ -496,7 +496,7 @@
                             {% for skill in skills %}
                             <li class="folio-list__item column" data-animate-el>
                                 <a class="folio-list__item-link" href="javascript:void(0);" onclick="openPreview('{{ skill.name|escapejs }}', '{{ skill.category|escapejs }}', '{% if skill.icon %}{{ skill.icon.url }}{% else %}{% static 'images/icons/Django.png' %}{% endif %}', '{{ skill.description|linebreaksbr|escapejs }}', '')">
-                                    <div class="folio-list__item-pic">
+                                    <div class="folio-list__item-pic" style="display: flex; justify-content: center; align-items: center;">
                                         {% if skill.icon %}
                                         <img src="{{ skill.icon.url }}" 
                                              srcset="{{ skill.icon.url }}" alt="{{ skill.name }}" style="width: 60px; height: 60px; object-fit: contain;">
@@ -554,7 +554,7 @@
                             {% for project in projects %}
                             <li class="folio-list__item column" data-animate-el>
                                 <a class="folio-list__item-link" href="#0" onclick="openPreview('{{ project.title|escapejs }}', '{{ project.category|escapejs }}', '{% if project.icon %}{{ project.icon.url }}{% else %}{% static 'images/portfolio/homeocompare.png' %}{% endif %}', '{{ project.description|linebreaksbr|escapejs }}', '{{ project.url|escapejs }}')">
-                                    <div class="folio-list__item-pic">
+                                    <div class="folio-list__item-pic" style="display: flex; justify-content: center; align-items: center;">
                                         {% if project.icon %}
                                         <img src="{{ project.icon.url }}" 
                                              srcset="{{ project.icon.url }}"  alt="{{ project.title }}">
@@ -698,6 +698,38 @@
             
             {% endif %}
             {% endfor %}
+            
+            <!-- Coding Activity Section -->
+            {% if settings.show_coding_activity %}
+            {% if settings.github_username or settings.leetcode_username %}
+            <section id="coding-activity" class="s-about target-section" style="padding-top: 60px;">
+                <div class="row" data-animate-block>
+                    <div class="column lg-12">
+                        <h2 class="text-pretitle" data-animate-el>Coding Activity</h2>
+                        <div style="display: flex; flex-wrap: wrap; gap: 40px; justify-content: center; margin-top: 30px;">
+                            {% if settings.github_username %}
+                            <div style="flex: 1; min-width: 300px; max-width: 700px; overflow-x: auto; -webkit-overflow-scrolling: touch;" data-animate-el>
+                                <h4 style="color: var(--color-1); margin-bottom: 15px; font-size: 1.1rem; white-space: nowrap;">
+                                    <i class="fab fa-github" style="margin-right: 10px;"></i>GitHub Contributions
+                                </h4>
+                                <img src="https://ghchart.rshah.org/39d353/{{ settings.github_username }}" alt="GitHub Contributions" style="width: 100%; min-width: 600px; border-radius: 8px; background: rgba(255,255,255,0.05); padding: 15px;">
+                            </div>
+                            {% endif %}
+                            {% if settings.leetcode_username %}
+                            <div style="flex: 1; min-width: 300px; max-width: 500px;" data-animate-el>
+                                <h4 style="color: #ffa116; margin-bottom: 15px; font-size: 1.1rem;">
+                                    <i class="fas fa-code" style="margin-right: 10px;"></i>LeetCode Stats
+                                </h4>
+                                <img src="https://leetcard.jacoblin.cool/{{ settings.leetcode_username }}?theme=dark&font=Inter&ext=heatmap" alt="LeetCode Stats" style="max-width: 100%; border-radius: 8px;">
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </section>
+            {% endif %}
+            {% endif %}
+            
             {% if settings.show_contact_section %}
             <section id="contact" class="s-contact target-section">
 
