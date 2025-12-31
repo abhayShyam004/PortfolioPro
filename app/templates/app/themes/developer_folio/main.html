@@ -391,11 +391,13 @@
             background: rgba(10, 25, 47, 0.9);
             z-index: 98;
             opacity: 0;
+            pointer-events: none;
             transition: var(--transition);
         }
 
         .mobile-overlay.active {
             opacity: 1;
+            pointer-events: auto;
         }
 
         /* ========== MAIN CONTENT ========== */
@@ -1361,9 +1363,6 @@
             <li><a href="#section-{{ section.slug }}" class="mobile-link">{{ section.title }}</a></li>
             {% endfor %}
             <li><a href="#contact" class="mobile-link">Contact</a></li>
-            {% if profile.cv_link %}
-            <li><a href="{{ profile.cv_link }}" class="nav-resume" target="_blank" style="display: inline-block; margin-top: 20px;">Resume</a></li>
-            {% endif %}
         </ul>
     </div>
 
