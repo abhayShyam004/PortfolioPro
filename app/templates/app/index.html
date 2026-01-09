@@ -5,7 +5,7 @@
     <!--- basic page needs
     ================================================== -->
     <meta charset="utf-8">
-    <title>{{ profile.name }}</title>
+    <title>{{ profile.name }} | Portfolio</title>
     <meta name="description" content="">
     <meta name="author" content="">
 
@@ -55,12 +55,8 @@
     {% endif %}
     {% endblock %}
 
-    <!-- favicons
-    ================================================== -->
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-    <link rel="manifest" href="site.webmanifest">
+    <!-- Dynamic Favicon -->
+    {% include 'app/includes/dynamic_favicon.html' %}
 
     <!-- Dynamic Theme from Settings -->
     {% if settings %}
@@ -97,7 +93,8 @@
         .text-huge-title { font-size: {{ settings.name_font_size }}rem !important; }
         
         /* Intro section greeting */
-        .s-intro .text-pretitle { 
+        .s-intro .text-pretitle,
+        .s-intro .text-pretitle.with-line { 
             font-size: {{ settings.greeting_font_size }}rem !important; 
         }
         
@@ -302,12 +299,124 @@
     <!-- Spotlight Effect -->
     <div class="spotlight"></div>
 
-    <!-- # preloader
+    <!-- # INTRO ANIMATION OVERLAY
     ================================================== -->
-    <div id="preloader">
+    {% if settings.show_intro_animation %}
+    <div id="intro-overlay">• {{ settings.intro_greetings|default:"Hello"|cut:","|first }}</div>
+    
+    <style>
+        /* INTRO OVERLAY STYLES */
+        #intro-overlay {
+            position: fixed;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            background: var(--color-body, #141516);
+            color: #eae7d6;
+            font-size: 5rem;
+            font-family: var(--font-2, 'DM Serif Display', serif);
+            font-weight: 500;
+            transform: translateY(0);
+            transition: transform 0.5s ease-out;
+            z-index: 99999;
+        }
+        
+        #intro-overlay.scroll-up {
+            transform: translateY(-100vh);
+        }
+        
+        @media screen and (max-width: 600px) {
+            #intro-overlay {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Get greetings from settings
+            const greetingsRaw = "{{ settings.intro_greetings|default:'Hello,Bonjour,Hola,Привет,مرحبا,നമസ്കാരം,こんにちは,नमस्ते'|escapejs }}";
+            const words = greetingsRaw.split(',').map(w => '• ' + w.trim()).filter(w => w.length > 2);
+            
+            // Speed settings: slow=300, medium=160, fast=80
+            const speedMap = { 'slow': 300, 'medium': 160, 'fast': 80 };
+            const cycleSpeed = speedMap["{{ settings.intro_speed|default:'medium' }}"] || 160;
+
+            const intro = document.getElementById("intro-overlay");
+            if (!intro || words.length === 0) {
+                if (intro) intro.remove();
+                return;
+            }
+            
+            // Set initial text
+            intro.textContent = words[0];
+            let i = 0;
+
+            // Short initial pause on first word (500ms)
+            setTimeout(() => {
+                const cycle = setInterval(() => {
+                    i++;
+                    intro.textContent = words[i];
+
+                    if (i === words.length - 1) {
+                        clearInterval(cycle);
+
+                        // Pause on last word same as first (500ms)
+                        setTimeout(() => {
+                            // force reflow so transition always fires
+                            intro.offsetHeight;
+                            intro.classList.add("scroll-up");
+
+                            // remove intro after snappy scroll (500ms)
+                            setTimeout(() => {
+                                intro.remove();
+                            }, 500);
+
+                        }, 500);
+                    }
+                }, cycleSpeed);
+            }, 500);
+        });
+    </script>
+    {% endif %}
+
+    <!-- # old preloader (hidden)
+    ================================================== -->
+    <div id="preloader" style="display: none;">
         <div id="loader">
         </div>
     </div>
+    <!-- Fallback: Ensure preloader is always dismissed even if main.js fails -->
+    <script>
+        (function() {
+            // Fallback timeout - dismiss preloader after 3 seconds max
+            setTimeout(function() {
+                var preloader = document.getElementById('preloader');
+                if (preloader && preloader.style.display !== 'none') {
+                    preloader.style.opacity = '0';
+                    preloader.style.visibility = 'hidden';
+                    preloader.style.display = 'none';
+                    document.documentElement.classList.remove('ss-preload');
+                    document.documentElement.classList.add('ss-loaded');
+                }
+                
+                // FIX: Force all animated elements to be visible for Classic theme
+                var theme = document.body.dataset.theme || 'classic';
+                if (theme === 'classic' || theme === 'modern' || theme === 'creative') {
+                    var animatedElements = document.querySelectorAll('[data-animate-el], [data-animate-block]');
+                    animatedElements.forEach(function(el) {
+                        el.style.opacity = '1';
+                        el.style.visibility = 'visible';
+                        el.style.transform = 'none';
+                    });
+                    // Also mark all as animated so ssViewAnimate doesn't try to animate them
+                    document.querySelectorAll('[data-animate-block]').forEach(function(block) {
+                        block.classList.add('ss-animated');
+                    });
+                }
+            }, 3000);
+        })();
+    </script>
 
 
     <!-- # page wrap
@@ -355,7 +464,7 @@
                     <ul>
                         <li><a href="#intro" class="home-link smoothscroll" data-nav="intro">{{ profile.name }}.</a></li>
                         
-                        {% for section in orderable_sections %}
+                        {% for section in nav_sections %}
                         <li><a href="#{{ section.slug }}" class="smoothscroll" data-nav="{{ section.slug }}">{{ section.title }}</a></li>
                         {% endfor %}
 

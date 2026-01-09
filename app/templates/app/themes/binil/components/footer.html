@@ -1,0 +1,111 @@
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <h2 class="footer-tagline">
+                Where Aesthetics <br>
+                <span class="text-secondary">&</span> Functionality Meet
+            </h2>
+            
+            <div class="footer-bottom">
+                <div class="footer-copyright">
+                    &copy; {% now "Y" %} {{ profile.name|default:"Binil" }}
+                </div>
+                
+                <div class="footer-socials">
+                    {% for link in social_links %}
+                    <a href="{{ link.url }}" target="_blank" class="social-link" title="{{ link.platform }}">
+                        <i class="fab fa-{{ link.platform|lower }}"></i>
+                    </a>
+                    {% endfor %}
+                    <!-- Email fallback -->
+                    {% if contact.email %}
+                    <a href="mailto:{{ contact.email }}" class="social-link">
+                        <i class="fas fa-envelope"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<style>
+    .footer {
+        padding: 100px 0 40px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .footer-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 60px;
+    }
+    
+    .footer-tagline {
+        font-size: 4rem;
+        letter-spacing: -2px;
+        line-height: 1;
+        font-weight: 800;
+        background: linear-gradient(to right, #fff, #888);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
+    .text-secondary {
+        color: var(--text-secondary);
+        -webkit-text-fill-color: var(--text-secondary);
+    }
+    
+    .footer-bottom {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 40px;
+        border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .footer-copyright {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+    
+    .footer-socials {
+        display: flex;
+        gap: 20px;
+    }
+    
+    .social-link {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.05);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-primary);
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
+    }
+    
+    .social-link:hover {
+        background: var(--accent-blue);
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(45, 92, 246, 0.4);
+    }
+    
+    @media (max-width: 768px) {
+        .footer-tagline {
+            font-size: 2.5rem;
+        }
+        .footer-bottom {
+            flex-direction: column;
+            gap: 20px;
+        }
+    }
+</style>

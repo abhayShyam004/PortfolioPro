@@ -1,0 +1,154 @@
+<section class="section" id="about">
+    <div class="container">
+        
+        <div class="section-header fade-in">
+            <h2 class="section-title">What I Do</h2>
+            <p class="section-desc">I help brands create digital experiences that matter.</p>
+        </div>
+
+        <div class="bento-grid">
+            {% for item in expertise_list %}
+            <div class="bento-card fade-in" style="animation-delay: {{ forloop.counter0|add:2 }}00ms">
+                <div class="card-icon">
+                    <i class="fas fa-layer-group"></i> <!-- Semantic icon fallback -->
+                </div>
+                <h3 class="card-title">{{ item.name }}</h3>
+                <!-- Description fallback -->
+                <p class="card-text">Creating seamless digital experiences with modern technology.</p>
+            </div>
+            {% empty %}
+                <!-- Placeholders if no data -->
+                <div class="bento-card fade-in">
+                    <div class="card-icon"><i class="fas fa-desktop"></i></div>
+                    <h3 class="card-title">Web Design</h3>
+                    <p class="card-text">Crafting beautiful and functional interfaces.</p>
+                </div>
+                <div class="bento-card fade-in">
+                    <div class="card-icon"><i class="fas fa-code"></i></div>
+                    <h3 class="card-title">Development</h3>
+                    <p class="card-text">Building robust and scalable applications.</p>
+                </div>
+                <div class="bento-card fade-in">
+                    <div class="card-icon"><i class="fas fa-mobile-alt"></i></div>
+                    <h3 class="card-title">Mobile Apps</h3>
+                    <p class="card-text">Native and cross-platform mobile solutions.</p>
+                </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</section>
+
+<style>
+    .section {
+        padding: 100px 0;
+    }
+    
+    .section-header {
+        margin-bottom: 60px;
+    }
+    
+    .section-title {
+        font-size: 3rem;
+        margin-bottom: 20px;
+    }
+    
+    .section-desc {
+        color: var(--text-secondary);
+        font-size: 1.2rem;
+        max-width: 600px;
+    }
+
+    /* Bento Grid */
+    .bento-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+    }
+
+    .bento-card {
+        background: var(--surface-color);
+        border: 1px solid var(--border-color);
+        padding: 40px;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .bento-card:hover {
+        border-color: var(--accent-blue);
+        transform: translateY(-5px);
+        box-shadow: 0 10px 40px -10px rgba(45, 92, 246, 0.3);
+    }
+    
+    .bento-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255,255,255,0.06), transparent 40%);
+        opacity: 0;
+        transition: opacity 0.3s;
+        pointer-events: none;
+    }
+    
+    .bento-card:hover::before {
+        opacity: 1;
+    }
+
+    .card-icon {
+        font-size: 2rem;
+        color: var(--accent-blue);
+        margin-bottom: 20px;
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+    }
+
+    .card-text {
+        color: var(--text-secondary);
+        line-height: 1.6;
+    }
+    
+    /* Reveal Animation */
+    .fade-in {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    .fade-in.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+</style>
+
+<script>
+    // Reveal on scroll
+    const observerOptions = {
+        threshold: 0.1
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    
+    // Mouse glow effect for cards
+    document.querySelectorAll('.bento-card').forEach(card => {
+        card.addEventListener('mousemove', e => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            card.style.setProperty('--mouse-x', `${x}px`);
+            card.style.setProperty('--mouse-y', `${y}px`);
+        });
+    });
+</script>

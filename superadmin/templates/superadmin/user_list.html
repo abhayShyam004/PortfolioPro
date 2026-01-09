@@ -33,7 +33,8 @@
 
 <!-- Users Table -->
 <div class="card">
-    <div class="table-wrapper">
+    <!-- Desktop Table View -->
+    <div class="table-wrapper desktop-only">
         <table>
             <thead>
                 <tr>
@@ -115,6 +116,79 @@
                 {% endfor %}
             </tbody>
         </table>
+    </div>
+
+    <!-- Mobile Card View -->
+    <div class="mobile-only">
+        {% for user in users %}
+        <div class="card" style="margin-bottom: 15px; background: #222; border: 1px solid #333;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <div style="width: 40px; height: 40px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff;">
+                        {{ user.username|first|upper }}
+                    </div>
+                    <div>
+                        <div style="font-weight: 700; color: #fff; font-size: 1.1rem;">{{ user.username }}</div>
+                        <div style="font-size: 0.85rem; color: #888;">{{ user.email|truncatechars:25 }}</div>
+                    </div>
+                </div>
+                <div>
+                    {% if user.is_banned %}
+                        <span class="badge badge-danger">Banned</span>
+                    {% elif user.is_active %}
+                        <span class="badge badge-success">Active</span>
+                    {% else %}
+                        <span class="badge badge-secondary">Inactive</span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 15px; padding: 10px; background: #1a1a1a; border-radius: 8px; font-family: monospace; font-size: 0.9rem;">
+                {% if user.role == 'SUPERADMIN' %}
+                    <span style="color: #eabe7c;">★ Superadmin Access</span>
+                {% else %}
+                    <a href="/?subdomain={{ user.subdomain }}" target="_blank" style="color: #eabe7c; text-decoration: none;">
+                        <i class="fas fa-external-link-alt" style="margin-right: 5px;"></i>
+                        {{ user.subdomain }}.portfoliopro.site
+                    </a>
+                {% endif %}
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                <a href="{% url 'superadmin:user_detail' user.id %}" class="btn btn-secondary" style="justify-content: center;">
+                    View
+                </a>
+                
+                {% if not user.is_superadmin %}
+                    {% if user.is_banned %}
+                        <form method="POST" action="{% url 'superadmin:unban_user' user.id %}" style="display: contents;" onsubmit="return confirmUnban(this, '{{ user.username }}')">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success" style="justify-content: center;">Unban</button>
+                        </form>
+                    {% else %}
+                        <form method="POST" action="{% url 'superadmin:ban_user' user.id %}" style="display: contents;" onsubmit="return confirmBan(this, '{{ user.username }}')">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger" style="justify-content: center;">Ban</button>
+                        </form>
+                    {% endif %}
+                    
+                    <form method="POST" action="{% url 'superadmin:impersonate_user' user.id %}" style="display: contents;" onsubmit="return confirmImpersonate(this, '{{ user.username }}')">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary" style="justify-content: center;"> Login</button>
+                    </form>
+                {% else %}
+                    <div style="grid-column: span 2; display: flex; align-items: center; justify-content: center; color: #666; border: 1px solid #333; border-radius: 8px;">
+                        No Actions
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <div style="text-align: center; padding: 40px; color: #666;">
+            <i class="fas fa-search" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+            No users found matching your criteria.
+        </div>
+        {% endfor %}
     </div>
     
     <!-- Pagination -->

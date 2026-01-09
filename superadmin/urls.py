@@ -23,4 +23,10 @@ urlpatterns = [
     # API endpoints
     path('api/stats/', views.api_user_stats, name='api_stats'),
     path('api/recent-users/', views.api_recent_users, name='api_recent_users'),
+    
+    # Release Notes
+    path('release-notes/', views.release_note_list, name='release_note_list'),
+    path('release-notes/<int:note_id>/deploy/', views.deploy_release_note, name='deploy_release_note'),
+    path('release-notes/<int:note_id>/delete/', views.delete_release_note, name='delete_release_note'),
+    path('broadcast-email/', views.broadcast_email, name='broadcast_email'),
 ]

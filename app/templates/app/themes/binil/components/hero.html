@@ -1,0 +1,358 @@
+<section class="hero-section" id="hero">
+    <div class="container hero-container">
+        
+        <div class="hero-content">
+            
+            <!-- Top Floating Elements -->
+            <div class="floating-wrapper">
+                <!-- Avatar Center -->
+                <div class="profile-avatar">
+                   {% if profile.about_photo %}
+                    <img src="{{ profile.about_photo.url }}" alt="{{ profile.name }}">
+                    {% else %}
+                    <img src="https://ui-avatars.com/api/?name={{ profile.name|default:'Binil' }}&background=random" alt="Profile">
+                    {% endif %}
+                </div>
+
+                <!-- Hello Tag -->
+                <div class="float-tag hello-tag" data-speed="0.04">
+                    <span class="wave">👋</span> Hello, I'm {{ profile.name|default:"Binil" }}
+                    <svg class="pointer-svg" width="23" height="23" viewBox="0 0 23 23" fill="none">
+                        <path d="M1 1L9.5 21.5L12.5 13L21 10L1 1Z" fill="#D946EF" stroke="white" stroke-width="1.5"/>
+                    </svg>
+                </div>
+
+                <!-- Product Tag -->
+                <div class="float-tag product-tag" data-speed="-0.03">
+                    Product
+                </div>
+            </div>
+
+            <!-- Main Typography Grid -->
+            <div class="typography-grid">
+                <div class="line-1">
+                    <h1 class="text-digital">DIGITAL</h1>
+                    <div class="float-tag location-tag" data-speed="0.02">
+                        // Based in <br> {{ profile.location|default:"Kerala, India" }}
+                    </div>
+                </div>
+                
+                <div class="line-2">
+                    <h1 class="text-experience">EXPERIENCE</h1>
+                </div>
+
+                <div class="line-3">
+                    <h1 class="text-designer">DESIGNER</h1>
+                    <div class="float-tag connect-tag nav-link" onclick="window.location.href='#contact'" style="cursor:pointer;" data-speed="0.05">
+                        <span class="status-dot"></span> Let's Connect
+                    </div>
+                </div>
+
+                <div class="line-4">
+                    <div class="float-tag role-tag" data-speed="-0.04">
+                        // UI/UX Designer <br>
+                        <span class="highlight">Full-Stack Developer</span>
+                        <div class="floating-pill-blue">Dev</div>
+                        <svg class="pointer-svg-blue" width="23" height="23" viewBox="0 0 23 23" fill="none">
+                            <path d="M1 1L9.5 21.5L12.5 13L21 10L1 1Z" fill="#2d5cf6" stroke="white" stroke-width="1.5"/>
+                        </svg>
+                    </div>
+                    <h1 class="text-developer">& DEVELOPER.</h1>
+                </div>
+            </div>
+
+            <!-- Subtitle -->
+            <p class="hero-desc">
+                I create a digital experience that borders on <br>
+                <span class="text-purple">efficiency</span>, <span class="text-orange">aesthetics</span> and <span class="text-cyan">functionality</span>.
+            </p>
+
+        </div>
+    </div>
+</section>
+
+<style>
+    .hero-section {
+        min-height: 100vh;
+        background-color: var(--bg-color);
+        display: flex;
+        justify-content: center;
+        align-items: center; /* Center vertically */
+        padding-top: 100px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .hero-content {
+        position: relative;
+        width: 100%;
+        max-width: 1000px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* Floating Wrapper & Avatar */
+    .floating-wrapper {
+        position: relative;
+        width: 100%;
+        height: 120px;
+        display: flex;
+        justify-content: center;
+        margin-bottom: -40px; /* Overlap with text */
+        z-index: 10;
+    }
+
+    .profile-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        border: 4px solid #1a1a1a;
+        overflow: hidden;
+        z-index: 20;
+        background: #fff;
+    }
+
+    .profile-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* Typography Grid */
+    .typography-grid {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        line-height: 0.9;
+    }
+
+    .typography-grid h1 {
+        font-family: var(--font-heading);
+        font-weight: 800;
+        margin: 0;
+        letter-spacing: -2px;
+    }
+
+    /* Line Specific Construction */
+    .line-1, .line-2, .line-3, .line-4 {
+        display: flex;
+        align-items: center;
+        position: relative;
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Text Styles */
+    .text-digital {
+        font-size: clamp(4rem, 10vw, 7.5rem);
+        background: linear-gradient(to bottom, #a78bfa, #7c3aed); /* Purple gradient */
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        z-index: 5;
+    }
+
+    .text-experience {
+        font-size: clamp(4rem, 11vw, 8.5rem);
+        color: #ffedd5; /* Creamy yellow */
+        z-index: 4;
+    }
+
+    .text-designer {
+        font-size: clamp(4rem, 11vw, 8.5rem);
+        color: #f3f4f6; /* White/Grey */
+        z-index: 3;
+    }
+
+    .text-developer {
+        font-size: clamp(4rem, 11vw, 8.5rem);
+        background: linear-gradient(to right, #22d3ee, #2d5cf6); /* Cyan to Blue */
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        z-index: 2;
+    }
+
+    /* Description */
+    .hero-desc {
+        margin-top: 40px;
+        text-align: center;
+        font-size: 1.5rem;
+        color: #999;
+        line-height: 1.5;
+        font-weight: 500;
+    }
+    
+    .text-purple { color: #a78bfa; }
+    .text-orange { color: #fb923c; }
+    .text-cyan { color: #22d3ee; }
+
+    /* FLOATING TAGS */
+    .float-tag {
+        position: absolute;
+        background: #111;
+        border: 1px solid #333;
+        padding: 8px 16px;
+        border-radius: 30px;
+        color: white;
+        font-size: 0.9rem;
+        white-space: nowrap;
+        pointer-events: none;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .hello-tag {
+        top: 20px;
+        left: 55%; /* Relative to center */
+        transform: translateX(40px);
+        background: #111;
+        border-radius: 30px 30px 30px 0;
+        z-index: 25;
+    }
+    .pointer-svg {
+        position: absolute;
+        bottom: -15px;
+        left: -10px;
+        transform: rotate(-10deg);
+    }
+
+    .product-tag {
+        top: 80px;
+        left: 35%; 
+        background: #d946ef; /* Pink */
+        border: none;
+        transform: rotate(-5deg);
+        z-index: 6;
+        padding: 4px 12px;
+        font-weight: 600;
+    }
+
+    .location-tag {
+        top: 10px;
+        right: 10%;
+        background: transparent;
+        border: none;
+        text-align: left;
+        font-family: var(--font-code);
+        color: #888;
+        font-size: 0.85rem;
+        line-height: 1.4;
+    }
+
+    .connect-tag {
+        top: 20%;
+        right: 15%;
+        background: #1a1a1a;
+        border: 1px solid #333;
+        padding: 10px 20px;
+        font-weight: 600;
+        pointer-events: auto !important;
+        transition: transform 0.2s;
+        border-radius: 40px;
+    }
+    .connect-tag:hover {
+        transform: scale(1.05);
+        border-color: #4ade80;
+    }
+    .status-dot {
+        width: 10px;
+        height: 10px;
+        background: #4ade80;
+        border-radius: 50%;
+        display: inline-block;
+        box-shadow: 0 0 10px #4ade80;
+    }
+
+    .role-tag {
+        bottom: 40px; /* Adjusted position */
+        left: 5%;
+        background: transparent;
+        border: none;
+        text-align: left;
+        font-family: var(--font-code);
+        color: #fff;
+        line-height: 1.4;
+    }
+    .role-tag .highlight {
+        color: #888;
+        font-size: 0.85rem;
+    }
+    
+    .floating-pill-blue {
+        position: absolute;
+        bottom: -30px;
+        right: 20px;
+        background: #2d5cf6;
+        padding: 4px 15px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 700;
+    }
+    
+    .pointer-svg-blue {
+        position: absolute;
+        bottom: -15px;
+        right: -15px;
+    }
+
+    /* Mobile Adjustments */
+    @media (max-width: 768px) {
+        .hero-section {
+            padding-top: 150px; /* More space for header */
+            height: auto;
+            min-height: 100vh;
+            display: block; /* Stack content normally */
+        }
+        
+        .typography-grid h1 {
+            font-size: 3.5rem; /* Smaller text */
+        }
+        
+        .floating-wrapper {
+            height: 100px; /* Reduce height */
+            margin-bottom: 20px;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+        }
+
+        /* Hide complicated floating elements on mobile to prevent overlap */
+        .location-tag, .connect-tag, .role-tag, .product-tag {
+            display: none;
+        }
+        
+        .hello-tag {
+            top: 0; left: 50%;
+            transform: translateX(10px);
+            font-size: 0.8rem;
+        }
+        
+        .hero-desc {
+            font-size: 1.1rem;
+            padding: 0 20px;
+            margin-top: 30px;
+            margin-bottom: 60px;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('mousemove', (e) => {
+        const floaters = document.querySelectorAll('.float-tag');
+        const x = (window.innerWidth - e.pageX * 2) / 100;
+        const y = (window.innerHeight - e.pageY * 2) / 100;
+
+        floaters.forEach(el => {
+            const speed = el.getAttribute('data-speed') || 0.05;
+            const xOffset = x * speed * 100;
+            const yOffset = y * speed * 100;
+            
+            el.style.transform = `translateX(${xOffset}px) translateY(${yOffset}px)`;
+        });
+    });
+</script>

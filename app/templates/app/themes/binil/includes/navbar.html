@@ -1,0 +1,117 @@
+<nav class="navbar">
+    <div class="nav-container">
+        <!-- Logo -->
+        <a href="" class="nav-logo">
+            {{ profile.name|default:"thegr8binil"|lower }} <span class="text-accent"/>></span>
+        </a>
+
+        <!-- Desktop Menu -->
+        <div class="nav-menu-desktop">
+            <a href="#hero" class="nav-link">Home</a>
+            <a href="#projects" class="nav-link">My Projects</a>
+            <a href="#about" class="nav-link">About Me</a>
+        </div>
+
+        <!-- CTA -->
+        <a href="#contact" class="nav-cta">
+            Contact Me <i class="fas fa-arrow-right"></i>
+        </a>
+    </div>
+</nav>
+
+<style>
+    .navbar {
+        position: fixed;
+        top: 20px;
+        left: 0;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        z-index: 100;
+        padding: 0 20px;
+    }
+
+    .nav-container {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 12px 30px;
+        border-radius: 50px;
+        display: flex;
+        align-items: center;
+        gap: 40px;
+        box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+    }
+
+    .nav-logo {
+        font-family: var(--font-code);
+        font-weight: 700;
+        font-size: 1.1rem;
+        letter-spacing: -0.5px;
+    }
+
+    .nav-menu-desktop {
+        display: flex;
+        gap: 25px;
+    }
+
+    .nav-link {
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+        position: relative;
+    }
+
+    .nav-link:hover {
+        color: var(--text-primary);
+    }
+
+    .nav-link::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 50%;
+        transform: translateX(-50%) scaleX(0);
+        width: 100%;
+        height: 2px;
+        background: var(--accent-blue);
+        transition: transform 0.3s ease;
+    }
+
+    .nav-link:hover::after {
+        transform: translateX(-50%) scaleX(1);
+    }
+
+    .nav-cta {
+        background: var(--accent-blue);
+        color: white;
+        padding: 10px 24px;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(45, 92, 246, 0.4);
+    }
+
+    .nav-cta:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(45, 92, 246, 0.6);
+        background: #1a4bd6;
+    }
+
+    @media (max-width: 768px) {
+        .nav-menu-desktop {
+            display: none;
+        }
+        .nav-container {
+            justify-content: space-between;
+            width: 100%;
+            max-width: 400px;
+            padding: 12px 20px;
+        }
+    }
+</style>

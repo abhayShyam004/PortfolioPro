@@ -423,3 +423,20 @@ ALLOWED_UPLOAD_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.pdf']
 # =============================================================================
 # SecurityMiddleware should be at the top of MIDDLEWARE list
 # This is already configured in MIDDLEWARE above
+
+
+# =============================================================================
+# EMAIL CONFIGURATION (Development)
+# =============================================================================
+# Prints emails to the console instead of sending them.
+# =============================================================================
+# EMAIL CONFIGURATION (Production/Real)
+# =============================================================================
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+# Configuration Loaded.
+DEFAULT_FROM_EMAIL = f"PortfolioPro Admin <{os.getenv('EMAIL_HOST_USER', 'admin@portfoliopro.site')}>"

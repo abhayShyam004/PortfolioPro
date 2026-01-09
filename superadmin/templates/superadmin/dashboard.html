@@ -14,7 +14,8 @@
 </div>
 
 <!-- Stats Grid -->
-<div class="stats-grid">
+<!-- Stats Grid -->
+<div class="stats-grid desktop-only">
     <div class="stat-card">
         <div class="stat-value">{{ total_users }}</div>
         <div class="stat-label">Total Users</div>
@@ -33,10 +34,38 @@
     </div>
 </div>
 
+<!-- Mobile Stats Grid (2x2) -->
+<div class="mobile-only" style="margin-bottom: 30px;">
+    <h1 style="font-size: 1.5rem; margin-bottom: 20px; font-weight: 800;">
+        <span style="display: block; font-size: 0.9rem; color: #888; font-weight: 500; margin-bottom: 5px;">Good Morning,</span>
+        Superadmin
+    </h1>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        <div style="background: linear-gradient(135deg, #1a1a1a 0%, #222 100%); padding: 20px; border-radius: 16px; border: 1px solid #333;">
+            <div style="color: #eabe7c; font-size: 2rem; font-weight: 700;">{{ total_users }}</div>
+            <div style="color: #888; font-size: 0.8rem; font-weight: 600; margin-top: 5px;">TOTAL USERS</div>
+        </div>
+        <div style="background: linear-gradient(135deg, #1a1a1a 0%, #222 100%); padding: 20px; border-radius: 16px; border: 1px solid #333;">
+            <div style="color: #28a745; font-size: 2rem; font-weight: 700;">{{ active_users }}</div>
+            <div style="color: #888; font-size: 0.8rem; font-weight: 600; margin-top: 5px;">ACTIVE</div>
+        </div>
+        <div style="background: linear-gradient(135deg, #1a1a1a 0%, #222 100%); padding: 20px; border-radius: 16px; border: 1px solid #333;">
+            <div style="color: #dc3545; font-size: 2rem; font-weight: 700;">{{ banned_users }}</div>
+            <div style="color: #888; font-size: 0.8rem; font-weight: 600; margin-top: 5px;">BANNED</div>
+        </div>
+        <div style="background: linear-gradient(135deg, #1a1a1a 0%, #222 100%); padding: 20px; border-radius: 16px; border: 1px solid #333;">
+            <div style="color: #ffc107; font-size: 2rem; font-weight: 700;">{{ superadmins }}</div>
+            <div style="color: #888; font-size: 0.8rem; font-weight: 600; margin-top: 5px;">ADMINS</div>
+        </div>
+    </div>
+</div>
+
 <!-- Recent Users -->
 <div class="card">
-    <h2 class="card-title">Recent Users</h2>
-    <div class="table-wrapper">
+    <h2 class="card-title">Recent Activity</h2>
+    
+    <!-- Desktop Table -->
+    <div class="table-wrapper desktop-only">
         <table>
             <thead>
                 <tr>
@@ -86,10 +115,32 @@
             </tbody>
         </table>
     </div>
+
+    <!-- Mobile Feed -->
+    <div class="mobile-only">
+        {% for user in recent_users %}
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid #2a2a2a;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 36px; height: 36px; background: #333; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                    {{ user.username|first|upper }}
+                </div>
+                <div>
+                    <div style="font-weight: 600; color: #fff;">{{ user.username }}</div>
+                    <div style="color: #666; font-size: 0.8rem;">Joined {{ user.created_at|timesince }} ago</div>
+                </div>
+            </div>
+            <a href="{% url 'superadmin:user_detail' user.id %}" style="width: 30px; height: 30px; background: #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff;">
+                <i class="fas fa-chevron-right" style="font-size: 0.8rem;"></i>
+            </a>
+        </div>
+        {% empty %}
+        <div style="color: #666; font-style: italic;">No recent activity</div>
+        {% endfor %}
+    </div>
 </div>
 
 <!-- Top Users by Content -->
-<div class="card">
+<div class="card desktop-only">
     <h2 class="card-title">Top Users by Content</h2>
     <div class="table-wrapper">
         <table>

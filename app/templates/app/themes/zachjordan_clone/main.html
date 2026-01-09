@@ -6,18 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ profile.name }} | Portfolio</title>
     
+    {% include 'app/includes/dynamic_favicon.html' %}
+    
     <!-- Fonts: Poppins for that bold, rounded, playful look -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Inter:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         /* ========== CSS VARIABLES ========== */
         :root {
             /* Signature mint green from zachjordan.io */
-            --mint: #2CD889;
-            --mint-dark: #25C07A;
+            --mint: #3ad59b;
+            --mint-dark: #2cc48a;
             --dark: #1a1a2e;
             --darker: #0f0f1a;
             --white: #ffffff;
@@ -28,6 +30,10 @@
             --shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.15);
             --radius: 20px;
             --radius-sm: 12px;
+            
+            /* Intro Animation Colors */
+            --theme-bg: var(--white);
+            --theme-text: var(--text-dark);
         }
         
         /* ========== RESET ========== */
@@ -991,31 +997,35 @@
             
             /* Hero adjustments */
             .hero {
-                padding: 100px 20px 60px;
-                min-height: 100vh; /* Force full screen */
+                padding: 120px 20px 40px; /* Push down from top bar */
+                min-height: 100vh;
                 display: flex;
                 flex-direction: column;
-                justify-content: center;
+                justify-content: flex-start; /* Align content to top (higher placement) */
+                align-items: center; /* Ensure centered horizontally */
             }
             
             .hero-nav {
-                display: none; /* Hide floating nav on mobile to avoid clutter */
+                display: none; 
             }
             
             .hero-photo-wrapper {
-                margin-top: 40px;
-                margin-bottom: 30px;
+                margin-top: 50px; /* Moved down */
+                margin-bottom: 35px;
             }
 
             .hero-photo,
             .hero-photo-placeholder {
-                width: 260px;
-                height: 260px;
+                width: 340px; /* Main request: MUCH bigger */
+                height: 340px;
                 border-width: 8px;
+                max-width: 90vw; /* Prevent overflow on very small screens */
+                max-height: 90vw;
             }
             
             .hero-text {
-                font-size: 1.5rem;
+                font-size: 2rem; /* Much bigger */
+                text-align: center;
             }
             
             /* Section details */
@@ -1106,13 +1116,13 @@
             
             .hero-photo,
             .hero-photo-placeholder {
-                width: 200px;
-                height: 200px;
-                border-width: 6px;
+                width: 340px; /* Increased from 200px */
+                height: 340px;
+                border-width: 8px; /* Restored thicker border */
             }
             
             .hero-text {
-                font-size: 1.3rem;
+                font-size: 1.8rem; /* Bigger for small screens too */
             }
             
             .section-title {
@@ -1337,6 +1347,8 @@
 {% endif %}
 
 <body>
+    {% include 'app/includes/intro_animation.html' %}
+    
     <!-- Thick Top Bar -->
     <header class="top-bar" id="topBar">
         <a href="#hero" class="logo">{{ profile.name|slice:":2"|upper }}</a>

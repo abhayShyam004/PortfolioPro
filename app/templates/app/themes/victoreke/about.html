@@ -1,0 +1,467 @@
+{% extends "app/themes/victoreke/base.html" %}
+
+{% block title %}About | {{ profile.name|default:"Portfolio" }}{% endblock %}
+{% block meta_description %}Learn more about {{ profile.name|default:"me" }}'s skills, experience and technical background{% endblock %}
+
+{% block content %}
+<main class="main">
+  
+  <!-- ABOUT HEADER -->
+  <section class="about-grid slide-up">
+    
+    <!-- About Content - Full Bio -->
+    <div class="about-content">
+      <h1 class="page-title">
+        I'm {{ profile.name|default:"John Doe" }}. {% if profile.location %}I live in {{ profile.location }}, where I build the future.{% endif %}
+      </h1>
+      
+      <div class="about-bio">
+        {% if profile.about_text %}
+          <p>{{ profile.about_text }}</p>
+        {% else %}
+          <p>Add your full bio in the admin panel. This section will display your complete about text.</p>
+        {% endif %}
+      </div>
+    </div>
+    
+    <!-- Sidebar -->
+    <aside class="about-sidebar slide-up delay-1">
+      {% if profile.about_photo %}
+        <img src="{{ profile.about_photo.url }}" alt="{{ profile.name }}" class="profile-image">
+      {% else %}
+        <div class="profile-image" style="display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--zinc-500);">Profile Photo</div>
+      {% endif %}
+      
+      <div class="profile-actions">
+        <div class="resume-btn-group">
+          {% if profile.cv_link %}
+          <a href="{{ profile.cv_link }}" class="resume-btn" target="_blank" rel="noopener noreferrer">
+            View Résumé
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+          {% endif %}
+        </div>
+        
+        {% if contact.email %}
+        <a href="mailto:{{ contact.email }}" class="email-link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          {{ contact.email }}
+        </a>
+        {% endif %}
+      </div>
+    </aside>
+    
+  </section>
+
+
+  <!-- EXPERTISE -->
+  {% if expertise_list %}
+  <section class="section slide-up delay-2" id="expertise">
+    <div class="section-header">
+      <h2 class="section-title">Expertise</h2>
+    </div>
+    <div class="skills-list">
+      {% for exp in expertise_list %}
+      <span class="skill-tag">
+        {% if exp.icon %}
+        <img src="{{ exp.icon.url }}" alt="" class="skill-icon">
+        {% else %}
+        <span class="skill-icon-placeholder">⚡</span>
+        {% endif %}
+        {{ exp.name }}
+      </span>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+
+  <!-- SKILLS & TECHNOLOGIES -->
+  {% if skills %}
+  <section class="section slide-up delay-2" id="skills">
+    <div class="section-header">
+      <h2 class="section-title">Skills & Technologies</h2>
+    </div>
+    <div class="skills-list">
+      {% for skill in skills %}
+      <span class="skill-tag">
+        {% if skill.icon %}
+        <img src="{{ skill.icon.url }}" alt="" class="skill-icon">
+        {% elif skill.icon_url %}
+        <img src="{{ skill.icon_url }}" alt="" class="skill-icon">
+        {% else %}
+        <span class="skill-icon-placeholder">🔹</span>
+        {% endif %}
+        {{ skill.name }}
+      </span>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+
+  <!-- PROJECTS -->
+  {% if projects %}
+  <section class="section slide-up delay-2" id="projects">
+    <div class="section-header">
+      <h2 class="section-title">Projects</h2>
+    </div>
+    <div class="projects-grid">
+      {% for project in projects %}
+      <!-- Changed from <a> to <div> to handle click for modal -->
+      <div 
+        class="project-card" 
+        onclick="openProjectModal('{{ project.title|escapejs }}', '{{ project.description|escapejs }}', '{{ project.url|escapejs }}', '{% if project.icon %}{{ project.icon.url }}{% endif %}')"
+      >
+        <div class="project-header">
+            <div class="project-logo">
+            {% if project.icon %}
+                <img src="{{ project.icon.url }}" alt="{{ project.title }}">
+            {% else %}
+                <span class="project-logo-placeholder">🚀</span>
+            {% endif %}
+            </div>
+            <h3 class="project-name">{{ project.title }}</h3>
+        </div>
+        
+        <div class="project-info">
+          <p class="project-tagline">{{ project.description|truncatewords:20 }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+
+  <!-- EDUCATION -->
+  {% if education_list %}
+  <section class="section slide-up delay-2" id="education">
+    <div class="section-header">
+      <h2 class="section-title">Education</h2>
+    </div>
+    <div class="jobs-grid">
+      {% for edu in education_list %}
+      <div class="job-item">
+        <div class="job-logo">
+          <span class="job-logo-placeholder">🎓</span>
+        </div>
+        <div class="job-content">
+          <h3 class="job-name">{{ edu.institution }}</h3>
+          <p>{{ edu.degree }}</p>
+          <time class="job-dates">{{ edu.timeframe }}</time>
+          {% if edu.description %}
+          <p class="job-description">{{ edu.description }}</p>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+
+  <!-- CUSTOM SECTIONS -->
+  {% for section in custom_sections %}
+  <section class="section slide-up delay-2" id="custom-{{ section.slug }}">
+    <div class="section-header">
+      <h2 class="section-title">{{ section.title }}</h2>
+    </div>
+    {% if section.items.all %}
+    <div class="projects-grid">
+      {% for item in section.items.all %}
+      <div class="project-card">
+        <div class="project-header">
+            <div class="project-logo">
+            {% if item.image %}
+                <img src="{{ item.image.url }}" alt="{{ item.title }}">
+            {% else %}
+                <span class="project-logo-placeholder">📌</span>
+            {% endif %}
+            </div>
+            <h3 class="project-name">{{ item.title }}</h3>
+        </div>
+        <div class="project-info">
+          {% if item.subtitle %}<p class="project-tagline" style="margin-bottom:0.5rem; font-weight:600;">{{ item.subtitle }}</p>{% endif %}
+          <p class="project-tagline">{{ item.description }}</p>
+          {% if item.link %}
+            <a href="{{ item.link }}" target="_blank" class="resume-btn" style="margin-top:1rem; display:inline-flex;">View Link</a>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </section>
+  {% endfor %}
+
+
+  <!-- CONTACT -->
+  <section class="section slide-up delay-2" id="contact">
+    <div class="section-header">
+      <h2 class="section-title">Get In Touch</h2>
+    </div>
+    <div class="contact-links">
+      {% if contact.email %}
+      <a href="mailto:{{ contact.email }}" class="contact-link">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+        </svg>
+        {{ contact.email }}
+      </a>
+      {% endif %}
+      {% if contact.phone %}
+      <a href="tel:{{ contact.phone }}" class="contact-link">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
+        </svg>
+        {{ contact.phone }}
+      </a>
+      {% endif %}
+      {% for link in social_links %}
+      {% if link.url %}
+      <a href="{{ link.url }}" class="contact-link" target="_blank" rel="noopener noreferrer">
+        {{ link.display_name|default:link.platform }}
+      </a>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+
+</main>
+
+<!-- Project Preview Modal -->
+<div id="projectPreviewModal" class="modal-overlay" onclick="closeProjectModal(event)">
+  <div class="preview-modal">
+    <div class="modal-header">
+      <h3 class="modal-title" id="modalTitle">Project Title</h3>
+      <button class="modal-close" onclick="closeProjectModal(null)">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <img src="" alt="Project Icon" id="modalIcon" class="modal-image">
+      <p class="modal-desc" id="modalDesc">Project description goes here...</p>
+    </div>
+    <div class="modal-footer">
+      <a href="#" target="_blank" id="modalLink" class="modal-btn modal-btn-primary">
+        Visit Project <svg style="width:16px;height:16px;margin-left:5px;display:inline-block;vertical-align:middle;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+/* ========== PROJECTS ========== */
+.projects-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 3rem; }
+@media (min-width: 768px) { .projects-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1280px) { .projects-grid { grid-template-columns: repeat(3, 1fr); } }
+
+.project-card {
+  display: flex; flex-direction: column; /* Changed to stacked for bigger look */
+  gap: 1.25rem;
+  background-color: var(--zinc-50); border: 1px solid var(--zinc-200);
+  padding: 1.5rem; /* Bigger padding */
+  border-radius: 1rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  height: 100%;
+  cursor: pointer;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+body.dark .project-card {
+  background-color: var(--zinc-900);
+  border-color: var(--zinc-800);
+}
+.project-card:hover {
+  border-color: var(--primary-color);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.project-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.project-logo {
+  flex-shrink: 0; width: 64px; height: 64px; /* Bigger logo */
+  background-color: var(--zinc-200); /* Darker background for contrast in light mode */
+  border-radius: 0.75rem;
+  padding: 0.5rem; display: flex; align-items: center; justify-content: center; overflow: hidden;
+  border: 1px solid var(--zinc-300);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+body.dark .project-logo {
+  background-color: var(--zinc-800);
+  border-color: var(--zinc-700);
+}
+.project-logo img { width: 100%; height: 100%; object-fit: contain; }
+.project-logo-placeholder { font-size: 1.75rem; }
+
+.project-info { flex: 1; }
+.project-name { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 0.25rem; color: var(--zinc-900); }
+body.dark .project-name { color: white; }
+.project-tagline { font-size: 0.95rem; color: var(--zinc-600); line-height: 1.5; }
+body.dark .project-tagline { color: var(--zinc-400); }
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  z-index: 1000;
+  display: none;
+  justify-content: center; align-items: center;
+  padding: 2rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.modal-overlay.active {
+  display: flex;
+  opacity: 1;
+}
+
+.preview-modal {
+  background: white;
+  width: 100%; max-width: 600px;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  transform: scale(0.95);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+body.dark .preview-modal {
+  background: var(--zinc-900);
+  border: 1px solid var(--zinc-800);
+}
+.modal-overlay.active .preview-modal {
+  transform: scale(1);
+}
+
+.modal-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--zinc-100);
+  display: flex; align-items: center; justify-content: space-between;
+}
+body.dark .modal-header { border-bottom-color: var(--zinc-800); }
+
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: var(--font-incognito);
+}
+
+.modal-close {
+  background: transparent;
+  border: none;
+  color: var(--zinc-500);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 9999px;
+  transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-close:hover {
+  background: var(--zinc-100);
+  color: var(--zinc-900);
+}
+body.dark .modal-close:hover {
+  background: var(--zinc-800);
+  color: white;
+}
+
+.modal-body {
+  padding: 2rem;
+  display: flex; flex-direction: column; align-items: center; gap: 1.5rem;
+  text-align: center;
+}
+
+.modal-image {
+  width: 100px; height: 100px;
+  border-radius: 1rem;
+  object-fit: contain;
+  background: var(--zinc-100);
+  border: 1px solid var(--zinc-200);
+  padding: 0.5rem;
+}
+body.dark .modal-image {
+  background: var(--zinc-800);
+  border-color: var(--zinc-700);
+}
+
+.modal-desc {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--zinc-600);
+}
+body.dark .modal-desc { color: var(--zinc-300); }
+
+.modal-footer {
+  padding: 1.5rem;
+  background: var(--zinc-50);
+  display: flex; justify-content: flex-end; gap: 1rem;
+  border-top: 1px solid var(--zinc-100);
+}
+body.dark .modal-footer {
+  background: var(--zinc-800);
+  border-top-color: var(--zinc-700);
+}
+
+.modal-btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.modal-btn-primary {
+  background: var(--primary-color);
+  color: white;
+}
+.modal-btn-primary:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+</style>
+
+<script>
+  function openProjectModal(title, desc, url, iconUrl) {
+    document.getElementById('modalTitle').textContent = title;
+    document.getElementById('modalDesc').textContent = desc; // Use textContent for safety
+    
+    // URL handling
+    const linkBtn = document.getElementById('modalLink');
+    if (url && url.length > 1) { // Check if valid URL string
+        // Ensure protocol
+        if (!url.startsWith('http://') && !url.startsWith('https://')) {
+            url = 'https://' + url;
+        }
+        linkBtn.href = url;
+        linkBtn.style.display = 'inline-flex';
+    } else {
+        linkBtn.style.display = 'none'; // Hide if no URL
+    }
+    
+    const icon = document.getElementById('modalIcon');
+    if (iconUrl) {
+      icon.src = iconUrl;
+      icon.style.display = 'block';
+    } else {
+      icon.style.display = 'none';
+    }
+    
+    document.getElementById('projectPreviewModal').classList.add('active');
+    document.body.style.overflow = 'hidden'; // Prevent scrolling
+  }
+
+  function closeProjectModal(event) {
+    if (event && event.target !== event.currentTarget) return; // Only close if clicking overlay or close btn
+    document.getElementById('projectPreviewModal').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+</script>
+{% endblock %}

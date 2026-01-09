@@ -14,6 +14,40 @@
     
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Dynamic Favicon -->
+    <link rel="icon" id="dynamic-favicon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%236366f1'/><text x='16' y='22' text-anchor='middle' font-family='Arial,sans-serif' font-size='14' font-weight='bold' fill='white'>AB</text></svg>">
+    <script>
+    (function() {
+        const initials = '{{ settings.favicon_initials|default:""|escapejs }}'.toUpperCase().slice(0, 3) || '';
+        const design = '{{ settings.favicon_design|default:"circle" }}';
+        const bgColor = '{{ settings.favicon_bg_color|default:"#6366f1" }}';
+        const textColor = '{{ settings.favicon_text_color|default:"#ffffff" }}';
+        const secondaryColor = '{{ settings.secondary_color|default:"#23967f" }}';
+        
+        if (!initials) return;
+        
+        let svg = '';
+        const fontSize = initials.length > 2 ? '10' : '14';
+        
+        if (design === 'circle') {
+            svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='${bgColor}'/><text x='16' y='22' text-anchor='middle' font-family='Arial,sans-serif' font-size='${fontSize}' font-weight='bold' fill='${textColor}'>${initials}</text></svg>`;
+        } else if (design === 'rounded') {
+            svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='${bgColor}'/><text x='16' y='22' text-anchor='middle' font-family='Arial,sans-serif' font-size='${fontSize}' font-weight='bold' fill='${textColor}'>${initials}</text></svg>`;
+        } else if (design === 'square') {
+            svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='${bgColor}'/><text x='16' y='22' text-anchor='middle' font-family='Arial,sans-serif' font-size='${fontSize}' font-weight='bold' fill='${textColor}'>${initials}</text></svg>`;
+        } else if (design === 'gradient') {
+            svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:${bgColor}'/><stop offset='100%' style='stop-color:${secondaryColor}'/></linearGradient></defs><circle cx='16' cy='16' r='16' fill='url(%23grad)'/><text x='16' y='22' text-anchor='middle' font-family='Arial,sans-serif' font-size='${fontSize}' font-weight='bold' fill='${textColor}'>${initials}</text></svg>`;
+        } else if (design === 'outline') {
+            svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='14' fill='none' stroke='${bgColor}' stroke-width='3'/><text x='16' y='22' text-anchor='middle' font-family='Arial,sans-serif' font-size='${fontSize}' font-weight='bold' fill='${bgColor}'>${initials}</text></svg>`;
+        }
+        
+        if (svg) {
+            const encoded = 'data:image/svg+xml,' + encodeURIComponent(svg);
+            const link = document.getElementById('dynamic-favicon');
+            if (link) link.href = encoded;
+        }
+    })();
+    </script>
     
     <!-- SortableJS for drag-and-drop -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
@@ -453,6 +487,90 @@
         .card-header h3 i { color: var(--primary); }
 
         .card-body { padding: 40px; }
+        
+        /* Collapsible Card Styles - Always Collapsible */
+        .card.collapsible .card-header {
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .card.collapsible .card-header:hover {
+            background: rgba(255,255,255,0.05);
+        }
+        
+        .card.collapsible .card-header::after {
+            content: '\f078'; /* Chevron down */
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.5);
+            transition: transform 0.3s ease;
+            margin-left: auto;
+        }
+        
+        .card.collapsible.collapsed .card-header::after {
+            transform: rotate(-90deg);
+        }
+        
+        .card.collapsible .card-body {
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.3s ease, opacity 0.3s ease;
+            max-height: 2000px;
+            opacity: 1;
+        }
+        
+        .card.collapsible.collapsed .card-body {
+            max-height: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            opacity: 0;
+            border-top: none;
+        }
+        
+        .card.collapsible.collapsed {
+            margin-bottom: 10px;
+        }
+        
+        /* Mobile-Only Collapsible Cards */
+        @media screen and (max-width: 768px) {
+            .card.mobile-collapsible .card-header {
+                cursor: pointer;
+                transition: background 0.3s ease;
+            }
+            
+            .card.mobile-collapsible .card-header::after {
+                content: '\f078';
+                font-family: 'Font Awesome 6 Free';
+                font-weight: 900;
+                font-size: 0.9rem;
+                color: rgba(255,255,255,0.5);
+                transition: transform 0.3s ease;
+                margin-left: auto;
+            }
+            
+            .card.mobile-collapsible.collapsed .card-header::after {
+                transform: rotate(-90deg);
+            }
+            
+            .card.mobile-collapsible .card-body {
+                overflow: hidden;
+                transition: max-height 0.4s ease, padding 0.3s ease, opacity 0.3s ease;
+                max-height: 2000px;
+                opacity: 1;
+            }
+            
+            .card.mobile-collapsible.collapsed .card-body {
+                max-height: 0;
+                padding-top: 0;
+                padding-bottom: 0;
+                opacity: 0;
+                border-top: none;
+            }
+            
+            .card.mobile-collapsible.collapsed {
+                margin-bottom: 10px;
+            }
+        }
 
         /* --- Forms --- */
         .form-group { margin-bottom: 30px; }
@@ -1139,7 +1257,7 @@
                 <form action="{% url 'update_appearance' %}" method="POST">
                     {% csrf_token %}
                     
-                    <div id="theme-colors-card" class="card theme-dependent-card" style="position: relative;">
+                    <div id="theme-colors-card" class="card mobile-collapsible theme-dependent-card" style="position: relative;">
                         <div class="card-header">
                             <h3><i class="fas fa-swatchbook"></i> Theme Colors</h3>
                         </div>
@@ -1182,8 +1300,174 @@
                         </div>
                     </div>
 
+                    <!-- Favicon Customization Card -->
+                    <div class="card collapsible" style="margin-top: 20px;">
+                        <div class="card-header">
+                            <h3><i class="fas fa-image"></i> Favicon Customization <i class="fas fa-info info-icon" data-desc="Customize your browser tab icon with your initials. Choose a design style, colors, and enter up to 3 characters. The favicon is generated dynamically - no storage used!" data-example="AB, JD, X"></i></h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-row">
+                                <div class="form-group" style="flex: 1;">
+                                    <label>Initials (1-3 characters)</label>
+                                    <input type="text" name="favicon_initials" value="{{ settings.favicon_initials }}" maxlength="3" class="form-control" placeholder="AB" style="text-transform: uppercase; font-weight: bold; font-size: 1.5rem; text-align: center; max-width: 150px;">
+                                </div>
+                                <div class="form-group" style="flex: 1;">
+                                    <label>Background Color</label>
+                                    <div class="color-picker-wrapper">
+                                        <input type="color" name="favicon_bg_color" value="{{ settings.favicon_bg_color|default:'#6366f1' }}" id="faviconBgColor">
+                                        <input type="text" value="{{ settings.favicon_bg_color|default:'#6366f1' }}" class="form-control" readonly>
+                                    </div>
+                                </div>
+                                <div class="form-group" style="flex: 1;">
+                                    <label>Text Color</label>
+                                    <div class="color-picker-wrapper">
+                                        <input type="color" name="favicon_text_color" value="{{ settings.favicon_text_color|default:'#ffffff' }}" id="faviconTextColor">
+                                        <input type="text" value="{{ settings.favicon_text_color|default:'#ffffff' }}" class="form-control" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <label style="margin-top: 20px;">Design Style</label>
+                            <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 10px;">
+                                {% for value, label in favicon_design_choices %}
+                                <label class="favicon-design-option" style="cursor: pointer; display: flex; flex-direction: column; align-items: center; padding: 15px; background: rgba(255,255,255,0.03); border: 2px solid {% if settings.favicon_design == value %}var(--primary){% else %}rgba(255,255,255,0.1){% endif %}; border-radius: 12px; transition: all 0.3s; min-width: 80px;">
+                                    <input type="radio" name="favicon_design" value="{{ value }}" {% if settings.favicon_design == value %}checked{% endif %} style="display: none;">
+                                    <div class="favicon-preview" data-design="{{ value }}" style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; margin-bottom: 8px;
+                                        {% if value == 'circle' %}border-radius: 50%;{% elif value == 'rounded' %}border-radius: 10px;{% elif value == 'square' %}border-radius: 0;{% elif value == 'gradient' %}border-radius: 50%; background: linear-gradient(135deg, {{ settings.favicon_bg_color|default:'#6366f1' }}, {{ settings.secondary_color|default:'#23967f' }});{% elif value == 'outline' %}border-radius: 50%; background: transparent; border: 3px solid {{ settings.favicon_bg_color|default:'#6366f1' }};{% endif %}
+                                        {% if value != 'gradient' and value != 'outline' %}background: {{ settings.favicon_bg_color|default:'#6366f1' }};{% endif %}
+                                        color: {% if value == 'outline' %}{{ settings.favicon_bg_color|default:'#6366f1' }}{% else %}{{ settings.favicon_text_color|default:'#ffffff' }}{% endif %};">
+                                        {{ settings.favicon_initials|default:'AB'|slice:':2' }}
+                                    </div>
+                                    <span style="font-size: 0.85rem; color: rgba(255,255,255,0.7);">{{ label }}</span>
+                                </label>
+                                {% endfor %}
+                            </div>
+                            
+                            <div style="margin-top: 25px; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 12px; display: flex; align-items: center; gap: 20px;">
+                                <div>
+                                    <strong style="color: rgba(255,255,255,0.8);">Live Preview:</strong>
+                                    <p style="font-size: 0.85rem; color: rgba(255,255,255,0.5); margin-top: 5px;">This is how your favicon will appear in browser tabs</p>
+                                </div>
+                                <div id="faviconLivePreview" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9rem; border-radius: 50%; background: {{ settings.favicon_bg_color|default:'#6366f1' }}; color: {{ settings.favicon_text_color|default:'#ffffff' }};">
+                                    {{ settings.favicon_initials|default:'AB'|slice:':2' }}
+                                </div>
+                                <div id="faviconLivePreview16" style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.5rem; border-radius: 50%; background: {{ settings.favicon_bg_color|default:'#6366f1' }}; color: {{ settings.favicon_text_color|default:'#ffffff' }};">
+                                    {{ settings.favicon_initials|default:'AB'|slice:':2' }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <script>
+                    // Favicon Preview Update
+                    (function() {
+                        const initialsInput = document.querySelector('input[name="favicon_initials"]');
+                        const bgColorInput = document.getElementById('faviconBgColor');
+                        const textColorInput = document.getElementById('faviconTextColor');
+                        const designRadios = document.querySelectorAll('input[name="favicon_design"]');
+                        const preview32 = document.getElementById('faviconLivePreview');
+                        const preview16 = document.getElementById('faviconLivePreview16');
+                        const allPreviews = document.querySelectorAll('.favicon-preview');
+                        
+                        function updateFaviconPreview() {
+                            const initials = (initialsInput?.value || 'AB').toUpperCase().slice(0, 2);
+                            const bgColor = bgColorInput?.value || '#6366f1';
+                            const textColor = textColorInput?.value || '#ffffff';
+                            const secondaryColor = document.querySelector('input[name="secondary_color"]')?.value || '#23967f';
+                            let design = 'circle';
+                            designRadios.forEach(r => { if(r.checked) design = r.value; });
+                            
+                            // Update ONLY the live preview elements (not the design option previews)
+                            [preview32, preview16].forEach(el => {
+                                if(!el) return;
+                                el.textContent = initials;
+                                
+                                if(design === 'circle') {
+                                    el.style.borderRadius = '50%';
+                                    el.style.background = bgColor;
+                                    el.style.border = 'none';
+                                    el.style.color = textColor;
+                                } else if(design === 'rounded') {
+                                    el.style.borderRadius = el === preview16 ? '3px' : '10px';
+                                    el.style.background = bgColor;
+                                    el.style.border = 'none';
+                                    el.style.color = textColor;
+                                } else if(design === 'square') {
+                                    el.style.borderRadius = '0';
+                                    el.style.background = bgColor;
+                                    el.style.border = 'none';
+                                    el.style.color = textColor;
+                                } else if(design === 'gradient') {
+                                    el.style.borderRadius = '50%';
+                                    el.style.background = `linear-gradient(135deg, ${bgColor}, ${secondaryColor})`;
+                                    el.style.border = 'none';
+                                    el.style.color = textColor;
+                                } else if(design === 'outline') {
+                                    el.style.borderRadius = '50%';
+                                    el.style.background = 'transparent';
+                                    el.style.border = `3px solid ${bgColor}`;
+                                    el.style.color = bgColor;
+                                }
+                            });
+                            
+                            // Update design option previews - each keeps its own design but updates colors/initials
+                            allPreviews.forEach(el => {
+                                if(!el) return;
+                                el.textContent = initials;
+                                const previewDesign = el.dataset.design || 'circle';
+                                
+                                if(previewDesign === 'circle') {
+                                    el.style.borderRadius = '50%';
+                                    el.style.background = bgColor;
+                                    el.style.border = 'none';
+                                    el.style.color = textColor;
+                                } else if(previewDesign === 'rounded') {
+                                    el.style.borderRadius = '10px';
+                                    el.style.background = bgColor;
+                                    el.style.border = 'none';
+                                    el.style.color = textColor;
+                                } else if(previewDesign === 'square') {
+                                    el.style.borderRadius = '0';
+                                    el.style.background = bgColor;
+                                    el.style.border = 'none';
+                                    el.style.color = textColor;
+                                } else if(previewDesign === 'gradient') {
+                                    el.style.borderRadius = '50%';
+                                    el.style.background = `linear-gradient(135deg, ${bgColor}, ${secondaryColor})`;
+                                    el.style.border = 'none';
+                                    el.style.color = textColor;
+                                } else if(previewDesign === 'outline') {
+                                    el.style.borderRadius = '50%';
+                                    el.style.background = 'transparent';
+                                    el.style.border = `3px solid ${bgColor}`;
+                                    el.style.color = bgColor;
+                                }
+                            });
+                            
+                            // Highlight selected design option
+                            document.querySelectorAll('.favicon-design-option').forEach(opt => {
+                                const radio = opt.querySelector('input[type="radio"]');
+                                if(radio.checked) {
+                                    opt.style.borderColor = 'var(--primary)';
+                                } else {
+                                    opt.style.borderColor = 'rgba(255,255,255,0.1)';
+                                }
+                            });
+                        }
+                        
+                        // Attach event listeners
+                        initialsInput?.addEventListener('input', updateFaviconPreview);
+                        bgColorInput?.addEventListener('input', updateFaviconPreview);
+                        textColorInput?.addEventListener('input', updateFaviconPreview);
+                        designRadios.forEach(r => r.addEventListener('change', updateFaviconPreview));
+                        
+                        // Initial update
+                        updateFaviconPreview();
+                    })();
+                    </script>
+
                     <div class="form-row">
-                        <div id="typography-card" class="card theme-dependent-card" style="flex: 1; position: relative;">
+                        <div id="typography-card" class="card mobile-collapsible theme-dependent-card" style="flex: 1; position: relative;">
                             <div class="card-header">
                                 <h3><i class="fas fa-font"></i> Typography</h3>
                             </div>
@@ -1212,7 +1496,7 @@
                             </div>
                         </div>
 
-                        <div id="visual-effects-card" class="card theme-dependent-card" style="flex: 1; position: relative;">
+                        <div id="visual-effects-card" class="card mobile-collapsible theme-dependent-card" style="flex: 1; position: relative;">
                             <div class="card-header">
                                 <h3><i class="fas fa-magic"></i> Visual Effects</h3>
                             </div>
@@ -1242,7 +1526,7 @@
                     </div>
 
                     <!-- Typography Size Controls -->
-                    <div class="card" style="margin-top: 30px;">
+                    <div class="card mobile-collapsible" style="margin-top: 30px;">
                         <div class="card-header">
                             <h3><i class="fas fa-text-height"></i> Typography Size</h3>
                         </div>
@@ -1293,7 +1577,7 @@
                          <h2 class="page-title" style="font-size: 2rem; margin-bottom: 20px;">Theme Presets (Color/Font Configurations)</h2>
                     </div>
                 
-                    <div id="quick-presets-card" class="card theme-dependent-card" style="position: relative;">
+                    <div id="quick-presets-card" class="card mobile-collapsible theme-dependent-card" style="position: relative;">
                         <div class="card-header">
                             <h3><i class="fas fa-swatchbook"></i> Quick Presets</h3>
                         </div>
@@ -1301,7 +1585,7 @@
                             <p style="color: rgba(255,255,255,0.6); margin-bottom: 20px;">Click a preset to apply its colors, fonts, and sizes:</p>
                             <div class="grid-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
                                 {% for theme in saved_themes %}
-                                <div class="theme-card preset-card" data-preset-id="{{ forloop.counter }}" onclick="applyTheme(this, '{{ theme.primary_color }}', '{{ theme.secondary_color }}', '{{ theme.background_color }}', '{{ theme.text_color }}', '{{ theme.heading_font }}', '{{ theme.body_font }}', '{{ theme.circle_color }}', {{ theme.name_font_size|default:'4.5' }}, {{ theme.greeting_font_size|default:'1.3' }}, {{ theme.section_heading_font_size|default:'1.0' }})" style="cursor: pointer; border: 2px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 15px; background: rgba(255,255,255,0.03); transition: all 0.3s ease; position: relative;">
+                                <div class="theme-card preset-card" data-preset-id="{{ forloop.counter }}" onclick="applyTheme(this, '{{ theme.primary_color }}', '{{ theme.secondary_color }}', '{{ theme.background_color }}', '{{ theme.text_color }}', '{{ theme.heading_font }}', '{{ theme.body_font }}', '{{ theme.circle_color }}')" style="cursor: pointer; border: 2px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 15px; background: rgba(255,255,255,0.03); transition: all 0.3s ease; position: relative;">
                                     <div style="height: 80px; border-radius: 8px; background: linear-gradient(135deg, {{ theme.primary_color }}, {{ theme.secondary_color }}); margin-bottom: 10px; position: relative; overflow: hidden;">
                                         <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 40%; background: {{ theme.background_color }}; opacity: 0.9;"></div>
                                         <div style="position: absolute; top: 8px; right: 8px; width: 16px; height: 16px; border-radius: 50%; background: {{ theme.circle_color }}; box-shadow: 0 0 10px rgba(0,0,0,0.3);"></div>
@@ -1357,7 +1641,7 @@
                             </style>
 
                             <script>
-                                function applyTheme(card, primary, secondary, bg, text, heading, body, circle, nameSize, greetingSize, sectionSize) {
+                                function applyTheme(card, primary, secondary, bg, text, heading, body, circle) {
                                     // Remove selected state from all cards
                                     document.querySelectorAll('.preset-card').forEach(c => c.classList.remove('selected'));
                                     
@@ -1396,28 +1680,7 @@
                                         bFont.dispatchEvent(new Event('change'));
                                     }
                                     
-                                    // Update Font Size Sliders
-                                    const nameSizeSlider = document.getElementById('nameSizeSlider');
-                                    const greetingSizeSlider = document.getElementById('greetingSizeSlider');
-                                    const sectionSizeSlider = document.getElementById('sectionHeadingSizeSlider');
-                                    
-                                    if (nameSizeSlider && nameSize) {
-                                        nameSizeSlider.value = nameSize;
-                                        const nameSizeValue = document.getElementById('nameSizeValue');
-                                        if (nameSizeValue) nameSizeValue.textContent = nameSize;
-                                    }
-                                    
-                                    if (greetingSizeSlider && greetingSize) {
-                                        greetingSizeSlider.value = greetingSize;
-                                        const greetingSizeValue = document.getElementById('greetingSizeValue');
-                                        if (greetingSizeValue) greetingSizeValue.textContent = greetingSize;
-                                    }
-                                    
-                                    if (sectionSizeSlider && sectionSize) {
-                                        sectionSizeSlider.value = sectionSize;
-                                        const sectionSizeValue = document.getElementById('sectionHeadingSizeValue');
-                                        if (sectionSizeValue) sectionSizeValue.textContent = sectionSize;
-                                    }
+                                    // Font size updates removed to prevent overriding user preferences
                                     
                                     // Update preview if available
                                     if (typeof updatePreview === 'function') {
@@ -1493,7 +1756,7 @@
                     <!-- Saved Themes moved below main form to fix nested form issues -->
 
                     <!-- Theme Gallery -->
-                    <div class="card" style="margin-top: 30px;">
+                    <div class="card mobile-collapsible" style="margin-top: 30px;">
                         <div class="card-header">
                             <h3><i class="fas fa-palette"></i> Theme Gallery <i class="fas fa-info info-icon" data-desc="Choose a complete visual theme for your portfolio. Each theme has a unique layout and interaction style." data-example="Terminal X, Glass Horizon"></i></h3>
                         </div>
@@ -1502,35 +1765,47 @@
                             
                             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
                                 {% for value, label in theme_choices %}
+                                {% if value in 'classic,developer,irish_spring,victoreke,interactive_3d' %}
                                 <label class="theme-card" style="
-                                    background: {% if value == 'classic' %}linear-gradient(135deg, #1a1a2e 0%, #16213e 100%){% elif value == 'developer_folio' %}linear-gradient(135deg, #0f0f23 0%, #1a1a3e 100%){% elif value == 'irish_spring' %}linear-gradient(135deg, #f0f9f0 0%, #2CD889 100%){% elif value == 'neural_odyssey' %}linear-gradient(135deg, #050510 0%, #1a0a2e 100%){% elif value == 'chrono_story' %}linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%){% elif value == 'glass_horizon' %}linear-gradient(135deg, #1e1b4b 0%, #312e81 100%){% elif value == 'cinematic_flow' %}linear-gradient(135deg, #000000 0%, #0a0a0a 100%){% elif value == 'interactive_3d' %}linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%){% endif %};
+                                    background: #1a1a2e;
                                     border: 2px solid {% if settings.active_theme == value %}var(--primary){% else %}rgba(255,255,255,0.1){% endif %};
                                     border-radius: 16px;
-                                    padding: 20px;
+                                    padding: 0;
                                     cursor: pointer;
                                     transition: all 0.3s ease;
                                     display: flex;
                                     flex-direction: column;
-                                    min-height: 160px;
+                                    min-height: 220px;
                                     position: relative;
+                                    overflow: hidden;
                                     {% if settings.active_theme == value %}box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);{% endif %}
                                 ">
                                     <input type="radio" name="active_theme" value="{{ value }}" 
                                            {% if settings.active_theme == value %}checked{% endif %}
                                            style="position: absolute; opacity: 0; pointer-events: none;">
                                     
-                                    <!-- Theme Icon -->
-                                    <div style="font-size: 2rem; margin-bottom: 15px;">
-                                        {% if value == 'classic' %}🎨{% elif value == 'developer_folio' %}💻{% elif value == 'irish_spring' %}🍀{% elif value == 'neural_odyssey' %}🌌{% elif value == 'chrono_story' %}📖{% elif value == 'glass_horizon' %}🔮{% elif value == 'cinematic_flow' %}🎬{% elif value == 'interactive_3d' %}💠{% endif %}
+                                    <!-- Simple Theme Preview -->
+                                    <div style="height: 140px; width: 100%; display: flex; align-items: center; justify-content: center; 
+                                        {% if value == 'classic' %}background: #1a1a2e; color: #fff;
+                                        {% elif value == 'developer' %}background: #0a192f; color: #64ffda; font-family: monospace;
+                                        {% elif value == 'irish_spring' %}background: #ffffff; color: #3ad59b; border: 1px solid #eee;
+                                        {% elif value == 'victoreke' %}background: #fafafa; color: #18181b; border: 1px solid #eee;
+                                        {% elif value == 'interactive_3d' %}background: #0a0a0f; color: #00ffff;
+                                        {% endif %}">
+                                        <span style="font-weight: 700; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px;">
+                                            {{ label }}
+                                        </span>
                                     </div>
                                     
-                                    <!-- Theme Name -->
-                                    <h4 style="margin: 0 0 8px 0; font-size: 1.1rem; font-weight: 700; color: {% if value == 'irish_spring' %}#1a1a2e{% else %}#fff{% endif %};">{{ label }}</h4>
-                                    
-                                    <!-- Theme Description -->
-                                    <p style="font-size: 0.8rem; color: {% if value == 'irish_spring' %}rgba(26,26,46,0.7){% else %}rgba(255,255,255,0.5){% endif %}; margin: 0; flex-grow: 1;">
-                                        {% if value == 'classic' %}Original portfolio style{% elif value == 'developer_folio' %}Matrix-style code theme{% elif value == 'irish_spring' %}Fresh mint & playful design{% elif value == 'neural_odyssey' %}3D parallax space{% elif value == 'chrono_story' %}Interactive storytelling{% elif value == 'glass_horizon' %}Glassmorphism design{% elif value == 'cinematic_flow' %}Scroll-driven cinema{% elif value == 'interactive_3d' %}Interactive 3D backgrounds{% endif %}
-                                    </p>
+                                    <div style="padding: 15px; background: linear-gradient(0deg, rgba(0,0,0,0.8), rgba(0,0,0,0)); flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-end;">
+                                        <!-- Theme Name -->
+                                        <h4 style="margin: 0 0 5px 0; font-size: 1.1rem; font-weight: 700; color: #fff;">{{ label }}</h4>
+                                        
+                                        <!-- Theme Description -->
+                                        <p style="font-size: 0.8rem; color: rgba(255,255,255,0.6); margin: 0;">
+                                            {% if value == 'classic' %}Original portfolio style{% elif value == 'developer' %}Matrix-style code theme{% elif value == 'irish_spring' %}Fresh mint & playful design{% elif value == 'victoreke' %}Modern dark aesthetic{% elif value == 'interactive_3d' %}Interactive 3D backgrounds{% endif %}
+                                        </p>
+                                    </div>
                                     
                                     <!-- Active Badge -->
                                     <div class="active-badge" style="
@@ -1544,17 +1819,12 @@
                                         border-radius: 10px; 
                                         font-weight: 600;
                                         display: {% if settings.active_theme == value %}block{% else %}none{% endif %};
+                                        box-shadow: 0 2px 5px rgba(0,0,0,0.5);
                                     ">
                                         ACTIVE
                                     </div>
-                                    
-                                    <!-- Coming Soon Badge (only for unimplemented themes) -->
-                                    {% if value != 'classic' and value != 'interactive_3d' and value != 'developer_folio' and value != 'irish_spring' %}
-                                    <div style="position: absolute; bottom: 10px; right: 10px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); font-size: 0.65rem; padding: 2px 6px; border-radius: 8px;">
-                                        COMING SOON
-                                    </div>
-                                    {% endif %}
                                 </label>
+                                {% endif %}
                                 {% endfor %}
                             </div>
 
@@ -1653,7 +1923,7 @@
                                     const themeCards = document.querySelectorAll('.theme-card');
                                     
                                     // Themes that support Background Styles and Quick Presets
-                                    const themesWithBgStyles = ['classic', 'developer_folio'];
+                                    const themesWithBgStyles = ['classic', 'developer_folio', 'victoreke'];
                                     
                                     // Themes with completely fixed styling (no customization)
                                     const themesWithFixedStyling = ['irish_spring'];
@@ -1815,6 +2085,77 @@
                         });
                     </script>
 
+                    <!-- VCard theme settings removed per user request -->
+
+                    <!-- Intro Animation Settings Card -->
+                    <div class="card collapsible" style="margin-top: 30px;">
+                        <div class="card-header" style="cursor: pointer;" onclick="toggleIntroSettings()">
+                            <h3><i class="fas fa-play-circle"></i> Intro Animation <i class="fas fa-info info-icon" data-desc="Show a language greeting animation when visitors first load your portfolio." data-example="Hello, Bonjour, Hola..."></i></h3>
+                            <label class="switch" onclick="event.stopPropagation();">
+                                <input type="checkbox" id="show_intro_animation" name="show_intro_animation" onchange="toggleIntroSettings()" {% if settings.show_intro_animation %}checked{% endif %}>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="card-body" id="intro-animation-settings" style="display: {% if settings.show_intro_animation %}block{% else %}none{% endif %};">
+                            <p style="color: rgba(255,255,255,0.6); margin-bottom: 20px;">Customize the greeting animation that plays when visitors first open your portfolio.</p>
+                            
+                            <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                <div class="form-group">
+                                    <label for="intro_speed">Animation Speed <i class="fas fa-info info-icon" data-desc="How fast the greetings cycle through."></i></label>
+                                    <select id="intro_speed" name="intro_speed" class="form-control" style="background: rgba(0,0,0,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.1);">
+                                        {% for value, label in intro_speed_choices %}
+                                        <option value="{{ value }}" {% if settings.intro_speed == value %}selected{% endif %}>{{ label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Preview</label>
+                                    <div style="background: rgba(0,0,0,0.3); border-radius: 8px; padding: 15px; text-align: center; font-size: 1.5rem; font-weight: 500; color: #eae7d6;">
+                                        <span id="intro-preview-text">• Hello</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group" style="margin-top: 15px;">
+                                <label for="intro_greetings">Custom Greetings <i class="fas fa-info info-icon" data-desc="Comma-separated list of greetings. Each will display in sequence."></i></label>
+                                <textarea id="intro_greetings" name="intro_greetings" class="form-control" style="min-height: 80px; background: rgba(0,0,0,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.1);">{{ settings.intro_greetings }}</textarea>
+                                <small style="color: rgba(255,255,255,0.5);">Separate greetings with commas. Example: Hello,Bonjour,Hola,नमस्ते</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <script>
+                        function toggleIntroSettings() {
+                            const checkbox = document.getElementById('show_intro_animation');
+                            const settings = document.getElementById('intro-animation-settings');
+                            
+                            if (checkbox.checked) {
+                                settings.style.display = 'block';
+                            } else {
+                                settings.style.display = 'none';
+                            }
+                        }
+                        
+                        // Preview animation
+                        (function() {
+                            const preview = document.getElementById('intro-preview-text');
+                            const greetingsInput = document.getElementById('intro_greetings');
+                            
+                            if (!preview || !greetingsInput) return;
+                            
+                            let words = greetingsInput.value.split(',').map(w => '• ' + w.trim()).filter(w => w.length > 2);
+                            let i = 0;
+                            
+                            setInterval(() => {
+                                words = greetingsInput.value.split(',').map(w => '• ' + w.trim()).filter(w => w.length > 2);
+                                if (words.length > 0) {
+                                    i = (i + 1) % words.length;
+                                    preview.textContent = words[i];
+                                }
+                            }, 600);
+                        })();
+                    </script>
+
                     <style>
                         .btn-save-appearance {
                             padding: 15px 50px;
@@ -1893,7 +2234,7 @@
                                  </div>
                              </div>
                              <div class="project-actions">
-                                 <button onclick="openEditProject('{{ project.id }}', '{{ project.title|escapejs }}', '{{ project.category|escapejs }}', '{{ project.client|escapejs }}', '{{ project.project_link|escapejs }}', '{{ project.repo_link|escapejs }}', '{{ project.description|escapejs }}')" class="btn btn-action btn-edit" aria-label="Edit {{ project.title }}">
+                                 <button onclick="openEditProject('{{ project.id }}', '{{ project.title|escapejs }}', '{{ project.category|escapejs }}', '{{ project.client|default:''|escapejs }}', '{{ project.url|escapejs }}', '{{ project.repo_link|default:''|escapejs }}', '{{ project.description|escapejs }}')" class="btn btn-action btn-edit" aria-label="Edit {{ project.title }}">
                                      <i class="fas fa-edit" aria-hidden="true"></i>
                                      <span class="action-label">Edit</span>
                                  </button>
@@ -4475,6 +4816,148 @@
     <!-- FOUC Prevention - Show page after styles load -->
     <script>
         document.documentElement.classList.add('loaded');
+    </script>
+    
+    <!-- Collapsible Cards System -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const isMobile = window.innerWidth <= 768;
+            
+            // Initialize always-collapsible cards
+            const collapsibleCards = document.querySelectorAll('.card.collapsible');
+            collapsibleCards.forEach(card => {
+                const header = card.querySelector('.card-header');
+                const cardId = card.id || card.querySelector('h3')?.textContent?.trim();
+                
+                // Start collapsed by default
+                if (!card.classList.contains('no-auto-collapse')) {
+                    card.classList.add('collapsed');
+                }
+                
+                // Toggle on header click
+                header?.addEventListener('click', (e) => {
+                    if (e.target.closest('input, select, button, label.switch')) return;
+                    card.classList.toggle('collapsed');
+                });
+            });
+            
+            // Initialize mobile-only collapsible cards
+            const mobileCollapsibleCards = document.querySelectorAll('.card.mobile-collapsible');
+            mobileCollapsibleCards.forEach(card => {
+                const header = card.querySelector('.card-header');
+                
+                // Only collapse on mobile
+                if (isMobile) {
+                    card.classList.add('collapsed');
+                }
+                
+                // Toggle on header click (only works on mobile due to CSS)
+                header?.addEventListener('click', (e) => {
+                    if (!isMobile) return; // Only toggle on mobile
+                    if (e.target.closest('input, select, button, label.switch')) return;
+                    card.classList.toggle('collapsed');
+                });
+            });
+            
+            // Auto-collapse all cards when Save button is clicked (appearance form)
+            const appearanceForm = document.querySelector('#section-appearance form');
+            if (appearanceForm) {
+                appearanceForm.addEventListener('submit', function() {
+                    // Collapse collapsible cards
+                    collapsibleCards.forEach(card => {
+                        card.classList.add('collapsed');
+                    });
+                    // Collapse mobile cards only on mobile
+                    if (isMobile) {
+                        mobileCollapsibleCards.forEach(card => {
+                            card.classList.add('collapsed');
+                        });
+                    }
+                });
+            }
+        });
+        
+        // Global function to toggle specific card
+        function toggleCard(cardId) {
+            const card = document.getElementById(cardId);
+            if (card) {
+                card.classList.toggle('collapsed');
+            }
+        }
+    </script>
+    <!-- Release Notes Modal -->
+    <div id="releaseNotesModal" class="modal" style="display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.8); backdrop-filter: blur(5px);">
+        <div class="modal-content" style="background-color: var(--bg-dark); margin: 10% auto; padding: 0; border: 1px solid var(--glass-border); width: 90%; max-width: 600px; border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); position: relative; overflow: hidden;">
+            
+            <div style="background: linear-gradient(135deg, var(--primary), var(--secondary)); padding: 25px; position: relative;">
+                <h2 style="margin: 0; color: white; font-size: 1.5rem; font-weight: 700;">Welcome Back!</h2>
+                <p style="margin: 5px 0 0; color: rgba(255,255,255,0.9); font-size: 0.95rem;">Here's what's been improved in version {{ app_version }}</p>
+                <div style="position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+                <div style="position: absolute; bottom: -30px; left: -10px; width: 60px; height: 60px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+            </div>
+
+            <div style="padding: 25px 30px; color: var(--text-main);">
+                {{ release_notes_content|safe }}
+            </div>
+
+            <div style="padding: 20px 30px; background: rgba(0,0,0,0.2); text-align: right; border-top: 1px solid var(--glass-border);">
+                <button onclick="dismissReleaseNotes()" style="background: var(--primary); color: white; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;">
+                    Awesome, Got it!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if we need to show release notes
+            {% if show_release_notes %}
+                const modal = document.getElementById('releaseNotesModal');
+                if (modal) {
+                    modal.style.display = 'block';
+                    document.body.style.overflow = 'hidden'; // Prevent scrolling
+                    
+                    // Add animation class
+                    modal.querySelector('.modal-content').animate([
+                        { transform: 'scale(0.9)', opacity: 0 },
+                        { transform: 'scale(1)', opacity: 1 }
+                    ], {
+                        duration: 300,
+                        easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+                        fill: 'forwards'
+                    });
+                }
+            {% endif %}
+        });
+
+        function dismissReleaseNotes() {
+            fetch('{% url "dismiss_release_notes" %}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    const modal = document.getElementById('releaseNotesModal');
+                    
+                    // Animate out
+                    modal.querySelector('.modal-content').animate([
+                        { transform: 'scale(1)', opacity: 1 },
+                        { transform: 'scale(0.9)', opacity: 0 }
+                    ], {
+                        duration: 200,
+                        easing: 'ease-in',
+                        fill: 'forwards'
+                    }).onfinish = () => {
+                        modal.style.display = 'none';
+                        document.body.style.overflow = '';
+                    };
+                }
+            })
+            .catch(error => console.error('Error dismissing notes:', error));
+        }
     </script>
 </body>
 </html>

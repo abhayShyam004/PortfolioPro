@@ -1,0 +1,75 @@
+<section class="stack-section">
+    <div class="marquee-wrapper">
+        <div class="marquee-content">
+            {% for i in "12345678"|make_list %} <!-- Repeat enough times to fill screen -->
+                {% for skill in skills|slice:":10" %}
+                <div class="tech-item">
+                    {% if skill.icon %}
+                    <img src="{{ skill.icon.url }}" alt="{{ skill.name }}" class="tech-icon">
+                    {% else %}
+                    <span class="tech-icon-text">⚡</span>
+                    {% endif %}
+                    <span class="tech-name">{{ skill.name }}</span>
+                </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<style>
+    .stack-section {
+        padding: 60px 0;
+        background: var(--surface-color);
+        border-top: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-color);
+        overflow: hidden;
+    }
+
+    .marquee-wrapper {
+        display: flex;
+        overflow: hidden;
+        user-select: none;
+        mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    }
+
+    .marquee-content {
+        display: flex;
+        gap: 60px;
+        animation: scroll 40s linear infinite;
+        min-width: 100%;
+        padding-left: 60px; /* Offset for gap */
+    }
+
+    .tech-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        flex-shrink: 0;
+        opacity: 0.7;
+        transition: opacity 0.3s;
+    }
+    
+    .tech-item:hover {
+        opacity: 1;
+    }
+
+    .tech-icon {
+        width: 40px;
+        height: 40px;
+        object-fit: contain;
+    }
+    
+    .tech-name {
+        font-family: var(--font-heading);
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        text-transform: uppercase;
+    }
+
+    @keyframes scroll {
+        from { transform: translateX(0); }
+        to { transform: translateX(-50%); } /* Assumes content is duplicated once to allow loop */
+    }
+</style>

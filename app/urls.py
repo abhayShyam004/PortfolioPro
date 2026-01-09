@@ -67,6 +67,8 @@ urlpatterns = [
     
     # Main portfolio
     path('', views.portfolio_view, name='home'),
+    path('about/', views.about_view, name='about'),
+    path('projects/', views.projects_view, name='projects'),
     path('contact/', views.contact_view, name='contact'),
     
     # Admin authentication
@@ -133,6 +135,16 @@ urlpatterns = [
     # Analytics API
     path('api/analytics/', views.get_analytics, name='get_analytics'),
     
+    # Release Notes API
+    path('api/release-notes/dismiss/', views.dismiss_release_notes, name='dismiss_release_notes'),
+
     # GitHub Import API
     path('api/import-github/', views.import_github_projects, name='import_github_projects'),
 ]
+
+# Serve media files in development
+from django.conf import settings
+from django.conf.urls.static import static
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

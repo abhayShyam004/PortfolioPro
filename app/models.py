@@ -268,14 +268,18 @@ class SiteSettings(models.Model):
     
     # Theme System
     THEME_CHOICES = [
+        ('modern', 'Modern Minimalist'),
         ('classic', 'Classic'),
+        ('creative', 'Creative Dark'),
+        ('developer', 'Developer Folio'),
+        ('terminal', 'Terminal/Hacker'),
+        ('terminal_x', 'Terminal X (Advanced)'),
         ('interactive_3d', 'Interactive 3D'),
-        ('developer_folio', 'Developer Folio'),
+        ('vcard', 'Digital Business Card'),
+        ('cv_simple', 'CV / Resume Simple'),
         ('irish_spring', 'Irish Spring'),
-        ('neural_odyssey', 'Neural Odyssey'),
-        ('chrono_story', 'Chrono Story'),
-        ('glass_horizon', 'Glass Horizon'),
-        ('cinematic_flow', 'Cinematic Flow'),
+        ('victoreke', 'Pro V2'),
+        ('binil', 'TheGr8Binil'),
     ]
     active_theme = models.CharField(max_length=30, choices=THEME_CHOICES, default='classic')
     theme_config = models.JSONField(default=dict, blank=True, help_text="Theme-specific configuration")
@@ -293,6 +297,36 @@ class SiteSettings(models.Model):
     github_username = models.CharField(max_length=100, blank=True, default="", help_text="Your GitHub username")
     leetcode_username = models.CharField(max_length=100, blank=True, default="", help_text="Your LeetCode username")
     coding_activity_order = models.IntegerField(default=50, help_text="Order position for coding activity section")
+    
+    # Favicon Customization (Dynamic Generation - No Storage)
+    FAVICON_DESIGN_CHOICES = [
+        ('circle', 'Circle'),
+        ('rounded', 'Rounded Square'),
+        ('square', 'Square'),
+        ('gradient', 'Gradient'),
+        ('outline', 'Outline'),
+    ]
+    favicon_initials = models.CharField(max_length=3, default="", blank=True, help_text="1-3 characters for favicon (e.g., AB)")
+    favicon_design = models.CharField(max_length=20, choices=FAVICON_DESIGN_CHOICES, default='circle')
+    favicon_bg_color = models.CharField(max_length=7, default="#6366f1", help_text="Favicon background color")
+    favicon_text_color = models.CharField(max_length=7, default="#ffffff", help_text="Favicon text color")
+    
+    # Intro Animation Settings
+    show_intro_animation = models.BooleanField(default=True, help_text="Show language greetings animation on page load")
+    intro_greetings = models.TextField(
+        default="Hello,Bonjour,Hola,Привет,مرحبا,നമസ്കാരം,こんにちは,नमस्ते",
+        blank=True,
+        help_text="Comma-separated list of greetings to display"
+    )
+    INTRO_SPEED_CHOICES = [
+        ('slow', 'Slow'),
+        ('medium', 'Medium'),
+        ('fast', 'Fast'),
+    ]
+    intro_speed = models.CharField(max_length=10, choices=INTRO_SPEED_CHOICES, default='medium')
+    
+    # Release Notes Tracking
+    last_seen_version = models.CharField(max_length=20, default="0.0.0", help_text="Last version of the app the user has seen release notes for")
     
     class Meta:
         verbose_name = "Site Settings"

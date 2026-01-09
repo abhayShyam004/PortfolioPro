@@ -12,6 +12,7 @@ from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
 from django.conf import settings
+from superadmin.models import ReleaseNote
 from django.db import models
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
@@ -228,6 +229,8 @@ def portfolio_view(request):
         'contact': contact,
         'settings': site_settings,
         'orderable_sections': orderable_sections,
+        # For navigation - exclude education, experience, expertise
+        'nav_sections': [s for s in orderable_sections if s.slug not in ['education', 'experience', 'expertise']],
         'edu_exp_adjacent': edu_exp_adjacent,
         'edu_first': edu_first,
         'custom_sections': CustomSection.objects.filter(
@@ -235,24 +238,160 @@ def portfolio_view(request):
             is_system=False, 
             is_visible=True
         ).order_by('order').prefetch_related('items'),
+        'visible_section_slugs': section_slugs,
         'tenant': tenant,
     }
+
+    # GENERIC PREVIEW MODE (For Theme Gallery Screenshots)
+    if request.GET.get('preview_mode'):
+        class MockObj:
+            def __init__(self, **kwargs):
+                self.__dict__.update(kwargs)
+            def get_platform_display(self):
+                return self.platform if hasattr(self, 'platform') else ''
+            
+            # Add url property for ImageField mocking
+            @property
+            def url(self):
+                return '/static/images/avatar_placeholder.png' # Fallback path
+        
+        context['profile'] = MockObj(
+            name="Alex Designer",
+            title="Creative Technologist",
+            bio="Building digital experiences that matter.",
+            hero_bio="Building digital experiences that matter.",
+            about_text="I am a passionate developer and designer focusing on creating immersive web experiences. With 5 years of experience, I help brands tell their stories through code and motion.",
+            avatar=None,
+            cv_link="#"
+        )
+        context['contact'] = MockObj(
+            email="hello@example.com",
+            phone="+1 (555) 123-4567",
+            contact_heading="Let's Work Together"
+        )
+        context['social_links'] = [
+            MockObj(platform="Github", url="#", icon_class="fab fa-github"),
+            MockObj(platform="LinkedIn", url="#", icon_class="fab fa-linkedin"),
+            MockObj(platform="Twitter", url="#", icon_class="fab fa-twitter"),
+        ]
+        context['skills'] = [
+            MockObj(name="React", category="Frontend", description="UI Library"),
+            MockObj(name="Python", category="Backend", description="Scripting"),
+            MockObj(name="Design", category="Creative", description="Figma & Adobe"),
+        ]
+        context['projects'] = [
+            MockObj(title="E-Commerce Platform", category="Web App", description="A modern shopping experience built with Next.js.", url="#", icon=None),
+            MockObj(title="Portfolio V1", category="Design", description="My previous portfolio site.", url="#", icon=None),
+            MockObj(title="Task Manager", category="Productivity", description="Manage your daily tasks efficiently.", url="#", icon=None),
+        ]
+        context['experiences'] = [
+            MockObj(position="Senior Developer", company="Tech Corp", timeframe="2022 - Present", description="Leading the frontend team."),
+            MockObj(position="UI Designer", company="Creative Studio", timeframe="2020 - 2022", description="Designed user interfaces for mobile apps."),
+        ]
+        # Ensure active_theme is overridden by query param if provided
+        active_theme_override = request.GET.get('theme')
+        if active_theme_override:
+            site_settings.active_theme = active_theme_override
 
     # Theme Routing
     if site_settings.active_theme == 'interactive_3d':
         return render(request, 'app/themes/interactive_3d/main.html', context)
     
-    if site_settings.active_theme == 'developer_folio':
+    if site_settings.active_theme == 'developer':
         return render(request, 'app/themes/developer_folio/main.html', context)
     
     if site_settings.active_theme == 'irish_spring':
         return render(request, 'app/themes/zachjordan_clone/main.html', context)
+    
+    if site_settings.active_theme == 'victoreke':
+        return render(request, 'app/themes/victoreke/index.html', context)
+
+    if site_settings.active_theme == 'binil':
+        return render(request, 'app/themes/binil/index.html', context)
 
     return render(request, 'app/index.html', context)
 
 
+def about_view(request):
+    """About page view - renders theme-specific about page"""
+    # Get tenant the same way portfolio_view does
+    tenant = getattr(request, 'tenant', None)
+    
+    if not tenant:
+        # No tenant - redirect to home
+        return redirect('home')
+    
+    profile = get_or_create_profile(tenant)
+    site_settings = get_or_create_settings(tenant)
+    
+    # Get all context data
+    experiences = Experience.objects.filter(user=tenant).order_by('order')
+    education_list = Education.objects.filter(user=tenant).order_by('order')
+    skills = Skill.objects.filter(user=tenant)
+    expertise_list = Expertise.objects.filter(user=tenant)
+    contact = get_or_create_contact(tenant)
+    social_links = SocialLink.objects.filter(user=tenant)
+    
+    context = {
+        'profile': profile,
+        'settings': site_settings,
+        'experiences': experiences,
+        'education_list': education_list,
+        'skills': skills,
+        'expertise_list': expertise_list,
+        'contact': contact,
+        'social_links': social_links,
+    }
+    
+    # Theme-specific routing
+    if site_settings and site_settings.active_theme == 'victoreke':
+        return render(request, 'app/themes/victoreke/about.html', context)
+        
+    if site_settings and site_settings.active_theme == 'binil':
+        return render(request, 'app/themes/binil/about.html', context)
+    
+    # Default: redirect to home with about anchor
+    return redirect('/#about')
+
+
+def projects_view(request):
+    """Projects page view - renders theme-specific projects page"""
+    # Get tenant the same way portfolio_view does
+    tenant = getattr(request, 'tenant', None)
+    
+    if not tenant:
+        # No tenant - redirect to home
+        return redirect('home')
+    
+    profile = get_or_create_profile(tenant)
+    site_settings = get_or_create_settings(tenant)
+    
+    projects = Project.objects.filter(user=tenant).order_by('-id')
+    contact = get_or_create_contact(tenant)
+    social_links = SocialLink.objects.filter(user=tenant)
+    
+    context = {
+        'profile': profile,
+        'settings': site_settings,
+        'projects': projects,
+        'contact': contact,
+        'social_links': social_links,
+    }
+    
+    # Theme-specific routing
+    if site_settings and site_settings.active_theme == 'victoreke':
+        return render(request, 'app/themes/victoreke/projects.html', context)
+
+    if site_settings and site_settings.active_theme == 'binil':
+        return render(request, 'app/themes/binil/projects.html', context)
+    
+    # Default: redirect to home with projects anchor
+    return redirect('/#projects')
+
+
 def contact_view(request):
     return render(request, 'app/contact.html')
+
 
 
 # ============== User Registration ==============
@@ -520,6 +659,23 @@ def admin_panel(request):
     contact = get_or_create_contact(user)
     site_settings = get_or_create_settings(user)
     
+    
+    
+    # Release Notes Logic
+    show_release_notes = False
+    release_notes_content = ""
+    app_version = "1.0.0"
+    
+    # Get latest published release note
+    latest_note = ReleaseNote.objects.filter(is_published=True).order_by('-published_at').first()
+    
+    if latest_note:
+        app_version = latest_note.version
+        # Check if version is newer/different than last seen
+        if site_settings.last_seen_version != latest_note.version:
+            show_release_notes = True
+            release_notes_content = latest_note.content
+            
     context = {
         'profile': profile,
         'social_links': SocialLink.objects.filter(user=user),
@@ -536,6 +692,8 @@ def admin_panel(request):
         'button_style_choices': SiteSettings.BUTTON_STYLE_CHOICES,
         'style_choices': SiteSettings.STYLE_CHOICES,
         'theme_choices': SiteSettings.THEME_CHOICES,
+        'favicon_design_choices': SiteSettings.FAVICON_DESIGN_CHOICES,
+        'intro_speed_choices': SiteSettings.INTRO_SPEED_CHOICES,
         'custom_sections': CustomSection.objects.filter(user=user, is_system=False).prefetch_related('items'),
         'all_sections': CustomSection.objects.filter(user=user).order_by('order'),
         'main_page_sections': CustomSection.objects.filter(user=user).filter(
@@ -552,8 +710,28 @@ def admin_panel(request):
         ],
         'next_section_order': CustomSection.objects.filter(user=user).count() + 1,
         'current_user': user,
+        'show_release_notes': show_release_notes,
+        'release_notes_content': release_notes_content,
+        'app_version': app_version,
     }
     return render(request, 'app/admin_panel.html', context)
+
+
+@admin_required
+def dismiss_release_notes(request):
+    """Dismiss release notes by updating last_seen_version"""
+    if request.method == 'POST':
+        user = get_admin_user(request)
+        site_settings = get_or_create_settings(user)
+        
+        latest_note = ReleaseNote.objects.filter(is_published=True).order_by('-published_at').first()
+        
+        if latest_note:
+            site_settings.last_seen_version = latest_note.version
+            site_settings.save()
+            return JsonResponse({'status': 'success'})
+    
+    return JsonResponse({'status': 'error'}, status=400)
 
 
 # ============== Profile API ==============
@@ -962,6 +1140,19 @@ def update_appearance(request):
                 config['glass_opacity'] = request.POST.get('glass_opacity', '0.1')
                 config['mouse_controls'] = request.POST.get('vanta_mouse_controls') == 'true'
                 site_settings.theme_config = config
+        
+        # Favicon Customization
+        site_settings.favicon_initials = request.POST.get('favicon_initials', site_settings.favicon_initials)[:3]
+        site_settings.favicon_design = request.POST.get('favicon_design', site_settings.favicon_design)
+        site_settings.favicon_bg_color = request.POST.get('favicon_bg_color', site_settings.favicon_bg_color)
+        site_settings.favicon_text_color = request.POST.get('favicon_text_color', site_settings.favicon_text_color)
+        
+        # Intro Animation Settings
+        site_settings.show_intro_animation = request.POST.get('show_intro_animation') == 'on'
+        intro_greetings = request.POST.get('intro_greetings', site_settings.intro_greetings)
+        if intro_greetings:
+            site_settings.intro_greetings = intro_greetings
+        site_settings.intro_speed = request.POST.get('intro_speed', site_settings.intro_speed)
         
         site_settings.save()
         messages.success(request, 'Appearance settings updated successfully!')

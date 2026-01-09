@@ -1,0 +1,129 @@
+{% extends "app/themes/victoreke/base.html" %}
+
+{% block title %}{{ profile.name|default:"Portfolio" }} | Software Developer{% endblock %}
+
+{% block content %}
+<main class="main">
+  
+  <!-- HERO SECTION -->
+  <section class="hero slide-up" id="hero">
+    <div class="hero-content">
+      <h1 class="hero-headline">
+        {{ profile.headline|default:profile.hero_bio|default:"Software Developer and Technical Writer who is passionate about building solutions" }}
+      </h1>
+      <p class="hero-bio">
+        {{ profile.about_text|truncatewords:50|default:"Add your bio in the admin panel to describe yourself and your work." }}
+      </p>
+
+      <!-- Social Links -->
+      {% if social_links %}
+      <ul class="social-links slide-up delay-1">
+        {% for link in social_links %}
+        {% if link.url %}
+        <li>
+          <a href="{{ link.url }}" class="social-link" target="_blank" rel="noopener noreferrer">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" opacity="0.6"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+            {{ link.display_name|default:link.platform }}
+          </a>
+        </li>
+        {% endif %}
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+
+    <!-- Hero SVG -->
+    <div class="hero-svg slide-up delay-2">
+      <svg viewBox="0 0 1273 906" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g>
+          <path class="path" d="M318.587 315.483V510.936L477.544 431.391V236.949M318.587 315.483L159.63 236.949M318.587 315.483L477.544 236.949M318.587 315.483V509.925L159.63 589.469M318.587 315.483L159.63 237.286L0.673828 315.483M318.587 315.483L159.63 394.016M477.544 236.949L318.587 158.753L159.63 236.949M477.544 236.949V432.402M477.544 236.949L318.587 158.416L477.544 80.2192L636.5 158.416L477.544 236.949ZM159.63 236.949V79.5451M159.63 589.469V394.016M159.63 589.469L0.673828 509.925V315.483M0.673828 315.483L159.63 394.016M159.63 79.5451L318.587 1.34863L477.544 79.5451L318.587 158.079L159.63 79.5451ZM795.457 395.701V237.286M795.457 237.286L636.5 159.09L477.544 237.286M795.457 237.286L636.5 315.82M477.544 237.286V431.728L601.139 491.762M477.544 237.286L636.5 315.82M636.5 315.82V472.887M954.414 668.003V473.561M954.414 473.561L795.457 395.364L636.5 473.561L795.457 552.094M954.414 473.561L795.457 552.094M954.414 473.561V669.014M954.414 473.561L795.457 395.027L954.414 316.831L1113.37 395.027L954.414 473.561ZM795.457 552.094L636.5 473.898L477.544 552.094M795.457 552.094L636.5 630.628M477.544 552.094V746.534L636.5 826.078V630.628M477.544 552.094L636.5 630.628M795.457 709.498V904.949M795.457 709.498L636.5 630.965M795.457 709.498L954.414 630.965M795.457 904.949L954.414 825.404V630.965M795.457 904.949L636.5 825.404V630.965M636.5 630.965L795.457 552.768L954.414 630.965M1113.37 552.431V747.882M1113.37 552.431L954.414 473.898M1113.37 552.431L1272.33 473.898M1113.37 747.882L1272.33 668.34V473.898M1113.37 747.882L954.414 668.34V473.898M954.414 473.898L1113.37 395.701L1272.33 473.898" stroke="url(#paint-linear)" stroke-opacity="0.6" stroke-width="2"/>
+        </g>
+        <circle cx="159" cy="586" r="5" fill="{{ settings.primary_color|default:'#33E092' }}"/>
+        <circle cx="159" cy="393" r="5" fill="{{ settings.primary_color|default:'#33E092' }}"/>
+        <circle cx="793" cy="551" r="5" fill="{{ settings.primary_color|default:'#33E092' }}"/>
+        <circle cx="1113" cy="551" r="5" fill="{{ settings.primary_color|default:'#33E092' }}"/>
+        <circle cx="1113" cy="398" r="5" fill="{{ settings.primary_color|default:'#33E092' }}"/>
+        <circle cx="793" cy="237" r="5" fill="{{ settings.primary_color|default:'#33E092' }}"/>
+        <defs>
+          <linearGradient id="paint-linear" x1="1272.23" y1="479.474" x2="506.242" y2="-216.277" gradientUnits="userSpaceOnUse">
+            <stop stop-color="{{ settings.primary_color|default:'#33E092' }}"/>
+            <stop offset="0.619553" stop-color="{{ settings.primary_color|default:'#33E092' }}" stop-opacity="0.4"/>
+            <stop offset="0.93102" stop-color="#26312d"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  </section>
+
+
+  <!-- CONTRIBUTIONS (GitHub & LeetCode Heatmaps) -->
+  <!-- CONTRIBUTIONS (GitHub & LeetCode Heatmaps) -->
+  {% if settings.show_coding_activity %}
+  <section class="section slide-up delay-2" id="contributions">
+    <div class="section-header">
+      <h2 class="section-title">Contributions</h2>
+    </div>
+    
+    <div class="contributions-container">
+      <!-- GitHub Contribution Graph -->
+      {% if settings.github_username %}
+      <div class="contribution-heatmap">
+        <h3 class="contribution-label">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+          </svg>
+          GitHub Activity
+        </h3>
+        <a href="https://github.com/{{ settings.github_username }}" target="_blank" rel="noopener noreferrer" class="heatmap-link">
+          <img src="https://ghchart.rshah.org/{{ settings.primary_color|default:'33E092'|slice:'1:' }}/{{ settings.github_username }}" alt="GitHub Contribution Graph" class="github-heatmap">
+        </a>
+      </div>
+      {% endif %}
+      
+      <!-- LeetCode Stats -->
+      {% if settings.leetcode_username %}
+      <div class="contribution-heatmap">
+        <h3 class="contribution-label">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M13.483 0a1.374 1.374 0 0 0-.961.438L7.116 6.226l-3.854 4.126a5.266 5.266 0 0 0-1.209 2.104 5.35 5.35 0 0 0-.125.513 5.527 5.527 0 0 0 .062 2.362 5.83 5.83 0 0 0 .349 1.017 5.938 5.938 0 0 0 1.271 1.818l4.277 4.193.039.038c2.248 2.165 5.852 2.133 8.063-.074l2.396-2.392c.54-.54.54-1.414.003-1.955a1.378 1.378 0 0 0-1.951-.003l-2.396 2.392a3.021 3.021 0 0 1-4.205.038l-.02-.019-4.276-4.193c-.652-.64-.972-1.469-.948-2.263a2.68 2.68 0 0 1 .066-.523 2.545 2.545 0 0 1 .619-1.164L9.13 8.114c1.058-1.134 3.204-1.27 4.43-.278l3.501 2.831c.593.48 1.461.387 1.94-.207a1.384 1.384 0 0 0-.207-1.943l-3.5-2.831c-.8-.647-1.766-1.045-2.774-1.202l2.015-2.158A1.384 1.384 0 0 0 13.483 0zm-2.866 12.815a1.38 1.38 0 0 0-1.38 1.382 1.38 1.38 0 0 0 1.38 1.382H20.79a1.38 1.38 0 0 0 1.38-1.382 1.38 1.38 0 0 0-1.38-1.382z"/>
+          </svg>
+          LeetCode Stats
+        </h3>
+        <a href="https://leetcode.com/u/{{ settings.leetcode_username }}" target="_blank" rel="noopener noreferrer" class="heatmap-link">
+          <img src="https://leetcard.jacoblin.cool/{{ settings.leetcode_username }}?theme=dark&font=Karma&ext=heatmap" alt="LeetCode Stats" class="leetcode-heatmap">
+        </a>
+      </div>
+      {% endif %}
+    </div>
+  </section>
+  {% endif %}
+
+
+  <!-- WORK EXPERIENCE -->
+  {% if experiences and 'experience' in visible_section_slugs %}
+  <section class="section slide-up delay-2" id="experience">
+    <div class="section-header">
+      <h2 class="section-title">Work Experience</h2>
+    </div>
+    <div class="jobs-grid">
+      {% for exp in experiences %}
+      <div class="job-item">
+        <div class="job-logo">
+          <span class="job-logo-placeholder">💼</span>
+        </div>
+        <div class="job-content">
+          <h3 class="job-name">{{ exp.company }}</h3>
+          <p>{{ exp.position }}</p>
+          <time class="job-dates">{{ exp.timeframe }}</time>
+          {% if exp.description %}
+          <p class="job-description">{{ exp.description }}</p>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+</main>
+{% endblock %}

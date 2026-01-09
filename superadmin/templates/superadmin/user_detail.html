@@ -134,7 +134,7 @@
 <!-- Change Role Card -->
 <div class="card">
     <h2 class="card-title">Change Role</h2>
-    <form method="POST" action="{% url 'superadmin:change_user_role' target_user.id %}" style="display: flex; gap: 12px; align-items: end;">
+    <form method="POST" action="{% url 'superadmin:change_user_role' target_user.id %}" style="display: flex; gap: 12px; align-items: end; flex-wrap: wrap;">
         {% csrf_token %}
         <div class="form-group" style="margin: 0;">
             <label class="form-label">Role</label>

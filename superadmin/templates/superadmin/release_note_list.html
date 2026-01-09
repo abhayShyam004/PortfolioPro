@@ -1,0 +1,184 @@
+{% extends 'superadmin/base.html' %}
+
+{% block title %}Release Notes{% endblock %}
+
+{% block content %}
+<div class="header">
+    <h1>Release Notes Management</h1>
+</div>
+
+<!-- Mobile Tabs -->
+<div class="mobile-only" style="margin-bottom: 20px;">
+    <div style="display: flex; background: #222; padding: 4px; border-radius: 8px;">
+        <button onclick="mobileTab('create')" id="tab-btn-create" class="btn btn-sm" style="flex: 1; background: #eabe7c; color: #000; justify-content: center; border:none;">
+            New Note
+        </button>
+        <button onclick="mobileTab('history')" id="tab-btn-history" class="btn btn-sm" style="flex: 1; background: transparent; color: #888; justify-content: center; border:none;">
+            History & Logs
+        </button>
+    </div>
+</div>
+
+<div class="responsive-flex">
+    <!-- Form Side -->
+    <div style="flex: 2;" id="sec-form">
+        <div class="card">
+            <h3 style="margin-bottom: 20px;">Create New Release Note</h3>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="version" class="form-label">Version</label>
+                    <input type="text" name="version" id="version" class="form-control" placeholder="e.g. 2.1.0" value="{{ next_version }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="headline" class="form-label">Headline (Optional)</label>
+                    <input type="text" name="headline" id="headline" class="form-control" placeholder="e.g. What's new in v2.1.0">
+                </div>
+
+                <div class="form-group">
+                    <label for="new_features" class="form-label">New Features (One per line)</label>
+                    <textarea name="new_features" id="new_features" class="form-control" rows="3" placeholder="{% if last_features %}{{ last_features }}{% else %}- Added dark mode&#10;- New dashboard layout{% endif %}"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="fixes" class="form-label">Bug Fixes (One per line)</label>
+                    <textarea name="fixes" id="fixes" class="form-control" rows="3" placeholder="{% if last_fixes %}{{ last_fixes }}{% else %}- Fixed login issue&#10;- Resolved mobile spacing{% endif %}"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="improvements" class="form-label">Improvements (One per line)</label>
+                    <textarea name="improvements" id="improvements" class="form-control" rows="3" placeholder="{% if last_improvements %}{{ last_improvements }}{% else %}- Improved load speed&#10;- Updated font styles{% endif %}"></textarea>
+                </div>
+                
+                <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
+                
+                <details>
+                    <summary style="cursor: pointer; color: #888; margin-bottom: 10px;">Advanced: Manual HTML Override</summary>
+                    <div class="form-group">
+                        <textarea name="content" id="content" class="form-control" rows="4" placeholder="Direct HTML input (Overrides formatted fields above)"></textarea>
+                    </div>
+                </details>
+
+                <button type="submit" class="btn btn-primary" style="margin-top: 15px;">
+                    <i class="fas fa-plus"></i> Create Draft
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Git History Side -->
+    <div style="flex: 1;" id="sec-git">
+        <div class="card" style="height: 100%; border-left: 4px solid #eabe7c;">
+            <h3 style="margin-bottom: 15px; font-size: 1rem;">Recent Commits</h3>
+            <div style="max-height: 600px; overflow-y: auto; font-size: 0.85rem;">
+                {% for commit in commits %}
+                <div style="margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #2a2a2a;">
+                    <div style="color: #eabe7c; font-weight: 600; margin-bottom: 4px;">
+                        {{ commit.hash }} <span style="color: #666; font-weight: 400;">({{ commit.time }})</span>
+                    </div>
+                    <div style="color: #ddd; line-height: 1.4;">
+                        {{ commit.message }}
+                    </div>
+                </div>
+                {% empty %}
+                <div style="color: #666;">No git history found or invalid repo.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Existing Release Notes -->
+<div class="card" id="sec-history">
+    <h3 style="margin-bottom: 20px;">History</h3>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Version</th>
+                    <th>Created</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for note in notes %}
+                <tr>
+                    <td><strong>v{{ note.version }}</strong></td>
+                    <td>{{ note.created_at|date:"M d" }}</td>
+                    <td>
+                        {% if note.is_published %}
+                            <span class="badge badge-success">Pub</span>
+                        {% else %}
+                            <span class="badge badge-secondary">Draft</span>
+                        {% endif %}
+                    </td>
+                    <td style="display: flex; gap: 10px; align-items: center;">
+                        {% if not note.is_published %}
+                        <form method="POST" action="{% url 'superadmin:deploy_release_note' note.id %}" style="margin:0;" onsubmit="return confirm('Deploy v{{ note.version }}?');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success btn-sm">
+                                <i class="fas fa-rocket"></i>
+                            </button>
+                        </form>
+                        {% endif %}
+                        
+                        <form method="POST" action="{% url 'superadmin:delete_release_note' note.id %}" style="margin:0;" onsubmit="return confirm('Delete v{{ note.version }}?');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 20px; color: grey;">
+                        Empty...
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function mobileTab(tab) {
+        // Reset buttons
+        document.getElementById('tab-btn-create').style.background = 'transparent';
+        document.getElementById('tab-btn-create').style.color = '#888';
+        
+        document.getElementById('tab-btn-history').style.background = 'transparent';
+        document.getElementById('tab-btn-history').style.color = '#888';
+        
+        // Active button
+        const activeBtn = document.getElementById('tab-btn-' + tab);
+        activeBtn.style.background = '#eabe7c';
+        activeBtn.style.color = '#000';
+        
+        // Sections
+        const secForm = document.getElementById('sec-form');
+        const secGit = document.getElementById('sec-git');
+        const secHistory = document.getElementById('sec-history');
+        
+        if (window.innerWidth <= 900) {
+            if (tab === 'create') {
+                secForm.style.display = 'block';
+                secGit.style.display = 'none';
+                secHistory.style.display = 'none';
+            } else {
+                secForm.style.display = 'none';
+                secGit.style.display = 'block';
+                secHistory.style.display = 'block';
+            }
+        }
+    }
+    
+    // Init correct state on load
+    if (window.innerWidth <= 900) {
+        mobileTab('create');
+    }
+</script>
+{% endblock %}

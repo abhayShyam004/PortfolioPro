@@ -1,0 +1,167 @@
+<section class="section" id="projects">
+    <div class="container">
+        
+        <div class="section-header fade-in">
+            <h2 class="section-title">Selected Works</h2>
+            <p class="section-desc">A collection of projects I've worked on.</p>
+        </div>
+
+        <div class="projects-list">
+            {% for project in projects %}
+            <div class="project-item fade-in">
+                <a href="{{ project.url }}" target="_blank" class="project-link-wrapper">
+                    <div class="project-content">
+                        <span class="project-number">0{{ forloop.counter }}</span>
+                        <h3 class="project-title">{{ project.title }}</h3>
+                        <div class="project-meta">
+                            <span class="project-cat">{{ project.category }}</span>
+                            <span class="project-arrow"><i class="fas fa-arrow-right"></i></span>
+                        </div>
+                    </div>
+                    
+                    <!-- Hover Image Reveal (Optional advanced feature) -->
+                    {% if project.icon %}
+                    <div class="project-hover-reveal">
+                        <img src="{{ project.icon.url }}" alt="{{ project.title }}">
+                    </div>
+                    {% endif %}
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        
+    </div>
+</section>
+
+<style>
+    .projects-list {
+        display: flex;
+        flex-direction: column;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .project-item {
+        border-bottom: 1px solid var(--border-color);
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    .project-link-wrapper {
+        display: block;
+        padding: 40px 0;
+        position: relative;
+        z-index: 2;
+    }
+
+    .project-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .project-number {
+        font-family: var(--font-code);
+        color: var(--text-secondary);
+        font-size: 1rem;
+        margin-right: 40px;
+        opacity: 0.5;
+    }
+
+    .project-title {
+        font-size: 2.5rem;
+        font-weight: 500;
+        flex-grow: 1;
+        transition: transform 0.3s ease;
+    }
+
+    .project-meta {
+        display: flex;
+        align-items: center;
+        gap: 30px;
+    }
+
+    .project-cat {
+        font-family: var(--font-code);
+        font-size: 0.9rem;
+        padding: 5px 15px;
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        color: var(--text-secondary);
+        transition: all 0.3s;
+    }
+
+    .project-arrow {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        border: 1px solid var(--border-color);
+        color: var(--text-secondary);
+        transition: all 0.3s;
+        transform: rotate(-45deg);
+    }
+
+    /* Hover States */
+    .project-item:hover .project-title {
+        transform: translateX(20px);
+        color: var(--accent-blue);
+    }
+
+    .project-item:hover .project-cat {
+        border-color: var(--accent-blue);
+        color: var(--accent-blue);
+    }
+
+    .project-item:hover .project-arrow {
+        background: var(--accent-blue);
+        border-color: var(--accent-blue);
+        color: white;
+        transform: rotate(0);
+    }
+    
+    .project-hover-reveal {
+        position: absolute;
+        top: 50%;
+        left: 60%;
+        transform: translate(-50%, -50%) scale(0) rotate(-10deg);
+        width: 300px;
+        height: 200px;
+        pointer-events: none;
+        opacity: 0;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        z-index: 1;
+        overflow: hidden;
+        border-radius: 10px;
+    }
+    
+    .project-hover-reveal img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .project-item:hover .project-hover-reveal {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1) rotate(0);
+    }
+    
+    @media (max-width: 768px) {
+        .project-title {
+            font-size: 1.5rem;
+        }
+        .project-number {
+            display: none;
+        }
+        .project-meta {
+            gap: 10px;
+        }
+        .project-cat {
+            display: none; /* Hide category on small screens if title is long */
+        }
+        .project-hover-reveal {
+            display: none; /* No hover image on mobile */
+        }
+    }
+</style>

@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Superadmin{% endblock %} | PortfolioPro</title>
+    {% include 'app/includes/dynamic_favicon.html' with settings=request.user.site_settings %}
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -475,9 +476,265 @@
         .modal-actions .btn {
             min-width: 100px;
         }
+        /* ... existing styles ... */
+        
+        /* Responsive Utilities */
+        .responsive-flex {
+            display: flex;
+            gap: 20px;
+        }
+        
+        @media (max-width: 900px) {
+            .responsive-flex {
+                flex-direction: column;
+            }
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                z-index: 1001;
+                /* Keep original dimensions */
+            }
+            .sidebar.active {
+                transform: translateX(0);
+                box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            }
+            /* Cards go edge-to-edge on mobile */
+            .card {
+                margin-left: -20px;
+                margin-right: -20px;
+                border-radius: 0;
+                border-left: none;
+                border-right: none;
+                padding: 20px 15px; /* Reduce horizontal padding slightly */
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+                padding-top: 80px; /* More space for mobile header */
+                background: #111; /* Slightly darker bg to distinguish cards */
+            }
+
+            /* Typography bumps */
+            body {
+                font-size: 16px; /* Base size up */
+            }
+            .card-title {
+                font-size: 1.2rem;
+            }
+            
+            /* Input & Button Ergonomics */
+            .btn, .form-control {
+                min-height: 48px; /* Minimum touch target size */
+                font-size: 1rem;
+            }
+            
+            /* Table Optimization: Hide less important columns */
+            /* Assuming: 1=Username, 2=Subdomain, 3=Email, 4=Role, 5=Status, 6=Created, 7=Actions */
+            /* Hide Subdomain(2), Email(3), Created(6) */
+            th:nth-child(2), td:nth-child(2),
+            th:nth-child(3), td:nth-child(3),
+            th:nth-child(6), td:nth-child(6) {
+                display: none;
+            }
+            
+            /* Ensure Actions column (last) is always visible and easy to tap */
+            td:last-child {
+                white-space: nowrap;
+            }
+            
+            /* Filters on mobile */
+            .filters {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .filters .form-control {
+                width: 100%;
+                min-width: 0;
+            }
+
+            /* Release Notes Layout */
+            .responsive-flex {
+                flex-direction: column-reverse; /* Put history below form OR form below history depending on pref. Let's keep form top (column) */
+                flex-direction: column;
+            }
+
+            /* Hide desktop page title */
+            .header h1 {
+                display: none;
+            }
+            
+            /* Adjust header actions (buttons) to be full width */
+            .header-actions {
+                width: 100%;
+            }
+            .header-actions .btn {
+                flex: 1;
+                justify-content: center;
+            }
+            
+            /* Modal adjustments */
+            .modal-box {
+                width: 95%;
+                padding: 25px 20px;
+            }
+        }
+        
+        .mobile-header {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #1a1a1a;
+            border-bottom: 1px solid #2a2a2a;
+            z-index: 1000;
+            padding: 0 20px;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .mobile-toggle {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+        }
+        .overlay.active {
+            display: block;
+        }
+        
+        /* Mobile Bottom Nav */
+        .bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #1a1a1a;
+            border-top: 1px solid #2a2a2a;
+            height: 60px;
+            z-index: 1002;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        
+        .bottom-nav-inner {
+            display: flex;
+            height: 100%;
+            justify-content: space-around;
+            align-items: center;
+        }
+        
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+            text-decoration: none;
+            font-size: 0.7rem;
+            gap: 4px;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .bottom-nav-item i {
+            font-size: 1.2rem;
+            margin-bottom: 2px;
+        }
+        
+        .bottom-nav-item.active {
+            color: #eabe7c;
+        }
+
+        /* Mobile Utility Classes */
+        .mobile-only { display: none; }
+        /* .desktop-only is visible by default, no need to force display: block which breaks grids */
+        
+        @media (max-width: 900px) {
+            .mobile-only { display: block; }
+            .desktop-only { display: none !important; }
+            
+            /* Hide Desktop Sidebar completely */
+            .sidebar { display: none !important; }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+                padding-top: 70px; /* Header space */
+                padding-bottom: 80px; /* Bottom Nav space */
+                background: #111;
+            }
+            
+            .bottom-nav { display: block; }
+            
+            /* Minimal Top Header */
+            .mobile-header {
+                display: flex !important;
+                background: rgba(26, 26, 26, 0.95);
+                backdrop-filter: blur(10px);
+            }
+            
+            /* Responsive Utilities */
+            .responsive-flex { flex-direction: column; }
+            
+            /* Card Reset */
+            .card {
+                margin: 0 0 15px 0;
+                border-radius: 12px; /* Restore radius, don't do full edge-to-edge unless explicitly needed */
+                padding: 20px;
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- Mobile Minimal Header -->
+    <div class="mobile-header">
+        <div style="font-weight: 700; display: flex; align-items: center; gap: 10px;">
+            <i class="fas fa-crown" style="color: #eabe7c;"></i>
+            <span>Superadmin</span>
+        </div>
+        <div style="display: flex; gap: 15px;">
+            <a href="{% url 'home' %}" style="color: #fff; text-decoration: none;"><i class="fas fa-globe"></i></a>
+            <a href="{% url 'admin_logout' %}" style="color: #dc3545; text-decoration: none;"><i class="fas fa-sign-out-alt"></i></a>
+        </div>
+    </div>
+    
+            <!-- Mobile Bottom Navigation -->
+    <nav class="bottom-nav">
+        <div class="bottom-nav-inner">
+            <a href="{% url 'superadmin:dashboard' %}" class="bottom-nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                <i class="fas fa-chart-pie"></i>
+                <span>Stats</span>
+            </a>
+            <a href="{% url 'superadmin:user_list' %}" class="bottom-nav-item {% if 'user' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="fas fa-users"></i>
+                <span>Users</span>
+            </a>
+            <a href="{% url 'superadmin:broadcast_email' %}" class="bottom-nav-item {% if 'broadcast_email' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="fas fa-envelope"></i>
+                <span>Emails</span>
+            </a>
+            <a href="{% url 'superadmin:release_note_list' %}" class="bottom-nav-item {% if 'release_note' in request.resolver_match.url_name %}active{% endif %}">
+                <i class="fas fa-bullhorn"></i>
+                <span>Releases</span>
+            </a>
+        </div>
+    </nav>
+    
+    <div class="overlay" onclick="toggleSidebar()"></div>
+
     <div class="layout">
         <!-- Sidebar -->
         <aside class="sidebar">
@@ -500,6 +757,14 @@
                     <a href="{% url 'superadmin:user_list' %}" class="nav-link {% if 'user' in request.resolver_match.url_name %}active{% endif %}">
                         <i class="fas fa-users"></i>
                         Users
+                    </a>
+                    <a href="{% url 'superadmin:broadcast_email' %}" class="nav-link {% if 'broadcast_email' in request.resolver_match.url_name %}active{% endif %}">
+                        <i class="fas fa-envelope"></i>
+                        Broadcast Email
+                    </a>
+                    <a href="{% url 'superadmin:release_note_list' %}" class="nav-link {% if 'release_note' in request.resolver_match.url_name %}active{% endif %}">
+                        <i class="fas fa-bullhorn"></i>
+                        Release Notes
                     </a>
                 </div>
                 
@@ -655,3 +920,11 @@
     </script>
 </body>
 </html>
+
+
+<script>
+    function toggleSidebar() {
+        document.querySelector('.sidebar').classList.toggle('active');
+        document.querySelector('.overlay').classList.toggle('active');
+    }
+</script>

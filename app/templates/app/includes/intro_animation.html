@@ -1,0 +1,83 @@
+{% comment %}
+Intro Animation Overlay - Include this at start of body in all theme templates
+Usage: {% include 'app/includes/intro_animation.html' %}
+{% endcomment %}
+
+{% if settings.show_intro_animation %}
+<div id="intro-overlay">• {{ settings.intro_greetings|default:"Hello"|cut:","|first }}</div>
+
+<style>
+    /* INTRO OVERLAY STYLES */
+    #intro-overlay {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        background: var(--theme-bg, {{ settings.background_color|default:"#141516" }});
+        color: var(--theme-text, {{ settings.hero_about_text_color|default:"#eae7d6" }});
+        font-size: 5rem;
+        font-family: var(--font-2, 'DM Serif Display', serif);
+        font-weight: 500;
+        transform: translateY(0);
+        transition: transform 0.5s ease-out;
+        z-index: 99999;
+    }
+    
+    #intro-overlay.scroll-up {
+        transform: translateY(-100vh);
+    }
+    
+    @media screen and (max-width: 600px) {
+        #intro-overlay {
+            font-size: 2.5rem;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // Get greetings from settings
+        const greetingsRaw = "{{ settings.intro_greetings|default:'Hello,Bonjour,Hola,Привет,مرحبا,നമസ്കാരം,こんにちは,नमस्ते'|escapejs }}";
+        const words = greetingsRaw.split(',').map(w => '• ' + w.trim()).filter(w => w.length > 2);
+        
+        // Speed settings: slow=300, medium=160, fast=80
+        const speedMap = { 'slow': 300, 'medium': 160, 'fast': 80 };
+        const cycleSpeed = speedMap["{{ settings.intro_speed|default:'medium' }}"] || 160;
+
+        const intro = document.getElementById("intro-overlay");
+        if (!intro || words.length === 0) {
+            if (intro) intro.remove();
+            return;
+        }
+        
+        // Set initial text
+        intro.textContent = words[0];
+        let i = 0;
+
+        // Short initial pause on first word (500ms)
+        setTimeout(() => {
+            const cycle = setInterval(() => {
+                i++;
+                intro.textContent = words[i];
+
+                if (i === words.length - 1) {
+                    clearInterval(cycle);
+
+                    // Pause on last word same as first (500ms)
+                    setTimeout(() => {
+                        // force reflow so transition always fires
+                        intro.offsetHeight;
+                        intro.classList.add("scroll-up");
+
+                        // remove intro after snappy scroll (500ms)
+                        setTimeout(() => {
+                            intro.remove();
+                        }, 500);
+
+                    }, 500);
+                }
+            }, cycleSpeed);
+        }, 500);
+    });
+</script>
+{% endif %}

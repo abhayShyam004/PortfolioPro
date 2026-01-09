@@ -1,0 +1,139 @@
+{% load static %}
+
+<!-- Background Effects Styles -->
+<style>
+    .circles,
+    .gradient-bg,
+    .retro-grid,
+    #particles-js,
+    canvas.bg-effect,
+    .aurora-bg,
+    .hexagons-bg {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0 !important; /* Behind content (content usually 1 or 10) */
+        pointer-events: none;
+    }
+
+    /* Circles Effect */
+    {% if settings.background_style == 'circles' %}
+    .circles {
+        overflow: hidden;
+    }
+    .circles li {
+        position: absolute;
+        display: block;
+        list-style: none;
+        width: 20px;
+        height: 20px;
+        background: transparent;
+        border: 2px solid {{ settings.circle_color|default:"#6366f1" }};
+        animation: animate 25s linear infinite;
+        bottom: -150px;
+    }
+    .circles li:nth-child(1){ left: 25%; width: 80px; height: 80px; animation-delay: 0s; }
+    .circles li:nth-child(2){ left: 10%; width: 20px; height: 20px; animation-delay: 2s; animation-duration: 12s; }
+    .circles li:nth-child(3){ left: 70%; width: 20px; height: 20px; animation-delay: 4s; }
+    .circles li:nth-child(4){ left: 40%; width: 60px; height: 60px; animation-delay: 0s; animation-duration: 18s; }
+    .circles li:nth-child(5){ left: 65%; width: 20px; height: 20px; animation-delay: 0s; }
+    .circles li:nth-child(6){ left: 75%; width: 110px; height: 110px; animation-delay: 3s; }
+    .circles li:nth-child(7){ left: 35%; width: 150px; height: 150px; animation-delay: 7s; }
+    .circles li:nth-child(8){ left: 50%; width: 25px; height: 25px; animation-delay: 15s; animation-duration: 45s; }
+    .circles li:nth-child(9){ left: 20%; width: 15px; height: 15px; animation-delay: 2s; animation-duration: 35s; }
+    .circles li:nth-child(10){ left: 85%; width: 150px; height: 150px; animation-delay: 0s; animation-duration: 11s; }
+
+    @keyframes animate {
+        0%{ transform: translateY(0) rotate(0deg); opacity: 1; border-radius: 0; }
+        100%{ transform: translateY(-1000px) rotate(720deg); opacity: 0; border-radius: 50%; }
+    }
+
+    /* Gradient Mesh */
+    {% elif settings.background_style == 'gradient' %}
+    .gradient-bg { 
+        background: linear-gradient(-45deg, {{ settings.primary_color }}33, {{ settings.secondary_color }}33, {{ settings.circle_color }}33); 
+        background-size: 400% 400%; 
+        animation: gradientBG 15s ease infinite; 
+    }
+    @keyframes gradientBG { 
+        0% { background-position: 0% 50%; } 
+        50% { background-position: 100% 50%; } 
+        100% { background-position: 0% 50%; } 
+    }
+
+    /* Retro Grid */
+    {% elif settings.background_style == 'grid' %}
+    .retro-grid { 
+        background-image: linear-gradient({{ settings.circle_color }}33 1px, transparent 1px), 
+                          linear-gradient(90deg, {{ settings.circle_color }}33 1px, transparent 1px); 
+        background-size: 50px 50px; 
+    }
+    {% endif %}
+    
+    /* Ensure content is readable on dark themes if effects are present */
+    /* This depends on the theme, but Pro V2 handles it via z-index */
+</style>
+
+<!-- Background Effects Markup -->
+{% if settings.background_style == 'circles' %}
+    <ul class="circles">
+        <li></li><li></li><li></li><li></li><li></li>
+        <li></li><li></li><li></li><li></li><li></li>
+    </ul>
+
+{% elif settings.background_style == 'gradient' %}
+    <div class="gradient-bg"></div>
+
+{% elif settings.background_style == 'grid' %}
+    <div class="retro-grid"></div>
+
+{% elif settings.background_style == 'particles' %}
+    <div id="particles-js"></div>
+
+{% elif settings.background_style == 'waves' %}
+    <canvas id="waves-canvas" class="bg-effect"></canvas>
+
+{% elif settings.background_style == 'matrix' %}
+    <canvas id="matrix-canvas" class="bg-effect"></canvas>
+
+{% elif settings.background_style == 'starfield' %}
+    <canvas id="starfield-canvas" class="bg-effect"></canvas>
+
+{% elif settings.background_style == 'aurora' %}
+    <div class="aurora-bg"></div>
+
+{% elif settings.background_style == 'hexagons' %}
+    <div class="hexagons-bg"></div>
+{% endif %}
+
+<!-- Initialization Scripts -->
+{% if settings.background_style == 'particles' %}
+    <!-- Assuming particles_simple.js handles auto-init for #particles-js -->
+    <!-- We must pass the color through CSS variable or JS global since script might read computed style -->
+    <script>
+        document.documentElement.style.setProperty('--color-effect', '{{ settings.circle_color|default:"#ffffff" }}');
+    </script>
+    <script src="{% static 'js/particles_simple.js' %}"></script>
+
+{% elif settings.background_style in 'waves,matrix,starfield' %}
+    <script src="{% static 'js/backgrounds.js' %}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            if (typeof BackgroundEffects !== 'undefined') {
+                const color = "{{ settings.circle_color|default:'#6366f1' }}";
+                
+                {% if settings.background_style == 'waves' %}
+                if(document.getElementById('waves-canvas')) BackgroundEffects.initWaves('waves-canvas', color);
+                
+                {% elif settings.background_style == 'matrix' %}
+                if(document.getElementById('matrix-canvas')) BackgroundEffects.initMatrix('matrix-canvas', color);
+                
+                {% elif settings.background_style == 'starfield' %}
+                if(document.getElementById('starfield-canvas')) BackgroundEffects.initStarfield('starfield-canvas', color);
+                {% endif %}
+            }
+        });
+    </script>
+{% endif %}

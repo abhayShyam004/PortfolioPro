@@ -9,6 +9,119 @@
 body.theme-classic {
     /* Classic theme inherits default variables from styles.css */
     --theme-id: "classic";
+    color: var(--color-text, #a0a0a0);
+}
+
+/* Ensure all text in Classic theme is visible */
+body.theme-classic,
+body.theme-classic p,
+body.theme-classic span,
+body.theme-classic div,
+body.theme-classic li,
+body.theme-classic td,
+body.theme-classic th {
+    color: var(--color-text, #a0a0a0);
+}
+
+/* Section headings */
+body.theme-classic h1,
+body.theme-classic h2,
+body.theme-classic h3,
+body.theme-classic h4,
+body.theme-classic h5,
+body.theme-classic h6,
+body.theme-classic .text-pretitle,
+body.theme-classic .text-huge-title,
+body.theme-classic .timeline__title,
+body.theme-classic .timeline__meta {
+    color: var(--color-text-dark, #ffffff);
+}
+
+/* About section text */
+body.theme-classic .s-about p,
+body.theme-classic .about-info p,
+body.theme-classic .about-desc p,
+body.theme-classic .timeline__desc,
+body.theme-classic .timeline__timeframe,
+body.theme-classic .about-expertise li {
+    color: var(--color-text, #a0a0a0);
+}
+
+/* Intro section text */
+body.theme-classic .s-intro .text-pretitle {
+    color: var(--color-text-dark, #ffffff);
+}
+
+/* Skills section */
+body.theme-classic .folio-item__title,
+body.theme-classic .skill-item__title,
+body.theme-classic .folio-item__cat {
+    color: var(--color-text-dark, #ffffff);
+}
+
+/* Contact section */
+body.theme-classic .s-contact p,
+body.theme-classic .contact-heading {
+    color: var(--color-text, #a0a0a0);
+}
+
+/* =================================================================
+ * # FIX: Ensure all elements are visible (bypass broken scroll animations)
+ * ================================================================= */
+body.theme-classic [data-animate-el],
+body.theme-classic [data-animate-block],
+body.theme-classic .about-info,
+body.theme-classic .about-info__text,
+body.theme-classic .about-expertise,
+body.theme-classic .timeline,
+body.theme-classic .timeline__block,
+body.theme-classic .s-about .row,
+body.theme-classic .s-about .column,
+body.theme-classic .intro-content > *,
+body.theme-classic .s-intro .text-pretitle,
+body.theme-classic .s-intro .text-huge-title {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+}
+
+/* =================================================================
+ * # CLASSIC THEME - INTRO SOCIAL LINKS (Desktop - Vertical on Right)
+ * ================================================================= */
+body.theme-classic .intro-social {
+    position: absolute !important;
+    right: 20px !important;
+    left: auto !important;
+    top: 50% !important;
+    transform: translateY(-50%) rotate(90deg) !important;
+    transform-origin: center center !important;
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 20px;
+    list-style: none;
+    margin: 0 !important;
+    padding: 0 !important;
+    z-index: 10;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+body.theme-classic .intro-social li {
+    margin: 0;
+    padding: 0;
+}
+
+body.theme-classic .intro-social li a {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    transition: color 0.3s ease;
+    white-space: nowrap;
+}
+
+body.theme-classic .intro-social li a:hover {
+    color: var(--color-1, #eabe7c);
 }
 
 /* =================================================================

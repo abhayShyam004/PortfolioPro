@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ profile.name }} | Portfolio</title>
     
+    {% include 'app/includes/dynamic_favicon.html' %}
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
@@ -27,6 +29,10 @@
             --font-sans: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
             --font-mono: 'Fira Code', 'SF Mono', monospace;
             --transition: all 0.25s cubic-bezier(0.645, 0.045, 0.355, 1);
+            
+            /* Intro Animation Colors */
+            --theme-bg: var(--dark-navy);
+            --theme-text: var(--lightest-slate);
         }
 
         /* ========== RESET & BASE ========== */
@@ -1285,6 +1291,8 @@
 {% endif %}
 
 <body>
+    {% include 'app/includes/intro_animation.html' %}
+    
     <!-- Background Effect from Admin Panel -->
     {% if settings.background_style == 'circles' %}
     <div class="bg-effect circles-bg">

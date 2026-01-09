@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ profile.name }} | Portfolio</title>
+    {% include 'app/includes/dynamic_favicon.html' %}
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1806,6 +1807,22 @@
         .fix-mobile-height {
             height: calc(var(--vh, 1vh) * 100);
         }
+        /* Fix vanta background on mobile */
+        @media (max-width: 768px) {
+            #vanta-bg {
+                top: 0 !important;
+                bottom: 0 !important;
+                height: 100vh !important;
+                height: 100dvh !important; /* Dynamic viewport height for modern mobile browsers */
+            }
+            #vanta-bg canvas {
+                position: absolute !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+            }
+        }
     </style>
 </head>
 
@@ -1814,6 +1831,16 @@
 {% endif %}
 
 <body>
+    <!-- Intro Animation -->
+    <style>
+        body {
+            /* Intro Animation Variables */
+            --theme-bg: var(--bg-primary);
+            --theme-text: var(--text-primary);
+        }
+    </style>
+    {% include 'app/includes/intro_animation.html' %}
+
     <div id="vanta-bg"></div>
     
     <div class="app-container">

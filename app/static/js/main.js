@@ -147,8 +147,7 @@
             let scrollY = window.pageYOffset;
             let activeIDs = new Set();
 
-            // 1. Identify all active sections
-            const scrollY = window.pageYOffset;
+            // Identify all active sections
             const viewportHeight = window.innerHeight;
             const triggerPoint = viewportHeight * 0.35; // Highlight when top of section is at 35% of detection zone (upper screen)
 
