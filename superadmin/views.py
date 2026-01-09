@@ -600,33 +600,46 @@ def deploy_release_note(request, note_id):
         note.is_published = True
         note.save()
         
-        # --- Automatic Email Notification ---
+        # --- Automatic Email Notification (Async Thread) ---
         try:
+            import threading
             from django.contrib.auth import get_user_model
             from django.core.mail import EmailMessage
             from django.conf import settings
             
+            def send_async_email(subject, body, recipients):
+                try:
+                    email = EmailMessage(
+                        subject=subject,
+                        body=body,
+                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        to=[settings.DEFAULT_FROM_EMAIL],
+                        bcc=recipients,
+                    )
+                    email.content_subtype = "html"
+                    email.send(fail_silently=True)
+                except Exception:
+                    pass # Fail silently in background thread
+
             user_model = get_user_model()
             # Send to all active users
             recipients = user_model.objects.filter(is_active=True).values_list('email', flat=True)
             recipient_list = [email for email in recipients if email]
             
             if recipient_list:
-                email = EmailMessage(
-                    subject=f"New Update: v{note.version} Released!",
-                    body=f"Hello,\n\nA new update (v{note.version}) has just been released!\n\nCheck out what's new:\n{note.content}\n\nBest,\nPortfolioPro Team",
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    to=[settings.DEFAULT_FROM_EMAIL],
-                    bcc=recipient_list,
-                )
-                email.content_subtype = "html"  # Allow HTML in email if content is HTML-ish
-                email.send(fail_silently=False)
-                messages.success(request, f'Release note v{note.version} deployed and emailed to {len(recipient_list)} users!')
+                email_subject = f"New Update: v{note.version} Released!"
+                email_body = f"Hello,\n\nA new update (v{note.version}) has just been released!\n\nCheck out what's new:\n{note.content}\n\nBest,\nPortfolioPro Team"
+                
+                # Start background thread
+                threading.Thread(target=send_async_email, args=(email_subject, email_body, recipient_list)).start()
+                
+                messages.success(request, f'Release note v{note.version} deployed! Email notification started for {len(recipient_list)} users.')
             else:
                  messages.success(request, f'Release note v{note.version} deployed (no users to email).')
                  
         except Exception as e:
-            messages.warning(request, f'Release note deployed, but email failed: {str(e)}')
+            # Fallback if threading setup fails, but don't block
+             messages.warning(request, f'Release note deployed, but email setup failed: {str(e)}')
 
     return redirect('superadmin:release_note_list')
 
@@ -679,21 +692,29 @@ def broadcast_email(request):
                 
             from django.core.mail import EmailMessage
             from django.conf import settings
+            import threading
             
-            # Send email using BCC for privacy
-            email = EmailMessage(
-                subject=subject,
-                body=message,
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                to=[settings.DEFAULT_FROM_EMAIL],  # Send To: sender (common practice)
-                bcc=recipient_list,
-            )
-            email.send(fail_silently=False)
+            def send_broadcast_async(subject, body, recipients):
+                try:
+                    # Send email using BCC for privacy
+                    email = EmailMessage(
+                        subject=subject,
+                        body=body,
+                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        to=[settings.DEFAULT_FROM_EMAIL],  # Send To: sender (common practice)
+                        bcc=recipients,
+                    )
+                    email.send(fail_silently=True)
+                except Exception:
+                    pass
+
+            # Start background thread
+            threading.Thread(target=send_broadcast_async, args=(subject, message, recipient_list)).start()
             
-            messages.success(request, f"Email broadcast sent to {len(recipient_list)} recipients ({group_name}).")
+            messages.success(request, f"Email broadcast started in background for {len(recipient_list)} recipients ({group_name}).")
             
         except Exception as e:
-            messages.error(request, f"Failed to send email: {str(e)}")
+            messages.error(request, f"Failed to initiate email broadcast: {str(e)}")
             
         return redirect('superadmin:broadcast_email')
         
