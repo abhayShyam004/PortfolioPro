@@ -4,803 +4,986 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PortfolioPro - The Future is Here</title>
-    
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>PortfolioPro - Stop Looking Templated</title>
+    <meta name="description" content="Build a portfolio that does not look like everyone else's. Custom subdomain, loud themes, deep color control, zero ads.">
     <link rel="icon" type="image/png" href="{% static 'favicon.png' %}">
     <style>
-        :root {
-            --primary: #6366f1;
-            --secondary: #23967f;
-            --bg-dark: #0a0a0f;
+        @font-face{font-family:'Incognito';src:url('{% static 'fonts/incognito_regular.woff2' %}') format('woff2');font-weight:400;font-style:normal}
+        @font-face{font-family:'Incognito';src:url('{% static 'fonts/incognito_medium.woff2' %}') format('woff2');font-weight:500;font-style:normal}
+        @font-face{font-family:'Incognito';src:url('{% static 'fonts/incognito_bold.woff2' %}') format('woff2');font-weight:700;font-style:normal}
+        @font-face{font-family:'Incognito Condensed';src:url('{% static 'fonts/incognito_condensed.woff2' %}') format('woff2');font-weight:700;font-style:normal}
+        @font-face{font-family:'Gitlab Mono';src:url('{% static 'fonts/gitlab-mono.woff2' %}') format('woff2');font-weight:400;font-style:normal}
+
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+        :root{
+            --paper:#ffffff;
+            --ink:#111111;
+            --muted:#5c5c5c;
+            --line:#e8e8e8;
+            --signal:#00eaff;
+            --signal-soft:#c5fbff;
+            --signal-two:#00ff84;
+            --signal-three:#111111;
+            --panel:#f7f7f7;
+            --shadow:6px 6px 0 #111111;
+            --font-display:'Incognito Condensed','Incognito','Arial Narrow',sans-serif;
+            --font-body:'Gitlab Mono','IBM Plex Mono','Courier New',monospace;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Outfit', sans-serif;
-            background: var(--bg-dark);
-            color: #fff;
-            min-height: 100vh;
-            overflow-x: hidden;
+        html{scroll-behavior:smooth}
+        body{
+            font-family:var(--font-body);
+            background:var(--paper);
+            color:var(--ink);
+            overflow-x:hidden;
+            background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+            background-size:32px 32px;
         }
 
-        /* SPOTLIGHT GLOW EFFECT */
-        .spotlight {
-            position: fixed;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 5;
-            transform: translate(-50%, -50%);
-            transition: opacity 0.3s;
-            opacity: 0;
+        body::before{
+            content:'';
+            position:fixed;
+            inset:0;
+            pointer-events:none;
+            background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+            opacity:.45;
+            z-index:4;
         }
 
-        /* ========== LIQUID MORPHING BACKGROUND ========== */
-        .liquid-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            background: linear-gradient(135deg, #0a0a0f 0%, #1a0a2e 100%);
+        a{color:inherit;text-decoration:none}
+        img{display:block;max-width:100%}
+
+        .page{
+            position:relative;
+            z-index:1;
         }
-        
-        .blob {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.6;
-            animation: morph 20s ease-in-out infinite;
+
+        .utility{
+            position:sticky;
+            top:0;
+            z-index:20;
+            background:rgba(255,255,255,.92);
+            backdrop-filter:blur(10px);
+            border-bottom:2px solid var(--ink);
         }
-        
-        .blob:nth-child(1) {
-            width: 500px;
-            height: 500px;
-            background: linear-gradient(45deg, #6366f1, #8b5cf6);
-            top: -200px;
-            left: -200px;
-            animation-delay: 0s;
+
+        .utility-inner{
+            max-width:1440px;
+            margin:0 auto;
+            padding:14px 24px;
+            display:flex;
+            justify-content:space-between;
+            flex-wrap:wrap;
+            gap:16px;
+            align-items:center;
         }
-        
-        .blob:nth-child(2) {
-            width: 400px;
-            height: 400px;
-            background: linear-gradient(45deg, #23967f, #10b981);
-            bottom: -150px;
-            right: -150px;
-            animation-delay: -7s;
+
+        .brand{
+            font-family:var(--font-display);
+            font-size:1.55rem;
+            line-height:1;
+            letter-spacing:-.04em;
         }
-        
-        .blob:nth-child(3) {
-            width: 350px;
-            height: 350px;
-            background: linear-gradient(45deg, #f59e0b, #ef4444);
-            top: 50%;
-            left: 50%;
-            animation-delay: -14s;
+
+        .brand span{color:var(--signal-two)}
+
+        .utility-actions{
+            display:flex;
+            align-items:center;
+            gap:10px;
+            flex-wrap:wrap;
         }
-        
-        @keyframes morph {
-            0%, 100% { 
-                border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-                transform: translate(0, 0) rotate(0deg);
+
+        .utility-link,
+        .primary-link{
+            border:2px solid var(--ink);
+            background:#fff;
+            color:var(--ink);
+            font-family:var(--font-body);
+            text-transform:uppercase;
+            letter-spacing:.12em;
+            font-size:.68rem;
+            cursor:pointer;
+            transition:transform .16s ease,box-shadow .16s ease,background .16s ease,color .16s ease;
+        }
+
+        .utility-link,
+        .primary-link{
+            padding:11px 16px;
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+        }
+
+        .primary-link{
+            background:var(--ink);
+            color:#fff;
+        }
+
+        .utility-link:hover,
+        .primary-link:hover,
+        .hero-cta:hover,
+        .hero-secondary:hover,
+        .step-action:hover{
+            transform:translate(-3px,-3px);
+            box-shadow:var(--shadow);
+        }
+
+        .hero{
+            max-width:1440px;
+            margin:0 auto;
+            padding:42px 24px 30px;
+        }
+
+        .hero-grid{
+            display:grid;
+            grid-template-columns:minmax(0,1.25fr) minmax(320px,.75fr);
+            gap:22px;
+            align-items:start;
+        }
+
+        .hero-copy{
+            position:relative;
+            padding:22px 0 0;
+        }
+
+        .hero-copy::before{
+            content:'';
+            position:absolute;
+            top:26px;
+            left:8px;
+            width:min(62vw,760px);
+            height:clamp(90px,16vw,180px);
+            background:var(--signal);
+            z-index:-1;
+            transform:rotate(-2.1deg);
+        }
+
+        .hero-eyebrow,
+        .section-eyebrow,
+        .wall-note,
+        .meta-kicker{
+            font-size:.72rem;
+            text-transform:uppercase;
+            letter-spacing:.16em;
+            color:var(--muted);
+        }
+
+        .hero-title{
+            margin-top:18px;
+            font-family:var(--font-display);
+            font-size:clamp(4.8rem,14vw,12rem);
+            line-height:.78;
+            letter-spacing:-.06em;
+            text-transform:uppercase;
+        }
+
+        .hero-title span{
+            display:block;
+        }
+
+        .hero-title .lift{
+            margin-left:1.2ch;
+        }
+
+        .hero-title .accent-word{
+            color:var(--signal-two);
+            text-decoration:line-through;
+            text-decoration-thickness:.08em;
+            text-decoration-color:var(--ink);
+        }
+
+        .hero-deck{
+            max-width:560px;
+            margin-top:26px;
+            font-size:.92rem;
+            line-height:1.8;
+            color:#202020;
+        }
+
+        .hero-actions{
+            display:flex;
+            gap:14px;
+            flex-wrap:wrap;
+            margin-top:28px;
+        }
+
+        .hero-cta,
+        .hero-secondary,
+        .step-action{
+            border:2px solid var(--ink);
+            background:#fff;
+            color:var(--ink);
+            padding:15px 22px;
+            font-family:var(--font-body);
+            font-size:.72rem;
+            text-transform:uppercase;
+            letter-spacing:.14em;
+            display:inline-flex;
+            align-items:center;
+            gap:10px;
+            transition:transform .16s ease,box-shadow .16s ease,background .16s ease,color .16s ease;
+        }
+
+        .hero-cta,
+        .step-action{
+            background:var(--ink);
+            color:#fff;
+        }
+
+        .arrow{
+            width:9px;
+            height:9px;
+            border-right:2px solid currentColor;
+            border-bottom:2px solid currentColor;
+            transform:rotate(-45deg);
+        }
+
+        .hero-collage{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:14px;
+            align-content:start;
+        }
+
+        .sticker,
+        .ticker,
+        .domain-card,
+        .manifesto,
+        .feature-card,
+        .theme-card,
+        .step-card,
+        .closing-card{
+            border:2px solid var(--ink);
+            background:#fff;
+        }
+
+        .sticker{
+            min-height:180px;
+            padding:18px;
+            display:flex;
+            flex-direction:column;
+            justify-content:space-between;
+            background:var(--signal-soft);
+        }
+
+        .sticker.rotate-left{transform:rotate(-2.1deg)}
+        .sticker.rotate-right{transform:rotate(1.6deg)}
+
+        .sticker strong{
+            font-family:var(--font-display);
+            font-size:clamp(2.5rem,7vw,5.8rem);
+            line-height:.8;
+            letter-spacing:-.05em;
+            text-transform:uppercase;
+        }
+
+        .sticker small{
+            font-size:.72rem;
+            letter-spacing:.1em;
+            text-transform:uppercase;
+            color:var(--muted);
+            line-height:1.6;
+        }
+
+        .domain-card{
+            grid-column:1 / -1;
+            padding:20px;
+            background:var(--signal);
+        }
+
+        .domain-card code{
+            display:block;
+            font-family:var(--font-display);
+            font-size:clamp(1.8rem,4vw,3.6rem);
+            line-height:.88;
+            letter-spacing:-.05em;
+            word-break:break-word;
+        }
+
+        .domain-card p{
+            margin-top:10px;
+            max-width:26ch;
+            font-size:.8rem;
+            line-height:1.7;
+        }
+
+        .section-stack{
+            max-width:1440px;
+            margin:0 auto;
+            padding:16px 24px 32px;
+            display:grid;
+            gap:28px;
+        }
+
+        .manifesto{
+            display:grid;
+            grid-template-columns:minmax(0,1.15fr) minmax(280px,.85fr);
+            gap:18px;
+            padding:24px;
+            background:#fff;
+        }
+
+        .manifesto h2{
+            font-family:var(--font-display);
+            font-size:clamp(2.8rem,7vw,6rem);
+            line-height:.83;
+            letter-spacing:-.05em;
+            text-transform:uppercase;
+            max-width:11ch;
+        }
+
+        .manifesto h2 mark{
+            background:var(--signal);
+            color:var(--ink);
+            padding:0 .1em;
+        }
+
+        .manifesto-list{
+            display:grid;
+            gap:16px;
+            align-content:start;
+        }
+
+        .manifesto-item{
+            border-top:2px solid var(--ink);
+            padding-top:14px;
+            display:grid;
+            gap:6px;
+        }
+
+        .manifesto-item strong{
+            font-family:var(--font-display);
+            font-size:1.4rem;
+            letter-spacing:-.03em;
+            text-transform:uppercase;
+        }
+
+        .manifesto-item p,
+        .feature-card p,
+        .theme-card p,
+        .step-card p,
+        .closing-card p{
+            font-size:.8rem;
+            line-height:1.7;
+            color:#222;
+        }
+
+        .feature-wall{
+            display:grid;
+            grid-template-columns:repeat(12,1fr);
+            gap:16px;
+        }
+
+        .feature-card{
+            padding:22px;
+            min-height:240px;
+            display:flex;
+            flex-direction:column;
+            justify-content:space-between;
+            background:#fff;
+        }
+
+        .feature-card.wide{grid-column:span 7}
+        .feature-card.tall{grid-column:span 5;min-height:300px}
+        .feature-card.medium{grid-column:span 4}
+        .feature-card.split{grid-column:span 8}
+
+        .feature-card.signal{background:var(--signal)}
+        .feature-card.signal-two{background:var(--signal-soft)}
+
+        .feature-card h3,
+        .theme-card h3,
+        .step-card h3,
+        .closing-card h3{
+            font-family:var(--font-display);
+            font-size:clamp(2rem,4.4vw,4rem);
+            line-height:.86;
+            letter-spacing:-.04em;
+            text-transform:uppercase;
+            max-width:9ch;
+        }
+
+        .feature-card h3 span,
+        .theme-card h3 span,
+        .closing-card h3 span{
+            color:var(--signal-two);
+        }
+
+        .feature-meta{
+            display:flex;
+            justify-content:space-between;
+            align-items:flex-end;
+            gap:12px;
+        }
+
+        .feature-num{
+            font-family:var(--font-display);
+            font-size:clamp(2.4rem,4vw,4rem);
+            line-height:.8;
+            letter-spacing:-.05em;
+        }
+
+        .stats-band{
+            border:2px solid var(--ink);
+            background:var(--signal-two);
+            padding:24px;
+        }
+
+        .stats-band .wall-note{color:#fff;opacity:.9}
+
+        .stats-grid{
+            margin-top:16px;
+            display:grid;
+            grid-template-columns:repeat(3,minmax(0,1fr));
+            gap:16px;
+        }
+
+        .stat-box{
+            background:#fff;
+            border:2px solid var(--ink);
+            padding:18px;
+        }
+
+        .stat-box strong{
+            display:block;
+            font-family:var(--font-display);
+            font-size:clamp(3rem,8vw,6.8rem);
+            line-height:.82;
+            letter-spacing:-.06em;
+        }
+
+        .stat-box span{
+            display:block;
+            margin-top:8px;
+            font-size:.72rem;
+            text-transform:uppercase;
+            letter-spacing:.14em;
+            color:var(--muted);
+        }
+
+        .theme-wall{
+            display:grid;
+            grid-template-columns:1.15fr .85fr;
+            gap:16px;
+        }
+
+        .theme-wall-copy{
+            padding:24px;
+            background:#fff;
+            border:2px solid var(--ink);
+            display:flex;
+            flex-direction:column;
+            gap:18px;
+        }
+
+        .theme-wall-copy h3,
+        .steps-intro h3,
+        .closing-card h3{
+            font-family:var(--font-display);
+            font-size:clamp(2.8rem,6vw,5rem);
+            line-height:.84;
+            letter-spacing:-.05em;
+            text-transform:uppercase;
+        }
+
+        .theme-list{
+            display:grid;
+            grid-template-columns:repeat(2,minmax(0,1fr));
+            gap:12px;
+        }
+
+        .theme-card{
+            padding:14px;
+            background:#fff;
+            display:grid;
+            gap:12px;
+        }
+
+        .theme-preview{
+            height:88px;
+            border:2px solid var(--ink);
+            background:#111;
+            position:relative;
+            overflow:hidden;
+        }
+
+        .theme-preview::before,
+        .theme-preview::after{
+            content:'';
+            position:absolute;
+        }
+
+        .theme-preview.one{background:linear-gradient(135deg,#0f172a,#1e293b)}
+        .theme-preview.one::before{inset:14px 18px auto 18px;height:12px;background:#e2e8f0}
+        .theme-preview.one::after{left:18px;right:34px;bottom:18px;height:32px;border:2px solid #38bdf8}
+
+        .theme-preview.two{background:#f8fafc}
+        .theme-preview.two::before{top:14px;left:14px;right:14px;height:18px;background:#111}
+        .theme-preview.two::after{left:14px;bottom:14px;width:40px;height:40px;background:#ffe600;border-radius:50%}
+
+        .theme-preview.three{background:linear-gradient(135deg,#030712,#111827)}
+        .theme-preview.three::before{top:12px;left:12px;width:58px;height:58px;border:2px solid #22c55e}
+        .theme-preview.three::after{right:12px;bottom:12px;width:70px;height:12px;background:#fff}
+
+        .theme-preview.four{background:linear-gradient(135deg,#1d4ed8,#7c3aed)}
+        .theme-preview.four::before{top:12px;left:12px;right:12px;height:12px;background:#fff}
+        .theme-preview.four::after{left:12px;bottom:12px;width:36px;height:36px;background:#00eaff}
+
+        .theme-preview.five{background:#0a0a0a}
+        .theme-preview.five::before{inset:16px auto auto 16px;width:60px;height:2px;background:#00ff84;box-shadow:0 12px 0 #00ff84,0 24px 0 #00ff84}
+        .theme-preview.five::after{right:16px;bottom:16px;width:14px;height:22px;border:2px solid #00ff84}
+
+        .theme-preview.six{background:#fff0f5}
+        .theme-preview.six::before{inset:12px 12px auto 12px;height:24px;background:#111}
+        .theme-preview.six::after{right:14px;bottom:14px;width:62px;height:16px;background:#ff4d6d}
+
+        .steps-grid{
+            display:grid;
+            grid-template-columns:.8fr 1.2fr;
+            gap:16px;
+        }
+
+        .steps-intro,
+        .steps-track{
+            border:2px solid var(--ink);
+            background:#fff;
+            padding:24px;
+        }
+
+        .steps-track{
+            display:grid;
+            gap:16px;
+        }
+
+        .step-card{
+            border:2px solid var(--ink);
+            background:var(--panel);
+            padding:18px;
+            display:grid;
+            gap:8px;
+        }
+
+        .step-card:nth-child(2){background:var(--signal-soft)}
+        .step-card:nth-child(3){background:var(--signal)}
+
+        .step-card strong{
+            font-family:var(--font-display);
+            font-size:clamp(1.8rem,3vw,2.8rem);
+            line-height:.85;
+            letter-spacing:-.04em;
+            text-transform:uppercase;
+        }
+
+        .closing-card{
+            display:grid;
+            grid-template-columns:1.05fr .95fr;
+            gap:16px;
+            padding:24px;
+            background:#fff;
+        }
+
+        .closing-card .closing-side{
+            display:grid;
+            gap:16px;
+            align-content:start;
+        }
+
+        .closing-punch{
+            padding:22px;
+            border:2px solid var(--ink);
+            background:var(--signal);
+            font-family:var(--font-display);
+            font-size:clamp(2.4rem,5vw,4.5rem);
+            line-height:.84;
+            letter-spacing:-.05em;
+            text-transform:uppercase;
+        }
+
+        .footer{
+            max-width:1440px;
+            margin:0 auto;
+            padding:0 24px 40px;
+        }
+
+        .footer-box{
+            border:2px solid var(--ink);
+            background:#fff;
+            padding:18px 20px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:16px;
+            flex-wrap:wrap;
+        }
+
+        .footer-brand{
+            font-family:var(--font-display);
+            font-size:1.2rem;
+            letter-spacing:-.04em;
+        }
+
+        .footer-copy{
+            font-size:.68rem;
+            text-transform:uppercase;
+            letter-spacing:.12em;
+            color:var(--muted);
+        }
+
+        .footer-links{
+            display:flex;
+            gap:10px;
+            flex-wrap:wrap;
+        }
+
+        .fade-up{
+            opacity:0;
+            transform:translateY(18px);
+            transition:opacity .45s ease,transform .45s ease;
+        }
+
+        .fade-up.is-visible{
+            opacity:1;
+            transform:translateY(0);
+        }
+
+        @media (max-width:1100px){
+            .hero-grid,
+            .manifesto,
+            .theme-wall,
+            .steps-grid,
+            .closing-card{
+                grid-template-columns:1fr;
             }
-            25% { 
-                border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
-                transform: translate(50px, -50px) rotate(90deg);
-            }
-            50% { 
-                border-radius: 40% 60% 60% 40% / 70% 30% 40% 70%;
-                transform: translate(-30px, 30px) rotate(180deg);
-            }
-            75% { 
-                border-radius: 70% 30% 50% 50% / 30% 50% 70% 50%;
-                transform: translate(30px, 50px) rotate(270deg);
+
+            .feature-card.wide,
+            .feature-card.tall,
+            .feature-card.medium,
+            .feature-card.split{
+                grid-column:span 12;
             }
         }
 
-        /* ========== MESH GRADIENT OVERLAY ========== */
-        .mesh-gradient {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            pointer-events: none;
-            opacity: 0.3;
-            background: 
-                radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(99, 102, 241, 0.3), transparent 50%),
-                radial-gradient(circle at calc(100% - var(--mouse-x, 50%)) calc(100% - var(--mouse-y, 50%)), rgba(35, 150, 127, 0.3), transparent 50%);
-            transition: background 0.3s ease;
+        @media (max-width:900px){
+            .utility-inner{
+                grid-template-columns:1fr;
+                justify-items:start;
+            }
+
+            .hero-title .lift{
+                margin-left:0;
+            }
+
+            .hero-copy::before{
+                width:min(88vw,620px);
+            }
+
+            .hero-collage,
+            .theme-list,
+            .stats-grid{
+                grid-template-columns:1fr;
+            }
         }
 
-        /* ========== NAVIGATION ========== */
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            padding: 30px 60px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 100;
-            background: rgba(10, 10, 15, 0.8);
-            backdrop-filter: blur(20px) saturate(180%);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .logo {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 2rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #fff 0%, #6366f1 50%, #23967f 100%);
-            background-size: 200% 200%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: gradientShift 3s ease infinite;
-        }
-        
-        @keyframes gradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-        
-        .nav-links {
-            display: flex;
-            gap: 40px;
-            align-items: center;
-        }
-        
-        .nav-links a:not(.btn) {
-            color: rgba(255,255,255,0.7);
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s;
-            position: relative;
-        }
-        
-        .nav-links a:not(.btn):after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: linear-gradient(90deg, #6366f1, #23967f);
-            transition: width 0.3s;
-        }
-        
-        .nav-links a:not(.btn):hover:after {
-            width: 100%;
-        }
-        
-        .nav-links a:not(.btn):hover {
-            color: #fff;
-        }
+        @media (max-width:640px){
+            body{
+                background-size:22px 22px;
+            }
 
-        /* ========== HERO SECTION ========== */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 120px 40px 80px;
-            position: relative;
-            z-index: 2;
-        }
-        
-        .hero-content {
-            max-width: 1200px;
-            text-align: center;
-        }
-        
-        .hero-badge {
-            display: inline-block;
-            padding: 10px 24px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 50px;
-            font-size: 0.85rem;
-            margin-bottom: 25px;
-            backdrop-filter: blur(10px);
-            animation: float 3s ease-in-out infinite;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .hero-badge:before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
-            animation: shine 3s infinite;
-        }
-        
-        @keyframes shine {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-        
-        .hero h1 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 4.5rem;
-            font-weight: 800;
-            line-height: 1.1;
-            margin-bottom: 20px;
-            letter-spacing: -2px;
-            position: relative;
-        }
-        
-        /* HOLOGRAPHIC TEXT EFFECT */
-        .holographic {
-            background: linear-gradient(
-                90deg,
-                #6366f1 0%,
-                #8b5cf6 20%,
-                #ec4899 40%,
-                #f59e0b 60%,
-                #10b981 80%,
-                #6366f1 100%
-            );
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: holographic 3s linear infinite;
-            filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.5));
-        }
-        
-        @keyframes holographic {
-            to { background-position: 200% center; }
-        }
-        
-        .hero p {
-            font-size: 1.2rem;
-            color: rgba(255,255,255,0.7);
-            margin-bottom: 40px;
-            max-width: 700px;
-            margin-left: auto;
-            margin-right: auto;
-            line-height: 1.6;
-        }
-        
-        .cta-buttons {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 60px;
-        }
-        
-        /* MAGNETIC BUTTONS */
-        .btn {
-            padding: 20px 45px;
-            border-radius: 50px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            border: none;
-            cursor: none;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            color: #fff;
-            box-shadow: 0 10px 40px rgba(99, 102, 241, 0.4);
-        }
-        
-        .btn-primary:before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #8b5cf6, #6366f1);
-            opacity: 0;
-            transition: opacity 0.4s;
-        }
-        
-        .btn-primary:hover:before {
-            opacity: 1;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 20px 60px rgba(99, 102, 241, 0.6);
-        }
-        
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
-            backdrop-filter: blur(10px);
-        }
-        
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.4);
-            transform: translateY(-5px) scale(1.05);
-        }
-        
-        .btn span {
-            position: relative;
-            z-index: 1;
-        }
+            .hero,
+            .section-stack,
+            .footer{
+                padding-left:16px;
+                padding-right:16px;
+            }
 
-        /* ========== 3D CARD FEATURES ========== */
-        .features {
-            padding: 80px 40px;
-            position: relative;
-            z-index: 2;
-        }
-        
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 40px;
-            max-width: 1400px;
-            margin: 0 auto;
-            perspective: 1000px;
-        }
-        
-        .feature-card {
-            padding: 40px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            position: relative;
-            transform-style: preserve-3d;
-            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-            backdrop-filter: blur(20px);
-            overflow: hidden;
-        }
-        
-        .feature-card:before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                135deg,
-                rgba(99, 102, 241, 0.1) 0%,
-                transparent 50%,
-                rgba(35, 150, 127, 0.1) 100%
-            );
-            opacity: 0;
-            transition: opacity 0.5s;
-        }
-        
-        .feature-card:hover {
-            border-color: rgba(255, 255, 255, 0.3);
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
-        }
-        
-        .feature-card:hover:before {
-            opacity: 1;
-        }
-        
-        .feature-icon {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 25px;
-            font-size: 2.2rem;
-            position: relative;
-            transition: all 0.5s;
-        }
-        
-        .feature-icon:after {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            border-radius: 22px;
-            padding: 2px;
-            background: linear-gradient(45deg, #6366f1, #8b5cf6, #ec4899);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            opacity: 0;
-            transition: opacity 0.5s;
-        }
-        
-        .feature-card:hover .feature-icon:after {
-            opacity: 1;
-        }
-        
-        .feature-card:hover .feature-icon {
-            transform: rotateY(360deg) scale(1.1);
-        }
-        
-        .feature-card h3 {
-            color: #fff;
-            margin-bottom: 12px;
-            font-weight: 700;
-            font-size: 1.4rem;
-            font-family: 'Space Grotesk', sans-serif;
-        }
-        
-        .feature-card p {
-            color: rgba(255,255,255,0.7);
-            font-size: 1rem;
-            line-height: 1.6;
-        }
+            .utility-inner{
+                padding:0;
+            }
 
-        /* Message Box */
-        .message-box {
-            max-width: 600px;
-            margin: 0 auto 40px;
-            padding: 20px;
-            background: rgba(99, 102, 241, 0.1);
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            border-radius: 16px;
-            text-align: center;
-            color: var(--primary);
-            font-weight: 500;
-            backdrop-filter: blur(10px);
-        }
+            .utility{
+                padding:12px 16px;
+            }
 
-        /* Footer */
-        .footer {
-            padding: 60px 40px;
-            text-align: center;
-            color: rgba(255,255,255,0.4);
-            font-size: 1rem;
-            position: relative;
-            z-index: 2;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
+            .hero-actions{
+                width:100%;
+            }
 
-        /* Responsive */
-        @media (max-width: 968px) {
-            .navbar {
-                padding: 20px 30px;
+            .hero-cta,
+            .hero-secondary,
+            .step-action,
+            .utility-link,
+            .primary-link{
+                width:100%;
             }
-            
-            .logo {
-                font-size: 1.5rem;
+
+            .feature-wall{
+                grid-template-columns:1fr;
             }
-            
-            .nav-links {
-                gap: 20px;
-            }
-            
-            .hero h1 {
-                font-size: 3.5rem;
-                letter-spacing: -1px;
-            }
-            
-            .hero p {
-                font-size: 1.1rem;
-            }
-            
-            .features-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 30px;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .spotlight {
-                display: none;
-            }
-            
-            .navbar {
-                padding: 15px 20px;
-            }
-            
-            .logo {
-                font-size: 1.3rem;
-            }
-            
-            .nav-links {
-                gap: 15px;
-            }
-            
-            .nav-links a:not(.btn) {
-                display: none; /* Hide non-essential links on mobile */
-            }
-            
-            .hero {
-                padding: 100px 20px 60px;
-            }
-            
-            .hero-badge {
-                font-size: 0.75rem;
-                padding: 8px 20px;
-                margin-bottom: 20px;
-            }
-            
-            .hero h1 {
-                font-size: 2.5rem;
-                margin-bottom: 15px;
-                letter-spacing: -1px;
-            }
-            
-            .hero p {
-                font-size: 1rem;
-                margin-bottom: 30px;
-                line-height: 1.5;
-            }
-            
-            .cta-buttons {
-                flex-direction: column;
-                gap: 15px;
-                margin-bottom: 40px;
-            }
-            
-            .btn {
-                padding: 16px 35px;
-                font-size: 1rem;
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .features {
-                padding: 60px 20px;
-            }
-            
-            .features-grid {
-                grid-template-columns: 1fr;
-                gap: 25px;
-            }
-            
-            .feature-card {
-                padding: 35px;
-            }
-            
-            .feature-icon {
-                width: 65px;
-                height: 65px;
-                font-size: 2rem;
-                margin-bottom: 20px;
-            }
-            
-            .feature-card h3 {
-                font-size: 1.3rem;
-            }
-            
-            .feature-card p {
-                font-size: 0.95rem;
-            }
-            
-            /* Disable heavy 3D effects on mobile for performance */
-            .feature-card {
-                transform: none !important;
-            }
-            
-            .blob {
-                filter: blur(60px);
-                opacity: 0.4;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .navbar {
-                padding: 12px 15px;
-            }
-            
-            .logo {
-                font-size: 1.1rem;
-            }
-            
-            .hero h1 {
-                font-size: 2rem;
-            }
-            
-            .hero p {
-                font-size: 0.9rem;
-            }
-            
-            .btn {
-                padding: 14px 30px;
-                font-size: 0.9rem;
-            }
-            
-            .feature-card {
-                padding: 25px;
-            }
-            
-            .feature-icon {
-                width: 55px;
-                height: 55px;
-                font-size: 1.7rem;
-            }
-            
-            .feature-card h3 {
-                font-size: 1.2rem;
+
+            .feature-card.wide,
+            .feature-card.tall,
+            .feature-card.medium,
+            .feature-card.split{
+                grid-column:auto;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Spotlight Effect -->
-    <div class="spotlight"></div>
+    <div class="page">
+        <header class="utility">
+            <div class="utility-inner">
+                <a href="/" class="brand">PORTFOLIO<span>PRO</span></a>
+                <div class="utility-actions">
+                    <a href="{% url 'admin_login' %}" class="utility-link">Sign in</a>
+                    <a href="{% url 'register' %}" class="primary-link">Get started</a>
+                </div>
+            </div>
+        </header>
 
-    <!-- Liquid Morphing Background -->
-    <div class="liquid-bg">
-        <div class="blob"></div>
-        <div class="blob"></div>
-        <div class="blob"></div>
+        <main>
+            <section class="hero">
+                <div class="hero-grid">
+                    <div class="hero-copy fade-up">
+                        <p class="hero-eyebrow">PortfolioPro / Bright mode for people tired of safe work</p>
+                        <h1 class="hero-title">
+                            <span>Stop</span>
+                            <span class="lift">looking</span>
+                            <span class="accent-word">templated.</span>
+                        </h1>
+                        <p class="hero-deck">Claim your own subdomain, flip through 12 themes, push color until it feels like yours, and publish a portfolio that does not disappear into the same old startup fog.</p>
+                        <div class="hero-actions">
+                            <a href="{% url 'register' %}" class="hero-cta">Claim your subdomain <span class="arrow"></span></a>
+                            <a href="#themes" class="hero-secondary">See the themes</a>
+                        </div>
+                    </div>
+
+                    <div class="hero-collage fade-up">
+                        <article class="sticker rotate-left">
+                            <small>Palette A / Toxic</small>
+                            <strong>12</strong>
+                            <small>themes that feel like choices, not filler.</small>
+                        </article>
+                        <article class="sticker rotate-right" style="background:#fff;">
+                            <small>Palette B / Hazard</small>
+                            <strong style="color:var(--signal-two);">14</strong>
+                            <small>color controls across the whole portfolio.</small>
+                        </article>
+                        <article class="domain-card">
+                            <small class="meta-kicker">Your own URL</small>
+                            <code>yourname.portfoliopro.app</code>
+                            <p>No subfolder energy. No weird path. Just your name and your work.</p>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section-stack">
+                <article class="manifesto fade-up">
+                    <div>
+                        <p class="section-eyebrow">Why this exists</p>
+                        <h2>The internet does not need another <mark>timid</mark> portfolio.</h2>
+                    </div>
+                    <div class="manifesto-list">
+                        <div class="manifesto-item">
+                            <strong>Louder first impression.</strong>
+                            <p>The page should tell people you care about your work before they read a single case study.</p>
+                        </div>
+                        <div class="manifesto-item">
+                            <strong>Control every visible thing.</strong>
+                            <p>Theme, palette, sections, favicon, social links, GitHub imports, custom blocks. It is yours to bend.</p>
+                        </div>
+                        <div class="manifesto-item">
+                            <strong>No passenger-seat branding.</strong>
+                            <p>Zero ads, zero watermarks, zero filler. Your work stays in front. Platform branding stays out.</p>
+                        </div>
+                    </div>
+                </article>
+
+                <div class="feature-wall">
+                    <article class="feature-card wide signal fade-up">
+                        <p class="wall-note">01 / Claim the URL</p>
+                        <h3>Your name.<span> Your address.</span></h3>
+                        <div class="feature-meta">
+                            <p>Start with a personal subdomain that actually looks like a destination, not a temporary folder.</p>
+                            <span class="feature-num">URL</span>
+                        </div>
+                    </article>
+
+                    <article class="feature-card tall fade-up">
+                        <p class="wall-note">02 / Push the palette</p>
+                        <h3>Color until it bites.</h3>
+                        <div class="feature-meta">
+                            <p>Background, text, heading, accent, buttons, effects. Tune the whole atmosphere instead of settling for one accent color.</p>
+                            <span class="feature-num">14</span>
+                        </div>
+                    </article>
+
+                    <article class="feature-card medium signal-two fade-up">
+                        <p class="wall-note">03 / Pull your work in</p>
+                        <h3>Import GitHub. Skip the copy-paste.</h3>
+                        <div class="feature-meta">
+                            <p>Bring in projects fast, then sharpen the copy manually where it matters.</p>
+                            <span class="feature-num">GH</span>
+                        </div>
+                    </article>
+
+                    <article class="feature-card medium fade-up">
+                        <p class="wall-note">04 / Know who looked</p>
+                        <h3>Built-in analytics.</h3>
+                        <div class="feature-meta">
+                            <p>Views, devices, referrers, recent traffic. Enough signal without bolting on another tool.</p>
+                            <span class="feature-num">VIS</span>
+                        </div>
+                    </article>
+
+                    <article class="feature-card split fade-up">
+                        <p class="wall-note">05 / Stay unbranded</p>
+                        <h3>Zero ads. Zero platform clutter.</h3>
+                        <div class="feature-meta">
+                            <p>Your portfolio should look self-possessed. No badges. No "powered by" tail dragging behind it.</p>
+                            <span class="feature-num">0</span>
+                        </div>
+                    </article>
+                </div>
+
+                <section class="stats-band fade-up">
+                    <p class="wall-note">Fast numbers</p>
+                    <div class="stats-grid">
+                        <article class="stat-box">
+                            <strong>12</strong>
+                            <span>Themes</span>
+                        </article>
+                        <article class="stat-box">
+                            <strong>14</strong>
+                            <span>Color controls</span>
+                        </article>
+                        <article class="stat-box">
+                            <strong>0</strong>
+                            <span>Ads or watermarks</span>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="theme-wall fade-up" id="themes">
+                    <article class="theme-wall-copy">
+                        <p class="section-eyebrow">Theme Wall</p>
+                        <h3>Pick a mood. Break it if you want.</h3>
+                        <p>Start from something sharp instead of a blank canvas. The point is not to freeze your taste into one template. The point is to get to a strong starting position fast.</p>
+                    </article>
+
+                    <div class="theme-list">
+                        <article class="theme-card">
+                            <div class="theme-preview one"></div>
+                            <h3>Modern Minimal</h3>
+                            <p>Quiet surface. Fast scanning. Strong typography.</p>
+                        </article>
+                        <article class="theme-card">
+                            <div class="theme-preview two"></div>
+                            <h3>Classic</h3>
+                            <p>Air, whitespace, and straightforward structure.</p>
+                        </article>
+                        <article class="theme-card">
+                            <div class="theme-preview three"></div>
+                            <h3>Creative Dark</h3>
+                            <p>Moody contrast for heavier visual work.</p>
+                        </article>
+                        <article class="theme-card">
+                            <div class="theme-preview four"></div>
+                            <h3>Developer Folio</h3>
+                            <p>Code-forward presentation without looking dead inside.</p>
+                        </article>
+                        <article class="theme-card">
+                            <div class="theme-preview five"></div>
+                            <h3>Terminal</h3>
+                            <p>CLI posture. Hacker energy. Minimal explanation.</p>
+                        </article>
+                        <article class="theme-card">
+                            <div class="theme-preview six"></div>
+                            <h3>Signature Editions</h3>
+                            <p>Custom personalities like Irish Spring, Pro V2, and Binil.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="steps-grid fade-up">
+                    <article class="steps-intro">
+                        <p class="section-eyebrow">Three steps</p>
+                        <h3>Get online before your coffee cools.</h3>
+                        <p style="margin-top:16px;font-size:.82rem;line-height:1.8;color:#222;">No deployment ceremony. No framework decisions. Just claim, customize, publish.</p>
+                        <div style="margin-top:22px;">
+                            <a href="{% url 'register' %}" class="step-action">Start free <span class="arrow"></span></a>
+                        </div>
+                    </article>
+
+                    <div class="steps-track">
+                        <article class="step-card">
+                            <strong>01 / Claim</strong>
+                            <p>Pick your subdomain, create the account, and get your shell ready.</p>
+                        </article>
+                        <article class="step-card">
+                            <strong>02 / Customize</strong>
+                            <p>Add projects, drag sections around, import GitHub, twist the colors until it feels like your work.</p>
+                        </article>
+                        <article class="step-card">
+                            <strong>03 / Publish</strong>
+                            <p>Go live, share the link, then watch the analytics instead of wondering whether anyone showed up.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="closing-card fade-up">
+                    <div class="closing-side">
+                        <p class="section-eyebrow">Final shove</p>
+                        <h3>Claim your corner of the internet <span>properly.</span></h3>
+                        <p>No code. No deployment keys. No timid default mood. Just a portfolio builder with enough visual range to stop looking like filler.</p>
+                        <div class="hero-actions">
+                            <a href="{% url 'register' %}" class="hero-cta">Build yours now <span class="arrow"></span></a>
+                            <a href="{% url 'admin_login' %}" class="hero-secondary">I already have one</a>
+                        </div>
+                    </div>
+                    <div class="closing-side">
+                        <div class="closing-punch">Your work deserves something with a pulse.</div>
+                        <div class="theme-card">
+                            <h3>Built for strong taste.</h3>
+                            <p>Start from a sharp system, then push it until the site feels unmistakably yours.</p>
+                        </div>
+                    </div>
+                </section>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <div class="footer-box">
+                <div>
+                    <div class="footer-brand">PORTFOLIOPRO</div>
+                    <div class="footer-copy">Your corner of the web. Your rules.</div>
+                </div>
+                <div class="footer-links">
+                    <a href="{% url 'register' %}" class="utility-link">Get started</a>
+                    <a href="{% url 'admin_login' %}" class="utility-link">Sign in</a>
+                </div>
+            </div>
+        </footer>
     </div>
-    
-    <!-- Mesh Gradient -->
-    <div class="mesh-gradient"></div>
-    
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="logo">PortfolioPro</div>
-        <div class="nav-links">
-            <a href="#features">Features</a>
-            <a href="/admin-login/" class="btn btn-secondary" style="padding: 10px 20px;">
-                <i class="fas fa-sign-in-alt"></i> <span>Sign In</span>
-            </a>
-        </div>
-    </nav>
-    
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-content">
-            <div class="hero-badge">✨ The Future of Portfolio Building</div>
-            
-            <h1>Build Your <span class="holographic">Dream Portfolio</span> in Minutes</h1>
-            
-            <p>Experience the next generation of portfolio creation with cutting-edge design, immersive animations, and unparalleled customization.</p>
-            
-            {% if message %}
-            <div class="message-box">{{ message }}</div>
-            {% endif %}
-            
-            <div class="cta-buttons">
-                <a href="/register/" class="btn btn-primary magnetic-btn">
-                    <span><i class="fas fa-rocket"></i> Get Started Free</span>
-                </a>
-                <a href="#features" class="btn btn-secondary magnetic-btn">
-                    <span><i class="fas fa-play"></i> Explore Features</span>
-                </a>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Features Section -->
-    <section class="features" id="features">
-        <div class="features-grid">
-            <div class="feature-card magnetic-card">
-                <div class="feature-icon">🎨</div>
-                <h3>Hyper-Customizable</h3>
-                <p>Infinite design possibilities with real-time preview, advanced themes, and pixel-perfect control over every element.</p>
-            </div>
-            
-            <div class="feature-card magnetic-card">
-                <div class="feature-icon">🌐</div>
-                <h3>Your Own Domain</h3>
-                <p>Get a professional subdomain instantly - no technical knowledge required. Share your work with the world.</p>
-            </div>
-            
-            <div class="feature-card magnetic-card">
-                <div class="feature-icon">⚡</div>
-                <h3>Blazing Fast</h3>
-                <p>Optimized for performance with instant loading, smooth animations, and cutting-edge web technologies.</p>
-            </div>
-            
-            <div class="feature-card magnetic-card">
-                <div class="feature-icon">🔒</div>
-                <h3>Enterprise Security</h3>
-                <p>Bank-level encryption, secure authentication, and automatic backups keep your data safe 24/7.</p>
-            </div>
-            
-            <div class="feature-card magnetic-card">
-                <div class="feature-icon">📱</div>
-                <h3>Responsive Design</h3>
-                <p>Looks stunning on every device - from desktop monitors to mobile phones and tablets.</p>
-            </div>
-            
-            <div class="feature-card magnetic-card">
-                <div class="feature-icon">🛠️</div>
-                <h3>Intuitive Dashboard</h3>
-                <p>Manage everything with our beautiful, easy-to-use admin panel. No coding required.</p>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Footer -->
-    <footer class="footer">
-        <p>&copy; 2026 PortfolioPro. All rights reserved.</p>
-    </footer>
 
     <script>
-        // ========== SPOTLIGHT EFFECT ==========
-        const spotlight = document.querySelector('.spotlight');
-        
-        document.addEventListener('mousemove', (e) => {
-            spotlight.style.left = e.clientX + 'px';
-            spotlight.style.top = e.clientY + 'px';
-            spotlight.style.opacity = '1';
-        });
-        
-        document.addEventListener('mouseleave', () => {
-            spotlight.style.opacity = '0';
-        });
+        (function(){
+            var observer = new IntersectionObserver(function(entries){
+                entries.forEach(function(entry){
+                    if(entry.isIntersecting){
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.14 });
 
-        // ========== MESH GRADIENT MOUSE FOLLOW ==========
-        const meshGradient = document.querySelector('.mesh-gradient');
-        document.addEventListener('mousemove', (e) => {
-            const x = (e.clientX / window.innerWidth) * 100;
-            const y = (e.clientY / window.innerHeight) * 100;
-            meshGradient.style.setProperty('--mouse-x', x + '%');
-            meshGradient.style.setProperty('--mouse-y', y + '%');
-        });
-
-        // ========== 3D TILT EFFECT FOR CARDS ==========
-        document.querySelectorAll('.magnetic-card').forEach(card => {
-            card.addEventListener('mousemove', function(e) {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
-                const centerX = rect.width / 2;
-                const centerY = rect.height / 2;
-                
-                const rotateX = (y - centerY) / 10;
-                const rotateY = (centerX - x) / 10;
-                
-                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`;
+            document.querySelectorAll('.fade-up').forEach(function(node){
+                observer.observe(node);
             });
-            
-            card.addEventListener('mouseleave', function() {
-                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
-            });
-        });
-
-        // ========== MAGNETIC BUTTONS ==========
-        document.querySelectorAll('.magnetic-btn').forEach(btn => {
-            btn.addEventListener('mousemove', function(e) {
-                const rect = btn.getBoundingClientRect();
-                const x = e.clientX - rect.left - rect.width / 2;
-                const y = e.clientY - rect.top - rect.height / 2;
-                
-                btn.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
-            });
-            
-            btn.addEventListener('mouseleave', function() {
-                btn.style.transform = 'translate(0, 0)';
-            });
-        });
+        })();
     </script>
 </body>
 </html>

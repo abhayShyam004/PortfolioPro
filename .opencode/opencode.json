@@ -1,0 +1,20 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "plugin": ["superpowers@git+https://github.com/obra/superpowers.git"],
+  "skills": {
+    "paths": [".claude/skills", ".agents/skills"]
+  },
+  "mcp": {
+    "stitch": {
+      "type": "remote",
+      "url": "https://stitch.googleapis.com/mcp",
+      "enabled": true,
+      "auth": {
+        "type": "api-key",
+        "location": "header",
+        "headerName": "X-Goog-Api-Key",
+        "keyEnvVar": "GOOGLE_STITCH_API_KEY"
+      }
+    }
+  }
+}
