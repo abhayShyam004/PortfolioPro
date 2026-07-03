@@ -4,985 +4,566 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PortfolioPro - Stop Looking Templated</title>
-    <meta name="description" content="Build a portfolio that does not look like everyone else's. Custom subdomain, loud themes, deep color control, zero ads.">
+    <title>PortfolioPro - Make it yours</title>
+    <meta name="description" content="The minimalist developer portfolio platform. Check your custom subdomain and go live in seconds.">
     <link rel="icon" type="image/png" href="{% static 'favicon.png' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/text-rotate.css' %}">
     <style>
-        @font-face{font-family:'Incognito';src:url('{% static 'fonts/incognito_regular.woff2' %}') format('woff2');font-weight:400;font-style:normal}
-        @font-face{font-family:'Incognito';src:url('{% static 'fonts/incognito_medium.woff2' %}') format('woff2');font-weight:500;font-style:normal}
-        @font-face{font-family:'Incognito';src:url('{% static 'fonts/incognito_bold.woff2' %}') format('woff2');font-weight:700;font-style:normal}
-        @font-face{font-family:'Incognito Condensed';src:url('{% static 'fonts/incognito_condensed.woff2' %}') format('woff2');font-weight:700;font-style:normal}
-        @font-face{font-family:'Gitlab Mono';src:url('{% static 'fonts/gitlab-mono.woff2' %}') format('woff2');font-weight:400;font-style:normal}
-
-        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-
-        :root{
-            --paper:#ffffff;
-            --ink:#111111;
-            --muted:#5c5c5c;
-            --line:#e8e8e8;
-            --signal:#00eaff;
-            --signal-soft:#c5fbff;
-            --signal-two:#00ff84;
-            --signal-three:#111111;
-            --panel:#f7f7f7;
-            --shadow:6px 6px 0 #111111;
-            --font-display:'Incognito Condensed','Incognito','Arial Narrow',sans-serif;
-            --font-body:'Gitlab Mono','IBM Plex Mono','Courier New',monospace;
-        }
-
-        html{scroll-behavior:smooth}
-        body{
-            font-family:var(--font-body);
-            background:var(--paper);
-            color:var(--ink);
-            overflow-x:hidden;
-            background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
-            background-size:32px 32px;
-        }
-
-        body::before{
-            content:'';
-            position:fixed;
-            inset:0;
-            pointer-events:none;
-            background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-            opacity:.45;
-            z-index:4;
-        }
-
-        a{color:inherit;text-decoration:none}
-        img{display:block;max-width:100%}
-
-        .page{
-            position:relative;
-            z-index:1;
-        }
-
-        .utility{
-            position:sticky;
-            top:0;
-            z-index:20;
-            background:rgba(255,255,255,.92);
-            backdrop-filter:blur(10px);
-            border-bottom:2px solid var(--ink);
-        }
-
-        .utility-inner{
-            max-width:1440px;
-            margin:0 auto;
-            padding:14px 24px;
-            display:flex;
-            justify-content:space-between;
-            flex-wrap:wrap;
-            gap:16px;
-            align-items:center;
-        }
-
-        .brand{
-            font-family:var(--font-display);
-            font-size:1.55rem;
-            line-height:1;
-            letter-spacing:-.04em;
-        }
-
-        .brand span{color:var(--signal-two)}
-
-        .utility-actions{
-            display:flex;
-            align-items:center;
-            gap:10px;
-            flex-wrap:wrap;
-        }
-
-        .utility-link,
-        .primary-link{
-            border:2px solid var(--ink);
-            background:#fff;
-            color:var(--ink);
-            font-family:var(--font-body);
-            text-transform:uppercase;
-            letter-spacing:.12em;
-            font-size:.68rem;
-            cursor:pointer;
-            transition:transform .16s ease,box-shadow .16s ease,background .16s ease,color .16s ease;
-        }
-
-        .utility-link,
-        .primary-link{
-            padding:11px 16px;
-            display:inline-flex;
-            align-items:center;
-            justify-content:center;
-        }
-
-        .primary-link{
-            background:var(--ink);
-            color:#fff;
-        }
-
-        .utility-link:hover,
-        .primary-link:hover,
-        .hero-cta:hover,
-        .hero-secondary:hover,
-        .step-action:hover{
-            transform:translate(-3px,-3px);
-            box-shadow:var(--shadow);
-        }
-
-        .hero{
-            max-width:1440px;
-            margin:0 auto;
-            padding:42px 24px 30px;
-        }
-
-        .hero-grid{
-            display:grid;
-            grid-template-columns:minmax(0,1.25fr) minmax(320px,.75fr);
-            gap:22px;
-            align-items:start;
-        }
-
-        .hero-copy{
-            position:relative;
-            padding:22px 0 0;
-        }
-
-        .hero-copy::before{
-            content:'';
-            position:absolute;
-            top:26px;
-            left:8px;
-            width:min(62vw,760px);
-            height:clamp(90px,16vw,180px);
-            background:var(--signal);
-            z-index:-1;
-            transform:rotate(-2.1deg);
-        }
-
-        .hero-eyebrow,
-        .section-eyebrow,
-        .wall-note,
-        .meta-kicker{
-            font-size:.72rem;
-            text-transform:uppercase;
-            letter-spacing:.16em;
-            color:var(--muted);
-        }
-
-        .hero-title{
-            margin-top:18px;
-            font-family:var(--font-display);
-            font-size:clamp(4.8rem,14vw,12rem);
-            line-height:.78;
-            letter-spacing:-.06em;
-            text-transform:uppercase;
-        }
-
-        .hero-title span{
-            display:block;
-        }
-
-        .hero-title .lift{
-            margin-left:1.2ch;
-        }
-
-        .hero-title .accent-word{
-            color:var(--signal-two);
-            text-decoration:line-through;
-            text-decoration-thickness:.08em;
-            text-decoration-color:var(--ink);
-        }
-
-        .hero-deck{
-            max-width:560px;
-            margin-top:26px;
-            font-size:.92rem;
-            line-height:1.8;
-            color:#202020;
-        }
-
-        .hero-actions{
-            display:flex;
-            gap:14px;
-            flex-wrap:wrap;
-            margin-top:28px;
-        }
-
-        .hero-cta,
-        .hero-secondary,
-        .step-action{
-            border:2px solid var(--ink);
-            background:#fff;
-            color:var(--ink);
-            padding:15px 22px;
-            font-family:var(--font-body);
-            font-size:.72rem;
-            text-transform:uppercase;
-            letter-spacing:.14em;
-            display:inline-flex;
-            align-items:center;
-            gap:10px;
-            transition:transform .16s ease,box-shadow .16s ease,background .16s ease,color .16s ease;
-        }
-
-        .hero-cta,
-        .step-action{
-            background:var(--ink);
-            color:#fff;
-        }
-
-        .arrow{
-            width:9px;
-            height:9px;
-            border-right:2px solid currentColor;
-            border-bottom:2px solid currentColor;
-            transform:rotate(-45deg);
-        }
-
-        .hero-collage{
-            display:grid;
-            grid-template-columns:1fr 1fr;
-            gap:14px;
-            align-content:start;
-        }
-
-        .sticker,
-        .ticker,
-        .domain-card,
-        .manifesto,
-        .feature-card,
-        .theme-card,
-        .step-card,
-        .closing-card{
-            border:2px solid var(--ink);
-            background:#fff;
-        }
-
-        .sticker{
-            min-height:180px;
-            padding:18px;
-            display:flex;
-            flex-direction:column;
-            justify-content:space-between;
-            background:var(--signal-soft);
-        }
-
-        .sticker.rotate-left{transform:rotate(-2.1deg)}
-        .sticker.rotate-right{transform:rotate(1.6deg)}
-
-        .sticker strong{
-            font-family:var(--font-display);
-            font-size:clamp(2.5rem,7vw,5.8rem);
-            line-height:.8;
-            letter-spacing:-.05em;
-            text-transform:uppercase;
-        }
-
-        .sticker small{
-            font-size:.72rem;
-            letter-spacing:.1em;
-            text-transform:uppercase;
-            color:var(--muted);
-            line-height:1.6;
-        }
-
-        .domain-card{
-            grid-column:1 / -1;
-            padding:20px;
-            background:var(--signal);
-        }
-
-        .domain-card code{
-            display:block;
-            font-family:var(--font-display);
-            font-size:clamp(1.8rem,4vw,3.6rem);
-            line-height:.88;
-            letter-spacing:-.05em;
-            word-break:break-word;
-        }
-
-        .domain-card p{
-            margin-top:10px;
-            max-width:26ch;
-            font-size:.8rem;
-            line-height:1.7;
-        }
-
-        .section-stack{
-            max-width:1440px;
-            margin:0 auto;
-            padding:16px 24px 32px;
-            display:grid;
-            gap:28px;
-        }
-
-        .manifesto{
-            display:grid;
-            grid-template-columns:minmax(0,1.15fr) minmax(280px,.85fr);
-            gap:18px;
-            padding:24px;
-            background:#fff;
-        }
-
-        .manifesto h2{
-            font-family:var(--font-display);
-            font-size:clamp(2.8rem,7vw,6rem);
-            line-height:.83;
-            letter-spacing:-.05em;
-            text-transform:uppercase;
-            max-width:11ch;
-        }
-
-        .manifesto h2 mark{
-            background:var(--signal);
-            color:var(--ink);
-            padding:0 .1em;
-        }
-
-        .manifesto-list{
-            display:grid;
-            gap:16px;
-            align-content:start;
-        }
-
-        .manifesto-item{
-            border-top:2px solid var(--ink);
-            padding-top:14px;
-            display:grid;
-            gap:6px;
-        }
-
-        .manifesto-item strong{
-            font-family:var(--font-display);
-            font-size:1.4rem;
-            letter-spacing:-.03em;
-            text-transform:uppercase;
-        }
-
-        .manifesto-item p,
-        .feature-card p,
-        .theme-card p,
-        .step-card p,
-        .closing-card p{
-            font-size:.8rem;
-            line-height:1.7;
-            color:#222;
-        }
-
-        .feature-wall{
-            display:grid;
-            grid-template-columns:repeat(12,1fr);
-            gap:16px;
-        }
-
-        .feature-card{
-            padding:22px;
-            min-height:240px;
-            display:flex;
-            flex-direction:column;
-            justify-content:space-between;
-            background:#fff;
-        }
-
-        .feature-card.wide{grid-column:span 7}
-        .feature-card.tall{grid-column:span 5;min-height:300px}
-        .feature-card.medium{grid-column:span 4}
-        .feature-card.split{grid-column:span 8}
-
-        .feature-card.signal{background:var(--signal)}
-        .feature-card.signal-two{background:var(--signal-soft)}
-
-        .feature-card h3,
-        .theme-card h3,
-        .step-card h3,
-        .closing-card h3{
-            font-family:var(--font-display);
-            font-size:clamp(2rem,4.4vw,4rem);
-            line-height:.86;
-            letter-spacing:-.04em;
-            text-transform:uppercase;
-            max-width:9ch;
-        }
-
-        .feature-card h3 span,
-        .theme-card h3 span,
-        .closing-card h3 span{
-            color:var(--signal-two);
-        }
-
-        .feature-meta{
-            display:flex;
-            justify-content:space-between;
-            align-items:flex-end;
-            gap:12px;
-        }
-
-        .feature-num{
-            font-family:var(--font-display);
-            font-size:clamp(2.4rem,4vw,4rem);
-            line-height:.8;
-            letter-spacing:-.05em;
-        }
-
-        .stats-band{
-            border:2px solid var(--ink);
-            background:var(--signal-two);
-            padding:24px;
-        }
-
-        .stats-band .wall-note{color:#fff;opacity:.9}
-
-        .stats-grid{
-            margin-top:16px;
-            display:grid;
-            grid-template-columns:repeat(3,minmax(0,1fr));
-            gap:16px;
-        }
-
-        .stat-box{
-            background:#fff;
-            border:2px solid var(--ink);
-            padding:18px;
-        }
-
-        .stat-box strong{
-            display:block;
-            font-family:var(--font-display);
-            font-size:clamp(3rem,8vw,6.8rem);
-            line-height:.82;
-            letter-spacing:-.06em;
-        }
-
-        .stat-box span{
-            display:block;
-            margin-top:8px;
-            font-size:.72rem;
-            text-transform:uppercase;
-            letter-spacing:.14em;
-            color:var(--muted);
-        }
-
-        .theme-wall{
-            display:grid;
-            grid-template-columns:1.15fr .85fr;
-            gap:16px;
-        }
-
-        .theme-wall-copy{
-            padding:24px;
-            background:#fff;
-            border:2px solid var(--ink);
-            display:flex;
-            flex-direction:column;
-            gap:18px;
-        }
-
-        .theme-wall-copy h3,
-        .steps-intro h3,
-        .closing-card h3{
-            font-family:var(--font-display);
-            font-size:clamp(2.8rem,6vw,5rem);
-            line-height:.84;
-            letter-spacing:-.05em;
-            text-transform:uppercase;
-        }
-
-        .theme-list{
-            display:grid;
-            grid-template-columns:repeat(2,minmax(0,1fr));
-            gap:12px;
-        }
-
-        .theme-card{
-            padding:14px;
-            background:#fff;
-            display:grid;
-            gap:12px;
-        }
-
-        .theme-preview{
-            height:88px;
-            border:2px solid var(--ink);
-            background:#111;
-            position:relative;
-            overflow:hidden;
-        }
-
-        .theme-preview::before,
-        .theme-preview::after{
-            content:'';
-            position:absolute;
-        }
-
-        .theme-preview.one{background:linear-gradient(135deg,#0f172a,#1e293b)}
-        .theme-preview.one::before{inset:14px 18px auto 18px;height:12px;background:#e2e8f0}
-        .theme-preview.one::after{left:18px;right:34px;bottom:18px;height:32px;border:2px solid #38bdf8}
-
-        .theme-preview.two{background:#f8fafc}
-        .theme-preview.two::before{top:14px;left:14px;right:14px;height:18px;background:#111}
-        .theme-preview.two::after{left:14px;bottom:14px;width:40px;height:40px;background:#ffe600;border-radius:50%}
-
-        .theme-preview.three{background:linear-gradient(135deg,#030712,#111827)}
-        .theme-preview.three::before{top:12px;left:12px;width:58px;height:58px;border:2px solid #22c55e}
-        .theme-preview.three::after{right:12px;bottom:12px;width:70px;height:12px;background:#fff}
-
-        .theme-preview.four{background:linear-gradient(135deg,#1d4ed8,#7c3aed)}
-        .theme-preview.four::before{top:12px;left:12px;right:12px;height:12px;background:#fff}
-        .theme-preview.four::after{left:12px;bottom:12px;width:36px;height:36px;background:#00eaff}
-
-        .theme-preview.five{background:#0a0a0a}
-        .theme-preview.five::before{inset:16px auto auto 16px;width:60px;height:2px;background:#00ff84;box-shadow:0 12px 0 #00ff84,0 24px 0 #00ff84}
-        .theme-preview.five::after{right:16px;bottom:16px;width:14px;height:22px;border:2px solid #00ff84}
-
-        .theme-preview.six{background:#fff0f5}
-        .theme-preview.six::before{inset:12px 12px auto 12px;height:24px;background:#111}
-        .theme-preview.six::after{right:14px;bottom:14px;width:62px;height:16px;background:#ff4d6d}
-
-        .steps-grid{
-            display:grid;
-            grid-template-columns:.8fr 1.2fr;
-            gap:16px;
-        }
-
-        .steps-intro,
-        .steps-track{
-            border:2px solid var(--ink);
-            background:#fff;
-            padding:24px;
-        }
-
-        .steps-track{
-            display:grid;
-            gap:16px;
-        }
-
-        .step-card{
-            border:2px solid var(--ink);
-            background:var(--panel);
-            padding:18px;
-            display:grid;
-            gap:8px;
-        }
-
-        .step-card:nth-child(2){background:var(--signal-soft)}
-        .step-card:nth-child(3){background:var(--signal)}
-
-        .step-card strong{
-            font-family:var(--font-display);
-            font-size:clamp(1.8rem,3vw,2.8rem);
-            line-height:.85;
-            letter-spacing:-.04em;
-            text-transform:uppercase;
-        }
-
-        .closing-card{
-            display:grid;
-            grid-template-columns:1.05fr .95fr;
-            gap:16px;
-            padding:24px;
-            background:#fff;
-        }
-
-        .closing-card .closing-side{
-            display:grid;
-            gap:16px;
-            align-content:start;
-        }
-
-        .closing-punch{
-            padding:22px;
-            border:2px solid var(--ink);
-            background:var(--signal);
-            font-family:var(--font-display);
-            font-size:clamp(2.4rem,5vw,4.5rem);
-            line-height:.84;
-            letter-spacing:-.05em;
-            text-transform:uppercase;
-        }
-
-        .footer{
-            max-width:1440px;
-            margin:0 auto;
-            padding:0 24px 40px;
-        }
-
-        .footer-box{
-            border:2px solid var(--ink);
-            background:#fff;
-            padding:18px 20px;
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            gap:16px;
-            flex-wrap:wrap;
-        }
-
-        .footer-brand{
-            font-family:var(--font-display);
-            font-size:1.2rem;
-            letter-spacing:-.04em;
-        }
-
-        .footer-copy{
-            font-size:.68rem;
-            text-transform:uppercase;
-            letter-spacing:.12em;
-            color:var(--muted);
-        }
-
-        .footer-links{
-            display:flex;
-            gap:10px;
-            flex-wrap:wrap;
-        }
-
-        .fade-up{
-            opacity:0;
-            transform:translateY(18px);
-            transition:opacity .45s ease,transform .45s ease;
-        }
-
-        .fade-up.is-visible{
-            opacity:1;
-            transform:translateY(0);
-        }
-
-        @media (max-width:1100px){
-            .hero-grid,
-            .manifesto,
-            .theme-wall,
-            .steps-grid,
-            .closing-card{
-                grid-template-columns:1fr;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #ffffff;
+            color: #18181b;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Top Left Brand Logo (Hidden initially, revealed after animation) */
+        .brand-logo {
+            position: fixed;
+            top: 28px;
+            left: 36px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #18181b;
+            text-decoration: none;
+            letter-spacing: -0.04em;
+            z-index: 50;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateY(-12px);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .brand-logo span {
+            color: #ff5941;
+        }
+
+        .brand-logo.is-visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        /* Top Right / Bottom Mobile Navigation Buttons */
+        .nav-actions {
+            position: fixed;
+            top: 24px;
+            right: 36px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            z-index: 50;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateY(-12px);
+        }
+
+        .nav-actions.is-visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        .nav-signin {
+            color: #71717a;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .nav-signin:hover {
+            color: #18181b;
+        }
+
+        .nav-get-started {
+            background: #18181b;
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .nav-get-started:hover {
+            background: #ff5941;
+            box-shadow: 0 8px 20px rgba(255, 89, 65, 0.35);
+            transform: translateY(-1px);
+        }
+
+        /* View 1: Intro Hero Rotating Text */
+        .intro-view {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            font-weight: 300;
+            font-size: clamp(2rem, 5vw, 3.75rem);
+            letter-spacing: -0.02em;
+            user-select: none;
+            z-index: 20;
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            opacity: 1;
+            transform: scale(1);
+            cursor: pointer;
+        }
+
+        .intro-view.is-hidden {
+            opacity: 0;
+            transform: scale(0.94) translateY(-20px);
+            pointer-events: none;
+        }
+
+        .preview-text {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.25em;
+        }
+
+        .text-rotate-badge {
+            background: #ff5941 !important;
+            color: #ffffff !important;
+            padding: 0.15em 0.5em !important;
+            border-radius: 0.35em !important;
+            font-weight: 400 !important;
+            box-shadow: 0 10px 30px -5px rgba(255, 89, 65, 0.45) !important;
+        }
+
+        /* View 2: Interactive Subdomain Search Dashboard */
+        .search-view {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 680px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(25px);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.15s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.15s;
+        }
+
+        .search-view.is-visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        .search-prompt {
+            font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            color: #18181b;
+            margin-bottom: 0.5rem;
+        }
+
+        .search-sub {
+            font-size: 1rem;
+            color: #71717a;
+            margin-bottom: 2.5rem;
+            font-weight: 400;
+        }
+
+        /* Interactive Ambient Lighting Container */
+        .search-box-wrapper {
+            position: relative;
+            width: 100%;
+            margin-bottom: 1.25rem;
+        }
+
+        /* Ambient Lighting Glow Behind the Bar */
+        .ambient-light {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 90%;
+            height: 160%;
+            transform: translate(-50%, -50%) scale(0.9);
+            border-radius: 100px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), background 0.5s ease;
+            z-index: 0;
+        }
+
+        .ambient-light.is-available {
+            opacity: 1;
+            background: radial-gradient(ellipse, rgba(0, 255, 132, 0.55) 0%, rgba(0, 255, 132, 0) 70%);
+            transform: translate(-50%, -50%) scale(1.35);
+        }
+
+        .ambient-light.is-taken {
+            opacity: 1;
+            background: radial-gradient(ellipse, rgba(255, 89, 65, 0.55) 0%, rgba(255, 89, 65, 0) 70%);
+            transform: translate(-50%, -50%) scale(1.35);
+        }
+
+        /* The Search Card Input Row */
+        .search-card {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            background: #ffffff;
+            border: 2px solid #e4e4e7;
+            border-radius: 100px;
+            padding: 6px 6px 6px 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .search-card:focus-within {
+            border-color: #18181b;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-card.is-available {
+            border-color: #00e878;
+            box-shadow: 0 15px 45px -5px rgba(0, 232, 120, 0.4);
+        }
+
+        .search-card.is-taken {
+            border-color: #ff5941;
+            box-shadow: 0 15px 45px -5px rgba(255, 89, 65, 0.4);
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-family: inherit;
+            font-size: 1.15rem;
+            font-weight: 500;
+            color: #18181b;
+            background: transparent;
+            min-width: 0;
+            padding: 8px 0;
+        }
+
+        .search-input::placeholder {
+            color: #a1a1aa;
+            font-weight: 400;
+        }
+
+        .domain-suffix {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #71717a;
+            padding-right: 16px;
+            user-select: none;
+        }
+
+        .claim-btn {
+            background: #18181b;
+            color: #ffffff;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 100px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .claim-btn:hover:not(:disabled) {
+            background: #00e878;
+            color: #09090c;
+            transform: scale(1.03);
+            box-shadow: 0 10px 20px -5px rgba(0, 232, 120, 0.5);
+        }
+
+        .claim-btn:disabled {
+            background: #e4e4e7;
+            color: #a1a1aa;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .arrow-icon {
+            transition: transform 0.2s ease;
+        }
+
+        .claim-btn:hover:not(:disabled) .arrow-icon {
+            transform: translateX(4px);
+        }
+
+        /* Status message below search bar */
+        .status-msg {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #71717a;
+            min-height: 1.5em;
+            transition: color 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .status-ok {
+            color: #10b981 !important;
+            font-weight: 600;
+            transform: scale(1.05);
+        }
+
+        .status-bad {
+            color: #ff5941 !important;
+            font-weight: 600;
+        }
+
+        /* Responsive styling for Mobile */
+        @media (max-width: 640px) {
+            .brand-logo {
+                top: 20px;
+                left: 20px;
+                font-size: 1.25rem;
+            }
+            
+            /* Dock signin / get started buttons at the bottom of screen for mobile */
+            .nav-actions {
+                top: auto;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                width: 100%;
+                padding: 16px 20px;
+                background: rgba(255, 255, 255, 0.92);
+                backdrop-filter: blur(12px);
+                border-top: 1px solid #e4e4e7;
+                justify-content: space-between;
+                transform: translateY(100%);
             }
 
-            .feature-card.wide,
-            .feature-card.tall,
-            .feature-card.medium,
-            .feature-card.split{
-                grid-column:span 12;
-            }
-        }
-
-        @media (max-width:900px){
-            .utility-inner{
-                grid-template-columns:1fr;
-                justify-items:start;
+            .nav-actions.is-visible {
+                transform: translateY(0);
             }
 
-            .hero-title .lift{
-                margin-left:0;
+            .search-view {
+                padding: 1.5rem 1rem;
             }
 
-            .hero-copy::before{
-                width:min(88vw,620px);
+            .search-card {
+                padding: 4px 4px 4px 16px;
             }
 
-            .hero-collage,
-            .theme-list,
-            .stats-grid{
-                grid-template-columns:1fr;
-            }
-        }
-
-        @media (max-width:640px){
-            body{
-                background-size:22px 22px;
+            .search-input {
+                font-size: 1rem;
             }
 
-            .hero,
-            .section-stack,
-            .footer{
-                padding-left:16px;
-                padding-right:16px;
+            .domain-suffix {
+                font-size: 0.95rem;
+                padding-right: 8px;
             }
 
-            .utility-inner{
-                padding:0;
-            }
-
-            .utility{
-                padding:12px 16px;
-            }
-
-            .hero-actions{
-                width:100%;
-            }
-
-            .hero-cta,
-            .hero-secondary,
-            .step-action,
-            .utility-link,
-            .primary-link{
-                width:100%;
-            }
-
-            .feature-wall{
-                grid-template-columns:1fr;
-            }
-
-            .feature-card.wide,
-            .feature-card.tall,
-            .feature-card.medium,
-            .feature-card.split{
-                grid-column:auto;
+            .claim-btn {
+                padding: 12px 20px;
+                font-size: 0.9rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="page">
-        <header class="utility">
-            <div class="utility-inner">
-                <a href="/" class="brand">PORTFOLIO<span>PRO</span></a>
-                <div class="utility-actions">
-                    <a href="{% url 'admin_login' %}" class="utility-link">Sign in</a>
-                    <a href="{% url 'register' %}" class="primary-link">Get started</a>
-                </div>
+    <!-- Top Left Brand Logo (Revealed after TextRotate finishes) -->
+    <a href="/" class="brand-logo" id="brandLogo">PORTFOLIO<span>PRO</span></a>
+
+    <!-- Navigation Buttons (Top Right on Desktop, Bottom Dock on Mobile) -->
+    <nav class="nav-actions" id="navActions">
+        <a href="{% url 'admin_login' %}" class="nav-signin">Sign in</a>
+        <a href="{% url 'register' %}" class="nav-get-started">Get started</a>
+    </nav>
+
+    <!-- Phase 1: Intro Hero Rotating Text -->
+    <section class="intro-view" id="introView" title="Click to skip straight to search">
+        <div class="preview-text">
+            <span>Make it </span>
+            <span class="text-rotate-badge" 
+                  id="heroBadge"
+                  data-text-rotate 
+                  data-texts='["fancy", "yours", "pro", "portfoliopro ✽"]' 
+                  data-interval="1250" 
+                  data-stagger-duration="18"
+                  data-stagger-from="last"
+                  data-loop="false">fancy</span>
+        </div>
+    </section>
+
+    <!-- Phase 2: Minimalist Interactive Subdomain Search Dashboard -->
+    <main class="search-view" id="searchView">
+        <h1 class="search-prompt">Claim your corner of the web.</h1>
+        <p class="search-sub">Enter your desired name to check instant availability.</p>
+
+        <div class="search-box-wrapper">
+            <!-- Dynamic Red / Green Interactive Lighting Glow -->
+            <div class="ambient-light" id="ambientLight"></div>
+            
+            <div class="search-card" id="searchCard">
+                <input type="text" class="search-input" id="subdomainInput" placeholder="yourname" spellcheck="false" autocomplete="off" autofocus>
+                <span class="domain-suffix">.{{ main_domain|default:"portfoliopro.site" }}</span>
+                <button class="claim-btn" id="claimBtn" disabled>
+                    <span>Claim</span>
+                    <svg class="arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </button>
             </div>
-        </header>
+        </div>
 
-        <main>
-            <section class="hero">
-                <div class="hero-grid">
-                    <div class="hero-copy fade-up">
-                        <p class="hero-eyebrow">PortfolioPro / Bright mode for people tired of safe work</p>
-                        <h1 class="hero-title">
-                            <span>Stop</span>
-                            <span class="lift">looking</span>
-                            <span class="accent-word">templated.</span>
-                        </h1>
-                        <p class="hero-deck">Claim your own subdomain, flip through 12 themes, push color until it feels like yours, and publish a portfolio that does not disappear into the same old startup fog.</p>
-                        <div class="hero-actions">
-                            <a href="{% url 'register' %}" class="hero-cta">Claim your subdomain <span class="arrow"></span></a>
-                            <a href="#themes" class="hero-secondary">See the themes</a>
-                        </div>
-                    </div>
+        <div class="status-msg" id="statusMsg">Letters, numbers, and hyphens only.</div>
+    </main>
 
-                    <div class="hero-collage fade-up">
-                        <article class="sticker rotate-left">
-                            <small>Palette A / Toxic</small>
-                            <strong>12</strong>
-                            <small>themes that feel like choices, not filler.</small>
-                        </article>
-                        <article class="sticker rotate-right" style="background:#fff;">
-                            <small>Palette B / Hazard</small>
-                            <strong style="color:var(--signal-two);">14</strong>
-                            <small>color controls across the whole portfolio.</small>
-                        </article>
-                        <article class="domain-card">
-                            <small class="meta-kicker">Your own URL</small>
-                            <code>yourname.{{ main_domain|default:"portfoliopro.site" }}</code>
-                            <p>No subfolder energy. No weird path. Just your name and your work.</p>
-                        </article>
-                    </div>
-                </div>
-            </section>
-
-            <section class="section-stack">
-                <article class="manifesto fade-up">
-                    <div>
-                        <p class="section-eyebrow">Why this exists</p>
-                        <h2>The internet does not need another <mark>timid</mark> portfolio.</h2>
-                    </div>
-                    <div class="manifesto-list">
-                        <div class="manifesto-item">
-                            <strong>Louder first impression.</strong>
-                            <p>The page should tell people you care about your work before they read a single case study.</p>
-                        </div>
-                        <div class="manifesto-item">
-                            <strong>Control every visible thing.</strong>
-                            <p>Theme, palette, sections, favicon, social links, GitHub imports, custom blocks. It is yours to bend.</p>
-                        </div>
-                        <div class="manifesto-item">
-                            <strong>No passenger-seat branding.</strong>
-                            <p>Zero ads, zero watermarks, zero filler. Your work stays in front. Platform branding stays out.</p>
-                        </div>
-                    </div>
-                </article>
-
-                <div class="feature-wall">
-                    <article class="feature-card wide signal fade-up">
-                        <p class="wall-note">01 / Claim the URL</p>
-                        <h3>Your name.<span> Your address.</span></h3>
-                        <div class="feature-meta">
-                            <p>Start with a personal subdomain that actually looks like a destination, not a temporary folder.</p>
-                            <span class="feature-num">URL</span>
-                        </div>
-                    </article>
-
-                    <article class="feature-card tall fade-up">
-                        <p class="wall-note">02 / Push the palette</p>
-                        <h3>Color until it bites.</h3>
-                        <div class="feature-meta">
-                            <p>Background, text, heading, accent, buttons, effects. Tune the whole atmosphere instead of settling for one accent color.</p>
-                            <span class="feature-num">14</span>
-                        </div>
-                    </article>
-
-                    <article class="feature-card medium signal-two fade-up">
-                        <p class="wall-note">03 / Pull your work in</p>
-                        <h3>Import GitHub. Skip the copy-paste.</h3>
-                        <div class="feature-meta">
-                            <p>Bring in projects fast, then sharpen the copy manually where it matters.</p>
-                            <span class="feature-num">GH</span>
-                        </div>
-                    </article>
-
-                    <article class="feature-card medium fade-up">
-                        <p class="wall-note">04 / Know who looked</p>
-                        <h3>Built-in analytics.</h3>
-                        <div class="feature-meta">
-                            <p>Views, devices, referrers, recent traffic. Enough signal without bolting on another tool.</p>
-                            <span class="feature-num">VIS</span>
-                        </div>
-                    </article>
-
-                    <article class="feature-card split fade-up">
-                        <p class="wall-note">05 / Stay unbranded</p>
-                        <h3>Zero ads. Zero platform clutter.</h3>
-                        <div class="feature-meta">
-                            <p>Your portfolio should look self-possessed. No badges. No "powered by" tail dragging behind it.</p>
-                            <span class="feature-num">0</span>
-                        </div>
-                    </article>
-                </div>
-
-                <section class="stats-band fade-up">
-                    <p class="wall-note">Fast numbers</p>
-                    <div class="stats-grid">
-                        <article class="stat-box">
-                            <strong>12</strong>
-                            <span>Themes</span>
-                        </article>
-                        <article class="stat-box">
-                            <strong>14</strong>
-                            <span>Color controls</span>
-                        </article>
-                        <article class="stat-box">
-                            <strong>0</strong>
-                            <span>Ads or watermarks</span>
-                        </article>
-                    </div>
-                </section>
-
-                <section class="theme-wall fade-up" id="themes">
-                    <article class="theme-wall-copy">
-                        <p class="section-eyebrow">Theme Wall</p>
-                        <h3>Pick a mood. Break it if you want.</h3>
-                        <p>Start from something sharp instead of a blank canvas. The point is not to freeze your taste into one template. The point is to get to a strong starting position fast.</p>
-                    </article>
-
-                    <div class="theme-list">
-                        <article class="theme-card">
-                            <div class="theme-preview one"></div>
-                            <h3>Modern Minimal</h3>
-                            <p>Quiet surface. Fast scanning. Strong typography.</p>
-                        </article>
-                        <article class="theme-card">
-                            <div class="theme-preview two"></div>
-                            <h3>Classic</h3>
-                            <p>Air, whitespace, and straightforward structure.</p>
-                        </article>
-                        <article class="theme-card">
-                            <div class="theme-preview three"></div>
-                            <h3>Creative Dark</h3>
-                            <p>Moody contrast for heavier visual work.</p>
-                        </article>
-                        <article class="theme-card">
-                            <div class="theme-preview four"></div>
-                            <h3>Developer Folio</h3>
-                            <p>Code-forward presentation without looking dead inside.</p>
-                        </article>
-                        <article class="theme-card">
-                            <div class="theme-preview five"></div>
-                            <h3>Terminal</h3>
-                            <p>CLI posture. Hacker energy. Minimal explanation.</p>
-                        </article>
-                        <article class="theme-card">
-                            <div class="theme-preview six"></div>
-                            <h3>Signature Editions</h3>
-                            <p>Custom personalities like Irish Spring, Pro V2, and Binil.</p>
-                        </article>
-                    </div>
-                </section>
-
-                <section class="steps-grid fade-up">
-                    <article class="steps-intro">
-                        <p class="section-eyebrow">Three steps</p>
-                        <h3>Get online before your coffee cools.</h3>
-                        <p style="margin-top:16px;font-size:.82rem;line-height:1.8;color:#222;">No deployment ceremony. No framework decisions. Just claim, customize, publish.</p>
-                        <div style="margin-top:22px;">
-                            <a href="{% url 'register' %}" class="step-action">Start free <span class="arrow"></span></a>
-                        </div>
-                    </article>
-
-                    <div class="steps-track">
-                        <article class="step-card">
-                            <strong>01 / Claim</strong>
-                            <p>Pick your subdomain, create the account, and get your shell ready.</p>
-                        </article>
-                        <article class="step-card">
-                            <strong>02 / Customize</strong>
-                            <p>Add projects, drag sections around, import GitHub, twist the colors until it feels like your work.</p>
-                        </article>
-                        <article class="step-card">
-                            <strong>03 / Publish</strong>
-                            <p>Go live, share the link, then watch the analytics instead of wondering whether anyone showed up.</p>
-                        </article>
-                    </div>
-                </section>
-
-                <section class="closing-card fade-up">
-                    <div class="closing-side">
-                        <p class="section-eyebrow">Final shove</p>
-                        <h3>Claim your corner of the internet <span>properly.</span></h3>
-                        <p>No code. No deployment keys. No timid default mood. Just a portfolio builder with enough visual range to stop looking like filler.</p>
-                        <div class="hero-actions">
-                            <a href="{% url 'register' %}" class="hero-cta">Build yours now <span class="arrow"></span></a>
-                            <a href="{% url 'admin_login' %}" class="hero-secondary">I already have one</a>
-                        </div>
-                    </div>
-                    <div class="closing-side">
-                        <div class="closing-punch">Your work deserves something with a pulse.</div>
-                        <div class="theme-card">
-                            <h3>Built for strong taste.</h3>
-                            <p>Start from a sharp system, then push it until the site feels unmistakably yours.</p>
-                        </div>
-                    </div>
-                </section>
-            </section>
-        </main>
-
-        <footer class="footer">
-            <div class="footer-box">
-                <div>
-                    <div class="footer-brand">PORTFOLIOPRO</div>
-                    <div class="footer-copy">Your corner of the web. Your rules.</div>
-                </div>
-                <div class="footer-links">
-                    <a href="{% url 'register' %}" class="utility-link">Get started</a>
-                    <a href="{% url 'admin_login' %}" class="utility-link">Sign in</a>
-                </div>
-            </div>
-        </footer>
-    </div>
-
+    <script src="{% static 'js/text-rotate.js' %}"></script>
     <script>
         (function(){
-            var observer = new IntersectionObserver(function(entries){
-                entries.forEach(function(entry){
-                    if(entry.isIntersecting){
-                        entry.target.classList.add('is-visible');
-                        observer.unobserve(entry.target);
+            var introView = document.getElementById('introView');
+            var searchView = document.getElementById('searchView');
+            var brandLogo = document.getElementById('brandLogo');
+            var navActions = document.getElementById('navActions');
+            var heroBadge = document.getElementById('heroBadge');
+            var hasTransformed = false;
+
+            // Function to trigger transformation from Intro to Search Dashboard
+            function triggerTransformation() {
+                if (hasTransformed) return;
+                hasTransformed = true;
+
+                introView.classList.add('is-hidden');
+                brandLogo.classList.add('is-visible');
+                navActions.classList.add('is-visible');
+                searchView.classList.add('is-visible');
+
+                setTimeout(function(){
+                    var inp = document.getElementById('subdomainInput');
+                    if (inp) inp.focus();
+                }, 400);
+            }
+
+            // Listen for completion of TextRotate sequence (when it reaches portfoliopro ✽)
+            if (heroBadge) {
+                heroBadge.addEventListener('textRotateComplete', function(){
+                    setTimeout(triggerTransformation, 500);
+                });
+            }
+
+            // Allow clicking anywhere on intro screen to skip straight to search
+            if (introView) {
+                introView.addEventListener('click', function(e){
+                    // If they didn't click the badge itself, transform immediately
+                    if (!e.target.closest('.text-rotate-badge')) {
+                        triggerTransformation();
                     }
                 });
-            }, { threshold: 0.14 });
+            }
 
-            document.querySelectorAll('.fade-up').forEach(function(node){
-                observer.observe(node);
-            });
+            // Live Interactive Subdomain Availability Logic with Red/Green Lighting
+            var inp = document.getElementById('subdomainInput');
+            var statusMsg = document.getElementById('statusMsg');
+            var claimBtn = document.getElementById('claimBtn');
+            var searchCard = document.getElementById('searchCard');
+            var ambientLight = document.getElementById('ambientLight');
+            var mainDomain = "{{ main_domain|default:'portfoliopro.site' }}";
+            var timer;
+
+            if (inp) {
+                inp.addEventListener('input', function(){
+                    clearTimeout(timer);
+                    var val = inp.value.trim().toLowerCase();
+
+                    searchCard.classList.remove('is-available', 'is-taken');
+                    ambientLight.classList.remove('is-available', 'is-taken');
+
+                    if (!val) {
+                        statusMsg.textContent = 'Enter a subdomain to check availability.';
+                        statusMsg.className = 'status-msg';
+                        claimBtn.disabled = true;
+                        return;
+                    }
+
+                    if (!/^[a-zA-Z0-9-]+$/.test(val) || val.startsWith('-') || val.endsWith('-')) {
+                        statusMsg.textContent = 'Use lowercase letters, numbers, and hyphens only.';
+                        statusMsg.className = 'status-msg status-bad';
+                        claimBtn.disabled = true;
+                        searchCard.classList.add('is-taken');
+                        ambientLight.classList.add('is-taken');
+                        return;
+                    }
+
+                    statusMsg.textContent = 'Checking availability...';
+                    statusMsg.className = 'status-msg';
+                    claimBtn.disabled = true;
+
+                    timer = setTimeout(function(){
+                        fetch('/api/auth/check-subdomain/?subdomain=' + encodeURIComponent(val))
+                            .then(function(res){
+                                if (!res.ok) throw new Error('Check failed');
+                                return res.json();
+                            })
+                            .then(function(data){
+                                if (data.available) {
+                                    statusMsg.textContent = '✨ ' + val + '.' + mainDomain + ' is available!';
+                                    statusMsg.className = 'status-msg status-ok';
+                                    claimBtn.disabled = false;
+                                    searchCard.classList.add('is-available');
+                                    ambientLight.classList.add('is-available');
+                                } else {
+                                    statusMsg.textContent = '❌ ' + (data.message || 'Taken. Try another name.');
+                                    statusMsg.className = 'status-msg status-bad';
+                                    claimBtn.disabled = true;
+                                    searchCard.classList.add('is-taken');
+                                    ambientLight.classList.add('is-taken');
+                                }
+                            })
+                            .catch(function(){
+                                statusMsg.textContent = 'Could not check availability right now.';
+                                statusMsg.className = 'status-msg status-bad';
+                                claimBtn.disabled = true;
+                            });
+                    }, 300);
+                });
+
+                claimBtn.addEventListener('click', function(){
+                    var val = inp.value.trim().toLowerCase();
+                    if (val && !claimBtn.disabled) {
+                        window.location.href = "{% url 'register' %}?subdomain=" + encodeURIComponent(val);
+                    }
+                });
+
+                inp.addEventListener('keydown', function(e){
+                    if (e.key === 'Enter' && !claimBtn.disabled) {
+                        claimBtn.click();
+                    }
+                });
+            }
         })();
     </script>
 </body>
