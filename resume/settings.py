@@ -373,11 +373,21 @@ CSRF_COOKIE_SECURE = not DEBUG  # HTTPS only in production
 CSRF_COOKIE_HTTPONLY = True
 CSRF_COOKIE_SAMESITE = 'Lax'
 CSRF_TRUSTED_ORIGINS = [
+    'https://portfoliopro.site',
+    'http://portfoliopro.site',
     'https://*.portfoliopro.site',
+    'http://*.portfoliopro.site',
     'https://*.onrender.com',
     'http://localhost:8000',
     'http://127.0.0.1:8000',
 ]
+if MAIN_DOMAIN and MAIN_DOMAIN != 'portfoliopro.site':
+    CSRF_TRUSTED_ORIGINS.extend([
+        f'https://{MAIN_DOMAIN}',
+        f'http://{MAIN_DOMAIN}',
+        f'https://*.{MAIN_DOMAIN}',
+        f'http://*.{MAIN_DOMAIN}',
+    ])
 
 # Session Security
 SESSION_COOKIE_SECURE = not DEBUG  # HTTPS only in production
@@ -385,6 +395,11 @@ SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 7  # 1 week
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+
+# Reverse proxy headers
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
+USE_X_FORWARDED_PORT = True
 
 # XSS Protection
 SECURE_BROWSER_XSS_FILTER = True
@@ -399,7 +414,6 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = 31536000  # 1 year
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Content Security Policy (basic)
 # Note: For full CSP, consider django-csp package

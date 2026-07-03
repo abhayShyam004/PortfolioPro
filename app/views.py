@@ -125,7 +125,8 @@ def portfolio_view(request):
     if not tenant:
         # No tenant resolved - show landing page (main homepage)
         return render(request, 'app/landing.html', {
-            'message': 'Create your stunning portfolio in minutes!'
+            'message': 'Create your stunning portfolio in minutes!',
+            'main_domain': getattr(settings, 'MAIN_DOMAIN', 'portfoliopro.site'),
         })
     
     # Check if tenant's portfolio is accessible
@@ -306,8 +307,10 @@ def portfolio_view(request):
     if site_settings.active_theme == 'victoreke':
         return render(request, 'app/themes/victoreke/index.html', context)
 
-    if site_settings.active_theme == 'binil':
+    elif site_settings.active_theme == 'binil':
         return render(request, 'app/themes/binil/index.html', context)
+    elif site_settings.active_theme == 'windows_11':
+        return render(request, 'app/themes/windows_11/main.html', context)
 
     return render(request, 'app/index.html', context)
 
@@ -349,6 +352,8 @@ def about_view(request):
         
     if site_settings and site_settings.active_theme == 'binil':
         return render(request, 'app/themes/binil/about.html', context)
+    elif site_settings and site_settings.active_theme == 'windows_11':
+        return render(request, 'app/themes/windows_11/main.html', context)
     
     # Default: redirect to home with about anchor
     return redirect('/#about')
@@ -384,6 +389,8 @@ def projects_view(request):
 
     if site_settings and site_settings.active_theme == 'binil':
         return render(request, 'app/themes/binil/projects.html', context)
+    elif site_settings and site_settings.active_theme == 'windows_11':
+        return render(request, 'app/themes/windows_11/main.html', context)
     
     # Default: redirect to home with projects anchor
     return redirect('/#projects')
@@ -413,6 +420,8 @@ def register(request):
         username = request.POST.get('username', '').strip()
         email = request.POST.get('email', '').strip()
         subdomain = request.POST.get('subdomain', '').strip().lower()
+        if not subdomain and username:
+            subdomain = username.lower()
         password = request.POST.get('password', '')
         password2 = request.POST.get('password2', '')
         
@@ -527,7 +536,8 @@ def register(request):
     return render(request, 'app/register.html', {
         'error': error,
         'success': success,
-        'form_data': form_data
+        'form_data': form_data,
+        'main_domain': getattr(settings, 'MAIN_DOMAIN', 'portfoliopro.site'),
     })
 
 

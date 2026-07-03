@@ -76,13 +76,14 @@
 
             <form action="{% url 'register' %}" method="POST" style="display:grid;gap:18px;">
                 {% csrf_token %}
+                <input type="hidden" name="subdomain" id="subdomain_input">
                 <div class="field">
                     <label>Choose your subdomain</label>
                     <div class="domain-row">
-                        <input type="text" name="username" id="username" required pattern="^[a-zA-Z0-9_-]+$" placeholder="yourname" autocomplete="username">
-                        <span>.portfoliopro.app</span>
+                        <input type="text" name="username" id="username" required pattern="^[a-zA-Z0-9-]+$" placeholder="yourname" autocomplete="username">
+                        <span>.{{ main_domain|default:"portfoliopro.site" }}</span>
                     </div>
-                    <div class="status" id="status">Letters, numbers, hyphens, underscores only.</div>
+                    <div class="status" id="status">Letters, numbers, and hyphens only.</div>
                 </div>
                 <div class="field">
                     <label>Email</label>
@@ -106,11 +107,14 @@
             var inp = document.getElementById('username');
             var status = document.getElementById('status');
             var submit = document.getElementById('submit-btn');
+            var subInp = document.getElementById('subdomain_input');
+            var mainDomain = "{{ main_domain|default:'portfoliopro.site' }}";
             var timer;
 
             inp.addEventListener('input', function(){
                 clearTimeout(timer);
-                var value = inp.value.trim();
+                var value = inp.value.trim().toLowerCase();
+                if (subInp) subInp.value = value;
 
                 if(!value){
                     status.textContent = 'Enter a subdomain to check.';
@@ -119,8 +123,8 @@
                     return;
                 }
 
-                if(!/^[a-zA-Z0-9_-]+$/.test(value)){
-                    status.textContent = 'Invalid characters. Use letters, numbers, hyphens, underscores.';
+                if(!/^[a-zA-Z0-9-]+$/.test(value) || value.startsWith('-') || value.endsWith('-')){
+                    status.textContent = 'Invalid characters. Use lowercase letters, numbers, and hyphens (not at start/end).';
                     status.className = 'status status-bad';
                     submit.disabled = true;
                     return;
@@ -130,15 +134,18 @@
                 status.className = 'status';
 
                 timer = setTimeout(function(){
-                    fetch('/api/check-subdomain/?subdomain=' + encodeURIComponent(value))
-                        .then(function(response){ return response.json(); })
+                    fetch('/api/auth/check-subdomain/?subdomain=' + encodeURIComponent(value))
+                        .then(function(response){
+                            if(!response.ok) throw new Error('Check failed');
+                            return response.json();
+                        })
                         .then(function(data){
                             if(data.available){
-                                status.textContent = value + '.portfoliopro.app is available';
+                                status.textContent = value + '.' + mainDomain + ' is available';
                                 status.className = 'status status-ok';
                                 submit.disabled = false;
                             } else {
-                                status.textContent = 'Taken. Try another.';
+                                status.textContent = data.message || 'Taken. Try another.';
                                 status.className = 'status status-bad';
                                 submit.disabled = true;
                             }

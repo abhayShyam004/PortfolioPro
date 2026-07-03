@@ -280,6 +280,7 @@ class SiteSettings(models.Model):
         ('irish_spring', 'Irish Spring'),
         ('victoreke', 'Pro V2'),
         ('binil', 'TheGr8Binil'),
+        ('windows_11', 'Windows 11 OS'),
     ]
     active_theme = models.CharField(max_length=30, choices=THEME_CHOICES, default='classic')
     theme_config = models.JSONField(default=dict, blank=True, help_text="Theme-specific configuration")

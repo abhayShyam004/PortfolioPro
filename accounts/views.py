@@ -217,8 +217,17 @@ class CheckSubdomainView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        # Check if subdomain exists
-        exists = User.objects.filter(subdomain__iexact=subdomain).exists()
+        # Check if subdomain has valid DNS characters (alphanumeric and hyphens, no start/end hyphen)
+        import re
+        if not re.match(r'^[a-z0-9][a-z0-9-]*[a-z0-9]$|^[a-z0-9]$', subdomain):
+            return Response({
+                'subdomain': subdomain,
+                'available': False,
+                'message': 'Subdomain must be lowercase alphanumeric with optional hyphens (cannot start or end with hyphen)'
+            })
+        
+        # Check if subdomain or username exists
+        exists = User.objects.filter(subdomain__iexact=subdomain).exists() or User.objects.filter(username__iexact=subdomain).exists()
         
         # Check reserved subdomains
         reserved = {

@@ -18,12 +18,14 @@ from django.contrib import admin
 from django.urls import path,include
 from django.conf import settings
 from django.conf.urls.static import static
+from accounts.views import CheckSubdomainView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     
     # API Authentication endpoints
     path('api/auth/', include('accounts.urls', namespace='accounts')),
+    path('api/check-subdomain/', CheckSubdomainView.as_view(), name='api_check_subdomain'),
     
     # Superadmin panel
     path('superadmin/', include('superadmin.urls', namespace='superadmin')),

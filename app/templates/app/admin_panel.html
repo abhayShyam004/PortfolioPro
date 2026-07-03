@@ -1765,7 +1765,7 @@
                             
                             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
                                 {% for value, label in theme_choices %}
-                                {% if value in 'classic,developer,irish_spring,victoreke,interactive_3d' %}
+                                {% if value in 'classic,developer,irish_spring,victoreke,interactive_3d,windows_11' %}
                                 <label class="theme-card" style="
                                     background: #1a1a2e;
                                     border: 2px solid {% if settings.active_theme == value %}var(--primary){% else %}rgba(255,255,255,0.1){% endif %};
@@ -1791,6 +1791,7 @@
                                         {% elif value == 'irish_spring' %}background: #ffffff; color: #3ad59b; border: 1px solid #eee;
                                         {% elif value == 'victoreke' %}background: #fafafa; color: #18181b; border: 1px solid #eee;
                                         {% elif value == 'interactive_3d' %}background: #0a0a0f; color: #00ffff;
+                                        {% elif value == 'windows_11' %}background: #005A9E; color: #ffffff;
                                         {% endif %}">
                                         <span style="font-weight: 700; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px;">
                                             {{ label }}
@@ -1803,7 +1804,7 @@
                                         
                                         <!-- Theme Description -->
                                         <p style="font-size: 0.8rem; color: rgba(255,255,255,0.6); margin: 0;">
-                                            {% if value == 'classic' %}Original portfolio style{% elif value == 'developer' %}Matrix-style code theme{% elif value == 'irish_spring' %}Fresh mint & playful design{% elif value == 'victoreke' %}Modern dark aesthetic{% elif value == 'interactive_3d' %}Interactive 3D backgrounds{% endif %}
+                                            {% if value == 'classic' %}Original portfolio style{% elif value == 'developer' %}Matrix-style code theme{% elif value == 'irish_spring' %}Fresh mint & playful design{% elif value == 'victoreke' %}Modern dark aesthetic{% elif value == 'interactive_3d' %}Interactive 3D backgrounds{% elif value == 'windows_11' %}Windows 11 OS Experience{% endif %}
                                         </p>
                                     </div>
                                     

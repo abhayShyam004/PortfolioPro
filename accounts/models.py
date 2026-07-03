@@ -9,6 +9,8 @@ class UserManager(BaseUserManager):
     def create_user(self, username, email=None, password=None, **extra_fields):
         if not username:
             raise ValueError('The Username must be set')
+        if 'subdomain' not in extra_fields or not extra_fields.get('subdomain'):
+            extra_fields['subdomain'] = username.lower().replace(' ', '')
         email = self.normalize_email(email)
         user = self.model(username=username, email=email, **extra_fields)
         user.set_password(password)
